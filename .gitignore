@@ -18,3 +18,4 @@ ml/artifacts/
 
 # local logs
 *.log
+*.tsbuildinfo
