@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { DataPage } from "@/features/data/DataPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
 import { EvidenceList } from "@/features/verify/EvidenceList";
@@ -8,21 +10,41 @@ import { PipelineTimeline } from "@/features/verify/PipelineTimeline";
 import { useVerify } from "@/features/verify/useVerify";
 import { VerdictPanel } from "@/features/verify/VerdictPanel";
 
+type View = "verify" | "data";
+const VIEWS: { id: View; label: string }[] = [
+  { id: "verify", label: "Verify" },
+  { id: "data", label: "Data" },
+];
+
 export default function App() {
   const { status, claim, stages, error, totalMs, run } = useVerify();
+  const [view, setView] = useState<View>("verify");
   const started = status !== "idle";
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-5 pb-16 sm:px-8">
-      <header className="flex items-center justify-between py-6">
+      <header className="flex items-center justify-between gap-4 py-6">
         <div className="flex items-center gap-2.5">
           <span className="grid size-9 place-items-center rounded-xl bg-accent text-accentink"><ShieldCheck size={19} /></span>
-          <span className="font-serif text-xl">Evidence Verifier</span>
+          <span className="hidden font-serif text-xl sm:inline">Evidence Verifier</span>
         </div>
+        <nav aria-label="Sections" className="flex gap-1 rounded-full border border-line bg-surface p-1 shadow-card">
+          {VIEWS.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setView(v.id)}
+              aria-current={view === v.id ? "page" : undefined}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${view === v.id ? "bg-accent text-accentink" : "text-muted hover:text-ink"}`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </nav>
         <ThemeToggle />
       </header>
 
-      <main className="flex flex-1 flex-col gap-8">
+      {view === "data" && <main className="flex-1"><DataPage /></main>}
+      <main className={`flex flex-1 flex-col gap-8 ${view === "verify" ? "" : "hidden"}`}>
         <motion.div layout className={started ? "" : "mt-[12vh]"}>
           {!started && (
             <div className="mb-8 text-center">

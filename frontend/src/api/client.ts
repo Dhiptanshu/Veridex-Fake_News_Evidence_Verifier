@@ -1,4 +1,4 @@
-import type { PipelineEvent, StageInfo } from "./types";
+import type { ClaimPage, DataStats, Label, PipelineEvent, SplitName, StageInfo } from "./types";
 
 export async function fetchStages(signal?: AbortSignal): Promise<StageInfo[]> {
   const res = await fetch("/api/stages", { signal });
@@ -35,4 +35,25 @@ export async function* streamVerify(
       if (data) yield JSON.parse(data.slice(6)) as PipelineEvent;
     }
   }
+}
+
+async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(url, { signal });
+  if (!res.ok) {
+    const detail = await res.json().then((j) => j.detail as string).catch(() => "");
+    throw new Error(detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export const fetchDataStats = (signal?: AbortSignal) => getJson<DataStats>("/api/data/stats", signal);
+
+export function fetchClaims(
+  p: { split: SplitName; label?: Label; q?: string; offset: number; limit: number },
+  signal?: AbortSignal,
+) {
+  const qs = new URLSearchParams({ split: p.split, offset: String(p.offset), limit: String(p.limit) });
+  if (p.label) qs.set("label", p.label);
+  if (p.q && p.q.length >= 2) qs.set("q", p.q);
+  return getJson<ClaimPage>(`/api/data/claims?${qs}`, signal);
 }

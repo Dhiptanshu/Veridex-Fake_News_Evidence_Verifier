@@ -44,3 +44,18 @@ export interface PipelineEvent {
   payload: Record<string, unknown> | null;
   message: string | null;
 }
+
+// --- data inspection (backend/app/api/data_routes.py) ---
+export type SplitName = "train" | "val" | "test";
+
+export interface DataStats {
+  config: { n_train: number; n_val: number; n_distractors: number; seed: number };
+  splits: Record<SplitName, {
+    claims: number; labels: Partial<Record<Label, number>>; dropped_unanswerable: number; mean_claim_words: number;
+  }>;
+  corpus: { pages: number; gold_pages: number; distractor_pages: number; sentences: number; mean_sentences_per_page: number };
+}
+
+export interface EvidenceView { page: string; title: string; sent_id: number; text: string }
+export interface ClaimView { id: number; claim: string; label: Label; evidence_sets: EvidenceView[][] }
+export interface ClaimPage { total: number; items: ClaimView[] }
