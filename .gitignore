@@ -19,3 +19,6 @@ ml/artifacts/
 # local logs
 *.log
 *.tsbuildinfo
+
+# local-only notes
+git_rules.md
