@@ -3,9 +3,9 @@
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
 
-**Status: Phase 4 (semantic retrieval) done.** Preprocessing, NER, keywords and retrieval (lexical, word-vector and
-transformer) are real and run on the FEVER subset; verification and explanation are still labelled placeholders
-(Phases 5 and 6).
+**Status: Phase 5 (verification) done.** Preprocessing, NER, keywords, retrieval and claim verification (BiLSTM/BiGRU,
+fine-tuned BERT) are real and run on the FEVER subset; only the explanation generator is still a labelled placeholder
+(Phase 6).
 
 ## Run
 
@@ -68,7 +68,8 @@ python ml/train_claim_baseline.py # claim-only classifiers -> docs/results/claim
 | ner | spaCy entities, noun chunks, SVO triples (dependency parse) | capitalised-span heuristic |
 | keywords | TF-IDF weights filtered by POS | TF-IDF + PMI phrases, term frequency |
 | retrieval | BGE-small dense search + title bonus (Phase 4) | TF-IDF (+title), TF-IDF only, MiniLM, TF-IDF + MiniLM, TF-IDF + Word2Vec, TF-IDF + GloVe |
-| verification, explanation | placeholder (Phases 5 and 6) | |
+| verification | BERT + stacker (Phase 5) | BERT concatenated, BiLSTM, BiGRU, claim-only TF-IDF |
+| explanation | placeholder (Phase 6) | |
 
 Retrieval on the 13,202 verifiable test claims, on the subset corpus (Recall@k = all pages or sentences of some
 gold evidence set are in the top k):
@@ -138,6 +139,65 @@ Findings:
 (films, albums, football, species, war, ...) but LDA is unsupervised, so a chip can be loosely matched, for example
 generic "country" vocabulary is labelled with India. PCA projects the claim and evidence onto a 2-D map; two components
 keep only about 6% of the variance, so the UI says distances are approximate.
+
+## Verification (Phase 5)
+
+The verifier reads the claim and the evidence our retriever returns (top 5 sentences) and outputs supported / refuted /
+not enough info. Training and evaluation use the *retrieved* evidence, so the numbers describe the whole pipeline, not a
+gold-evidence shortcut.
+
+```bash
+python ml/build_verification_data.py            # retrieve evidence for every claim, about 35 min -> data/processed/verif_*.jsonl
+python ml/kaggle/verify/prepare_dataset.py      # stage the Kaggle dataset, then: kaggle datasets create -p data/kaggle/verif
+cd ml/kaggle/verify && kaggle kernels push -p . # GPU kernel: BiLSTM, BiGRU, BERT (about 35 min on a T4)
+kaggle kernels output dhiptanshumalik/fnev-verify -p data/kaggle/verify_out
+# copy bert_fever/, lstm.pt, gru.pt from verify_out into data/models/, then:
+python ml/train_claim_baseline.py               # also saves data/models/claim_only.joblib
+python ml/eval_verification.py                  # metrics, temperature scaling -> docs/results/verification.json
+# per-sentence BERT scores (GPU kernel ml/kaggle/aggregate, upload the model as a dataset first), then:
+python ml/eval_aggregation.py --n-val 0 --n-test 0
+python ml/train_stacker.py                      # -> data/models/stacker.joblib
+```
+
+**Models.** BiLSTM and BiGRU: GloVe-initialised (frozen), claim and evidence encoded separately, max-pooled. BERT:
+`bert-base-uncased` fine-tuned for 2 epochs on 75,571 claim-evidence examples (AdamW 2e-5, fp16). For supported/refuted
+claims the training evidence is the gold sentences merged with retrieved ones; not-enough-info claims use retrieved
+evidence; single-sentence examples are added so the model can also rate one sentence on its own.
+
+**Final verdict ("BERT + stacker").** BERT scores the claim against each of the 5 sentences alone and against all of
+them concatenated; a logistic regression on those 13 numbers (trained on the validation split, balanced class weights)
+gives the final calibrated probabilities. This beat plain concatenation, which is brittle: for "Paris is the capital of
+Germany" every page alone was judged *refuted*, yet the concatenated input flipped to *supported* (0.84).
+
+Test set: 19,868 balanced claims (chance 0.333), evidence from our retriever. FEVER score = label correct **and** a
+complete gold evidence set retrieved.
+
+| Verifier | Accuracy | Macro-F1 | Cross-entropy | ECE | FEVER score |
+|---|---|---|---|---|---|
+| Claim-only TF-IDF (no evidence) | 0.528 | 0.527 | 1.011 | 0.122 | n/a |
+| BiLSTM + GloVe | 0.534 | 0.519 | 1.022 | 0.137 | 0.498 |
+| BiGRU + GloVe | 0.538 | 0.513 | 1.150 | 0.194 | 0.498 |
+| BERT, evidence concatenated | 0.715 | 0.711 | 0.830 | 0.147 | 0.680 |
+| BERT concatenated + temperature (T=1.6) | 0.715 | 0.711 | 0.705 | 0.049 | 0.680 |
+| BERT, per-sentence max rule | 0.732 | n/a | n/a | n/a | n/a |
+| **BERT + stacker (default)** | **0.749** | **0.747** | **0.636** | **0.024** | **0.714** |
+
+With gold evidence given to the concatenated BERT the accuracy is 0.762, so retrieval costs about 5 points; gold
+evidence is fully retrieved for 90.8% of supported/refuted test claims, which also caps the FEVER score.
+
+Findings and caveats:
+- **Evidence matters, but only a real model uses it.** The BiLSTM/BiGRU baselines barely beat the claim-only model on
+  the balanced test set. Their 65% on val was inflated: val is 54% supported and they lean on that prior (supported
+  recall 0.84, refuted recall 0.40). Both overfit after epoch 2 (val loss rises while train loss falls; curves in
+  `docs/results/verification_history.json`). BERT also peaks near epoch 1.5.
+- **Weakest class is refuted**, mostly mislabelled as not-enough-info (retrieved evidence often does not contradict the
+  claim directly). The stacker lifted refuted recall from 0.59 to 0.69.
+- **It is still a FEVER-trained model**, so it leans on lexical overlap. "The capital of Australia is Sydney" is judged
+  *supported* (0.90) even though the retrieved evidence says the capital is Canberra. Treat verdicts on real-world
+  claims as a demonstration, not as fact-checking.
+- **Calibration:** raw BERT is overconfident (ECE 0.147); temperature scaling (fitted on val) or the stacker fixes it.
+- The stacker is trained on the validation split that also chose BERT's checkpoint; test was used once.
+- Prior correction for the train/test label shift was tried and changed BERT by only +0.3 points, so it is not applied.
 
 ## Adding a pipeline stage
 
