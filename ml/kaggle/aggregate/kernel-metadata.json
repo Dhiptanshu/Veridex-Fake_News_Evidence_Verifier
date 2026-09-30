@@ -1,0 +1,13 @@
+{
+  "id": "dhiptanshumalik/fnev-aggregate",
+  "title": "fnev-aggregate",
+  "code_file": "aggregate.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": false,
+  "dataset_sources": ["dhiptanshumalik/fnev-verif", "dhiptanshumalik/fnev-bert"],
+  "competition_sources": [],
+  "kernel_sources": []
+}
