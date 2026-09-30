@@ -58,6 +58,7 @@ def test_stages_catalog_has_one_default_per_slot():
     for slot in SLOTS:
         assert sum(1 for s in data if s["slot"] == slot and s["is_default"]) == 1
     assert {s["name"] for s in data if s["slot"] == "keywords"} == {"tfidf", "tfidf_pmi", "frequency"}
+    assert {s["name"] for s in data if s["slot"] == "retrieval"} >= {"dense_bge", "tfidf", "wordvec_w2v", "hybrid_minilm"}
 
 
 def test_sse_stream_format():
