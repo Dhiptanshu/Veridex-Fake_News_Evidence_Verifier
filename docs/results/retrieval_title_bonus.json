@@ -1,0 +1,38 @@
+{
+  "store": "bge_small",
+  "val_by_bonus": {
+    "0.0": {
+      "sentence_recall@1": 0.6923,
+      "sentence_recall@5": 0.8943
+    },
+    "0.02": {
+      "sentence_recall@1": 0.7017,
+      "sentence_recall@5": 0.8976
+    },
+    "0.05": {
+      "sentence_recall@1": 0.7047,
+      "sentence_recall@5": 0.8956
+    },
+    "0.1": {
+      "sentence_recall@1": 0.699,
+      "sentence_recall@5": 0.8882
+    },
+    "0.2": {
+      "sentence_recall@1": 0.6869,
+      "sentence_recall@5": 0.8727
+    }
+  },
+  "tuned_bonus": 0.02,
+  "test": {
+    "0.0": {
+      "sentence_recall@1": 0.7019,
+      "sentence_recall@5": 0.9035
+    },
+    "0.02": {
+      "sentence_recall@1": 0.7078,
+      "sentence_recall@5": 0.9081
+    }
+  },
+  "val_claims": 2970,
+  "test_claims": 13202
+}

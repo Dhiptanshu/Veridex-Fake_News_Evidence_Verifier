@@ -1,0 +1,347 @@
+{
+  "n_topics": 20,
+  "perplexity": 3087.9,
+  "pages": 69824,
+  "topics": [
+    {
+      "id": 0,
+      "label": "art \u00b7 work \u00b7 book",
+      "words": [
+        "art",
+        "work",
+        "book",
+        "published",
+        "works",
+        "museum",
+        "author",
+        "books",
+        "arts",
+        "university"
+      ],
+      "pages": 2410
+    },
+    {
+      "id": 1,
+      "label": "company \u00b7 published \u00b7 founded",
+      "words": [
+        "company",
+        "published",
+        "founded",
+        "business",
+        "magazine",
+        "group",
+        "media",
+        "kong",
+        "comics",
+        "based"
+      ],
+      "pages": 1645
+    },
+    {
+      "id": 2,
+      "label": "used \u00b7 use \u00b7 term",
+      "words": [
+        "used",
+        "use",
+        "term",
+        "uss",
+        "department",
+        "france",
+        "data",
+        "ship",
+        "number",
+        "information"
+      ],
+      "pages": 2604
+    },
+    {
+      "id": 3,
+      "label": "india \u00b7 state \u00b7 indian",
+      "words": [
+        "india",
+        "state",
+        "indian",
+        "country",
+        "people",
+        "world",
+        "republic",
+        "language",
+        "south",
+        "largest"
+      ],
+      "pages": 2508
+    },
+    {
+      "id": 4,
+      "label": "award \u00b7 born \u00b7 actor",
+      "words": [
+        "award",
+        "born",
+        "actor",
+        "best",
+        "actress",
+        "american",
+        "role",
+        "series",
+        "television",
+        "character"
+      ],
+      "pages": 2750
+    },
+    {
+      "id": 5,
+      "label": "film \u00b7 directed \u00b7 best",
+      "words": [
+        "film",
+        "directed",
+        "best",
+        "films",
+        "american",
+        "released",
+        "written",
+        "story",
+        "produced",
+        "stars"
+      ],
+      "pages": 4733
+    },
+    {
+      "id": 6,
+      "label": "used \u00b7 people \u00b7 life",
+      "words": [
+        "used",
+        "people",
+        "life",
+        "human",
+        "medical",
+        "body",
+        "common",
+        "treatment",
+        "disease",
+        "like"
+      ],
+      "pages": 1496
+    },
+    {
+      "id": 7,
+      "label": "school \u00b7 university \u00b7 party",
+      "words": [
+        "school",
+        "university",
+        "party",
+        "united",
+        "president",
+        "states",
+        "member",
+        "state",
+        "national",
+        "election"
+      ],
+      "pages": 5820
+    },
+    {
+      "id": 8,
+      "label": "game \u00b7 used \u00b7 design",
+      "words": [
+        "game",
+        "used",
+        "design",
+        "company",
+        "power",
+        "air",
+        "use",
+        "designed",
+        "based",
+        "developed"
+      ],
+      "pages": 3403
+    },
+    {
+      "id": 9,
+      "label": "world \u00b7 won \u00b7 summer",
+      "words": [
+        "world",
+        "won",
+        "summer",
+        "olympics",
+        "held",
+        "championship",
+        "team",
+        "championships",
+        "event",
+        "born"
+      ],
+      "pages": 3616
+    },
+    {
+      "id": 10,
+      "label": "series \u00b7 television \u00b7 radio",
+      "words": [
+        "series",
+        "television",
+        "radio",
+        "season",
+        "category",
+        "episode",
+        "channel",
+        "network",
+        "broadcast",
+        "aired"
+      ],
+      "pages": 2131
+    },
+    {
+      "id": 11,
+      "label": "american \u00b7 football \u00b7 season",
+      "words": [
+        "american",
+        "football",
+        "season",
+        "team",
+        "played",
+        "league",
+        "university",
+        "born",
+        "college",
+        "basketball"
+      ],
+      "pages": 2256
+    },
+    {
+      "id": 12,
+      "label": "war \u00b7 century \u00b7 chinese",
+      "words": [
+        "war",
+        "century",
+        "chinese",
+        "china",
+        "world",
+        "empire",
+        "military",
+        "early",
+        "period",
+        "battle"
+      ],
+      "pages": 2174
+    },
+    {
+      "id": 13,
+      "label": "football \u00b7 league \u00b7 club",
+      "words": [
+        "football",
+        "league",
+        "club",
+        "played",
+        "born",
+        "team",
+        "footballer",
+        "cup",
+        "season",
+        "player"
+      ],
+      "pages": 4348
+    },
+    {
+      "id": 14,
+      "label": "church \u00b7 house \u00b7 son",
+      "words": [
+        "church",
+        "house",
+        "son",
+        "england",
+        "john",
+        "king",
+        "catholic",
+        "died",
+        "century",
+        "english"
+      ],
+      "pages": 2678
+    },
+    {
+      "id": 15,
+      "label": "album \u00b7 released \u00b7 band",
+      "words": [
+        "album",
+        "released",
+        "band",
+        "song",
+        "music",
+        "single",
+        "rock",
+        "records",
+        "studio",
+        "number"
+      ],
+      "pages": 4777
+    },
+    {
+      "id": 16,
+      "label": "district \u00b7 county \u00b7 located",
+      "words": [
+        "district",
+        "county",
+        "located",
+        "village",
+        "north",
+        "south",
+        "city",
+        "area",
+        "river",
+        "population"
+      ],
+      "pages": 11855
+    },
+    {
+      "id": 17,
+      "label": "born \u00b7 german \u00b7 war",
+      "words": [
+        "born",
+        "german",
+        "war",
+        "french",
+        "american",
+        "army",
+        "british",
+        "politician",
+        "world",
+        "august"
+      ],
+      "pages": 3823
+    },
+    {
+      "id": 18,
+      "label": "music \u00b7 singer \u00b7 born",
+      "words": [
+        "music",
+        "singer",
+        "born",
+        "musical",
+        "composer",
+        "american",
+        "dance",
+        "orchestra",
+        "jackson",
+        "artist"
+      ],
+      "pages": 853
+    },
+    {
+      "id": 19,
+      "label": "species \u00b7 family \u00b7 genus",
+      "words": [
+        "species",
+        "family",
+        "genus",
+        "described",
+        "islands",
+        "moth",
+        "plant",
+        "sea",
+        "island",
+        "australia"
+      ],
+      "pages": 3944
+    }
+  ]
+}
