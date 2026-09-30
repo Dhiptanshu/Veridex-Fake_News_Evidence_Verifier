@@ -15,6 +15,8 @@ dependencies = [
   "nltk>=3.9",
   "spacy>=3.7",   # plus the model: python ml/setup_nlp.py
   "textblob>=0.18",
+  "gensim>=4.3",
+  "sentence-transformers>=3.0",   # needs torch; CPU build: pip install torch --index-url https://download.pytorch.org/whl/cpu
 ]
 
 [project.optional-dependencies]
