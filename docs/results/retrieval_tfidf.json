@@ -1,0 +1,84 @@
+{
+  "method": "tfidf (title x2 + text, 1-2 grams, sublinear tf), cosine; sentence rerank within top-10 pages",
+  "test_claims": 13202,
+  "val_claims": 2970,
+  "corpus_note": "subset corpus (~70k pages): optimistic versus full Wikipedia",
+  "val_boost_grid_page_recall@5": {
+    "ngram_title": {
+      "0.0": 0.7825,
+      "0.1": 0.8936,
+      "0.2": 0.9145,
+      "0.3": 0.9128,
+      "0.5": 0.9108,
+      "1.0": 0.9108
+    },
+    "ner_title": {
+      "0.0": 0.7825,
+      "0.1": 0.8646,
+      "0.2": 0.8781,
+      "0.3": 0.8791,
+      "0.5": 0.8785,
+      "1.0": 0.8785
+    },
+    "ngram+ner_title": {
+      "0.0": 0.7825,
+      "0.1": 0.9044,
+      "0.2": 0.9279,
+      "0.3": 0.9266,
+      "0.5": 0.9249,
+      "1.0": 0.9249
+    }
+  },
+  "test": {
+    "claim_only": {
+      "page_recall@1": 0.5606,
+      "page_recall@5": 0.8234,
+      "page_recall@10": 0.8779,
+      "page_recall@20": 0.9143,
+      "page_mrr": 0.728,
+      "sentence_recall@1": 0.4192,
+      "sentence_recall@5": 0.7063,
+      "title_boost": 0.0
+    },
+    "ngram_title": {
+      "page_recall@1": 0.7578,
+      "page_recall@5": 0.9236,
+      "page_recall@10": 0.9445,
+      "page_recall@20": 0.9587,
+      "page_mrr": 0.8923,
+      "sentence_recall@1": 0.4249,
+      "sentence_recall@5": 0.7235,
+      "title_boost": 0.2
+    },
+    "ner_title": {
+      "page_recall@1": 0.6648,
+      "page_recall@5": 0.8751,
+      "page_recall@10": 0.9118,
+      "page_recall@20": 0.937,
+      "page_mrr": 0.8125,
+      "sentence_recall@1": 0.4208,
+      "sentence_recall@5": 0.7148,
+      "title_boost": 0.3
+    },
+    "ngram+ner_title": {
+      "page_recall@1": 0.7676,
+      "page_recall@5": 0.9296,
+      "page_recall@10": 0.948,
+      "page_recall@20": 0.9613,
+      "page_mrr": 0.9012,
+      "sentence_recall@1": 0.425,
+      "sentence_recall@5": 0.7244,
+      "title_boost": 0.2
+    },
+    "ngram+ner_title+wordnet": {
+      "page_recall@1": 0.7734,
+      "page_recall@5": 0.9304,
+      "page_recall@10": 0.9477,
+      "page_recall@20": 0.9604,
+      "page_mrr": 0.9055,
+      "sentence_recall@1": 0.4263,
+      "sentence_recall@5": 0.7285,
+      "title_boost": 0.2
+    }
+  }
+}

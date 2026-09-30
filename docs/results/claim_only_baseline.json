@@ -1,0 +1,236 @@
+{
+  "task": "claim text only -> supported/refuted/not_enough_info",
+  "train_claims": 39729,
+  "test_claims": 19868,
+  "note": "Test is FEVER's balanced dev set (chance = 0.333); train/val are label-imbalanced.",
+  "models": {
+    "bag_of_words": {
+      "best_C": 1.0,
+      "val_macro_f1_by_C": {
+        "0.1": 0.5476,
+        "0.3": 0.5502,
+        "1.0": 0.5533,
+        "3.0": 0.5502,
+        "10.0": 0.5421
+      },
+      "val": {
+        "accuracy": 0.5733,
+        "macro": {
+          "precision": 0.5467,
+          "recall": 0.5671,
+          "f1": 0.5533
+        },
+        "per_class": {
+          "supported": {
+            "precision": 0.7001,
+            "recall": 0.5955,
+            "f1": 0.6436,
+            "support": 2156
+          },
+          "refuted": {
+            "precision": 0.5188,
+            "recall": 0.6093,
+            "f1": 0.5605,
+            "support": 814
+          },
+          "not_enough_info": {
+            "precision": 0.4212,
+            "recall": 0.4965,
+            "f1": 0.4558,
+            "support": 1007
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "supported",
+            "refuted",
+            "not_enough_info"
+          ],
+          "rows_true_cols_pred": [
+            [
+              1284,
+              311,
+              561
+            ],
+            [
+              192,
+              496,
+              126
+            ],
+            [
+              358,
+              149,
+              500
+            ]
+          ]
+        }
+      },
+      "test": {
+        "accuracy": 0.5038,
+        "macro": {
+          "precision": 0.5124,
+          "recall": 0.5041,
+          "f1": 0.5034
+        },
+        "per_class": {
+          "supported": {
+            "precision": 0.461,
+            "recall": 0.5941,
+            "f1": 0.5191,
+            "support": 6597
+          },
+          "refuted": {
+            "precision": 0.619,
+            "recall": 0.5167,
+            "f1": 0.5632,
+            "support": 6605
+          },
+          "not_enough_info": {
+            "precision": 0.4574,
+            "recall": 0.4016,
+            "f1": 0.4277,
+            "support": 6666
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "supported",
+            "refuted",
+            "not_enough_info"
+          ],
+          "rows_true_cols_pred": [
+            [
+              3919,
+              917,
+              1761
+            ],
+            [
+              1777,
+              3413,
+              1415
+            ],
+            [
+              2805,
+              1184,
+              2677
+            ]
+          ]
+        }
+      }
+    },
+    "tfidf_1-2gram": {
+      "best_C": 3.0,
+      "val_macro_f1_by_C": {
+        "0.1": 0.5402,
+        "0.3": 0.5571,
+        "1.0": 0.5609,
+        "3.0": 0.5627,
+        "10.0": 0.5586
+      },
+      "val": {
+        "accuracy": 0.5874,
+        "macro": {
+          "precision": 0.5569,
+          "recall": 0.5723,
+          "f1": 0.5627
+        },
+        "per_class": {
+          "supported": {
+            "precision": 0.7036,
+            "recall": 0.6299,
+            "f1": 0.6647,
+            "support": 2156
+          },
+          "refuted": {
+            "precision": 0.5377,
+            "recall": 0.6044,
+            "f1": 0.5691,
+            "support": 814
+          },
+          "not_enough_info": {
+            "precision": 0.4293,
+            "recall": 0.4826,
+            "f1": 0.4544,
+            "support": 1007
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "supported",
+            "refuted",
+            "not_enough_info"
+          ],
+          "rows_true_cols_pred": [
+            [
+              1358,
+              277,
+              521
+            ],
+            [
+              197,
+              492,
+              125
+            ],
+            [
+              375,
+              146,
+              486
+            ]
+          ]
+        }
+      },
+      "test": {
+        "accuracy": 0.5284,
+        "macro": {
+          "precision": 0.5345,
+          "recall": 0.5288,
+          "f1": 0.5273
+        },
+        "per_class": {
+          "supported": {
+            "precision": 0.4823,
+            "recall": 0.6116,
+            "f1": 0.5393,
+            "support": 6597
+          },
+          "refuted": {
+            "precision": 0.6315,
+            "recall": 0.5597,
+            "f1": 0.5935,
+            "support": 6605
+          },
+          "not_enough_info": {
+            "precision": 0.4898,
+            "recall": 0.4149,
+            "f1": 0.4493,
+            "support": 6666
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "supported",
+            "refuted",
+            "not_enough_info"
+          ],
+          "rows_true_cols_pred": [
+            [
+              4035,
+              967,
+              1595
+            ],
+            [
+              1622,
+              3697,
+              1286
+            ],
+            [
+              2710,
+              1190,
+              2766
+            ]
+          ]
+        }
+      }
+    }
+  }
+}

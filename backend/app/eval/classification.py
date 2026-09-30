@@ -1,0 +1,20 @@
+"""Classification metrics for the verdict task (accuracy, precision, recall, F1, confusion matrix)."""
+from collections.abc import Sequence
+
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
+
+LABELS = ["supported", "refuted", "not_enough_info"]
+
+
+def report(y_true: Sequence[str], y_pred: Sequence[str]) -> dict:
+    p, r, f, support = precision_recall_fscore_support(y_true, y_pred, labels=LABELS, zero_division=0)
+    mp, mr, mf, _ = precision_recall_fscore_support(y_true, y_pred, labels=LABELS, average="macro", zero_division=0)
+    return {
+        "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
+        "macro": {"precision": round(float(mp), 4), "recall": round(float(mr), 4), "f1": round(float(mf), 4)},
+        "per_class": {
+            lab: {"precision": round(float(p[i]), 4), "recall": round(float(r[i]), 4), "f1": round(float(f[i]), 4), "support": int(support[i])}
+            for i, lab in enumerate(LABELS)
+        },
+        "confusion_matrix": {"labels": LABELS, "rows_true_cols_pred": confusion_matrix(y_true, y_pred, labels=LABELS).tolist()},
+    }
