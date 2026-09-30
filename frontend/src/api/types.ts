@@ -15,15 +15,21 @@ export interface StageInfo {
   placeholder: boolean;
 }
 
-export interface PreprocessOut { original: string; sentences: string[]; tokens: string[]; normalized: string[] }
+export interface TaggedToken { token: string; tag: string }
+export interface Sentiment { polarity: number; subjectivity: number }
+export interface PreprocessOut {
+  original: string; sentences: string[]; tokens: string[]; pos: TaggedToken[]; lemmas: string[];
+  normalized: string[]; sentiment: Sentiment | null;
+}
 export interface Entity { text: string; label: string; start: number; end: number }
-export interface NerOut { entities: Entity[] }
-export interface KeywordsOut { keywords: { term: string; score: number }[]; query: string }
+export interface Triple { subject: string; predicate: string; object: string }
+export interface NerOut { entities: Entity[]; noun_chunks: string[]; triples: Triple[] }
+export interface KeywordsOut { keywords: { term: string; score: number; kind: string }[]; query: string }
 export interface Evidence {
   id: string; title: string; source: string; url: string | null; score: number;
   sentences: { text: string; score: number }[];
 }
-export interface RetrievalOut { evidence: Evidence[]; score_entropy: number | null }
+export interface RetrievalOut { evidence: Evidence[]; query: string | null; score_entropy: number | null }
 export interface VerificationOut {
   label: Label; confidence: number; probabilities: Record<Label, number>;
   per_evidence: { evidence_id: string; supported: number; refuted: number; neutral: number }[];

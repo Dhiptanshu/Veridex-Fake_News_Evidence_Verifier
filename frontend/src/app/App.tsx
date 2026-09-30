@@ -5,6 +5,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { DataPage } from "@/features/data/DataPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
+import { OptionsPanel, type Options } from "@/features/verify/OptionsPanel";
+import { StageDetails } from "@/features/verify/StageDetails";
 import { EvidenceList } from "@/features/verify/EvidenceList";
 import { PipelineTimeline } from "@/features/verify/PipelineTimeline";
 import { useVerify } from "@/features/verify/useVerify";
@@ -19,6 +21,7 @@ const VIEWS: { id: View; label: string }[] = [
 export default function App() {
   const { status, claim, stages, error, totalMs, run } = useVerify();
   const [view, setView] = useState<View>("verify");
+  const [options, setOptions] = useState<Options>({});
   const started = status !== "idle";
 
   return (
@@ -55,7 +58,8 @@ export default function App() {
               </p>
             </div>
           )}
-          <div className="mx-auto max-w-3xl"><ClaimInput running={status === "running"} onSubmit={(c) => run(c)} /></div>
+          <div className="mx-auto max-w-3xl"><ClaimInput running={status === "running"} onSubmit={(c) => run(c, options as Record<string, string>)} /></div>
+          <div className="mt-2"><OptionsPanel value={options} onChange={setOptions} /></div>
         </motion.div>
 
         <AnimatePresence>
@@ -68,6 +72,7 @@ export default function App() {
               <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
                 <div className="space-y-6">
                   <AnnotatedClaim claim={claim} entities={stages.ner.output?.entities ?? null} placeholder={stages.ner.placeholder} />
+                  <StageDetails pre={stages.preprocess.output} ner={stages.ner.output} kw={stages.keywords.output} />
                   <EvidenceList retrieval={stages.retrieval.output} verification={stages.verification.output} placeholder={stages.retrieval.placeholder} />
                 </div>
                 <VerdictPanel verification={stages.verification.output} explanation={stages.explanation.output} placeholder={stages.verification.placeholder} />
