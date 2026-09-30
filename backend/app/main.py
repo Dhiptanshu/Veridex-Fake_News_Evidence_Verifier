@@ -21,6 +21,12 @@ def _warm_up() -> None:
     def warm_tfidf() -> None:
         get_index().feature_names()
 
+    def warm_bert() -> None:
+        from app.verification import models as vmodels
+
+        vmodels.load("bert").predict([("Warm up.", "Warm up.")])
+        vmodels.load_stacker()
+
     def warm_dense() -> None:
         store = hybrid.get_store(hybrid.get_resources(), "bge_small")
         store.encode(["Warm up."])
@@ -32,6 +38,7 @@ def _warm_up() -> None:
         ("tfidf index", warm_tfidf),
         ("pmi table", pmi.get_table),
         ("dense bge_small", warm_dense),
+        ("bert verifier + stacker", warm_bert),
         ("lda topics", topics.get_topics),
         ("pca projection", lambda: projection.get_projector("bge_small")),
     ]:
