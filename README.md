@@ -3,9 +3,8 @@
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
 
-**Status: Phase 2 (data) done.** The pipeline runs end-to-end and streams to the UI, and the real FEVER data is
-built and browsable. Stages marked `placeholder` return labelled stand-ins, not real analysis; they are replaced
-phase by phase.
+**Status: Phase 3 (classical NLP) done.** Preprocessing, NER, keywords and retrieval are real and run on the FEVER
+subset; verification and explanation are still labelled placeholders (Phases 5 and 6).
 
 ## Run
 
@@ -52,6 +51,39 @@ Splits: `train`/`val` are carved from FEVER `train.jsonl`; `test` is FEVER's lab
 with searching all of Wikipedia. Report them as "on the subset".
 
 The Data tab (`/api/data/stats`, `/api/data/claims`) lets you browse the real claims and their evidence.
+
+## Classical NLP and retrieval (Phase 3)
+
+```bash
+python ml/setup_nlp.py            # NLTK data -> data/nltk_data, spaCy en_core_web_sm
+python ml/build_indexes.py        # data/indexes/tfidf.joblib + pmi.joblib (about 90 s)
+python ml/eval_retrieval.py       # ablation on val/test -> docs/results/retrieval_tfidf.json (about 10 min)
+python ml/train_claim_baseline.py # claim-only classifiers -> docs/results/claim_only_baseline.json
+```
+
+| Slot | Default | Alternatives (switchable in the UI's Pipeline options) |
+|---|---|---|
+| preprocess | NLTK tokens, POS, WordNet lemmas, TextBlob sentiment | regex tokenizer |
+| ner | spaCy entities, noun chunks, SVO triples (dependency parse) | capitalised-span heuristic |
+| keywords | TF-IDF weights filtered by POS | TF-IDF + PMI phrases, term frequency |
+| retrieval | TF-IDF over pages + title match, sentences re-ranked | TF-IDF only |
+| verification, explanation | placeholder (Phases 5 and 6) | |
+
+Retrieval on the 13,202 verifiable test claims, on the subset corpus (Recall@k = all pages or sentences of some
+gold evidence set are in the top k):
+
+| Variant | Page R@5 | Page MRR | Sentence R@5 |
+|---|---|---|---|
+| TF-IDF, claim only | 0.823 | 0.728 | 0.706 |
+| + title match from claim n-grams | 0.924 | 0.892 | 0.724 |
+| + title match from NER entities too (default) | 0.930 | 0.901 | 0.724 |
+| + WordNet query expansion | 0.930 | 0.906 | 0.729 |
+
+Finding pages is largely solved by lexical search plus title matching; picking the right *sentence* (0.72) is the
+weak link, which Phase 4's semantic models target. The title boost (0.2) was tuned on val, not test.
+
+Claim-only baseline (no evidence; test accuracy, chance = 0.333): bag-of-words 0.504, TF-IDF 1-2 grams 0.528. An
+evidence-based verifier has to beat this.
 
 ## Adding a pipeline stage
 
