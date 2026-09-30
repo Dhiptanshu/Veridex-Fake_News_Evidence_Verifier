@@ -3,8 +3,9 @@
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
 
-**Status: Phase 3 (classical NLP) done.** Preprocessing, NER, keywords and retrieval are real and run on the FEVER
-subset; verification and explanation are still labelled placeholders (Phases 5 and 6).
+**Status: Phase 4 (semantic retrieval) done.** Preprocessing, NER, keywords and retrieval (lexical, word-vector and
+transformer) are real and run on the FEVER subset; verification and explanation are still labelled placeholders
+(Phases 5 and 6).
 
 ## Run
 
@@ -66,7 +67,7 @@ python ml/train_claim_baseline.py # claim-only classifiers -> docs/results/claim
 | preprocess | NLTK tokens, POS, WordNet lemmas, TextBlob sentiment | regex tokenizer |
 | ner | spaCy entities, noun chunks, SVO triples (dependency parse) | capitalised-span heuristic |
 | keywords | TF-IDF weights filtered by POS | TF-IDF + PMI phrases, term frequency |
-| retrieval | TF-IDF over pages + title match, sentences re-ranked | TF-IDF only |
+| retrieval | BGE-small dense search + title bonus (Phase 4) | TF-IDF (+title), TF-IDF only, MiniLM, TF-IDF + MiniLM, TF-IDF + Word2Vec, TF-IDF + GloVe |
 | verification, explanation | placeholder (Phases 5 and 6) | |
 
 Retrieval on the 13,202 verifiable test claims, on the subset corpus (Recall@k = all pages or sentences of some
@@ -84,6 +85,59 @@ weak link, which Phase 4's semantic models target. The title boost (0.2) was tun
 
 Claim-only baseline (no evidence; test accuracy, chance = 0.333): bag-of-words 0.504, TF-IDF 1-2 grams 0.528. An
 evidence-based verifier has to beat this.
+
+## Semantic retrieval (Phase 4)
+
+Sentence vectors for all 371,974 corpus sentences, from four models. Two transformer encoders are computed on a
+Kaggle GPU (about 3 minutes); the word-vector models are built locally.
+
+```bash
+# 1. dense embeddings on Kaggle (needs ~/.kaggle credentials); outputs emb_minilm.npy and emb_bge_small.npy
+cd data/kaggle/corpus && cp ../../processed/corpus.jsonl . && kaggle datasets create -p .     # once
+cd ml/kaggle/embed && kaggle kernels push -p .                                                # GPU kernel
+kaggle kernels output dhiptanshumalik/fnev-embed -p data/kaggle/out && cp data/kaggle/out/emb_*.npy data/indexes/
+
+# 2. local builds
+python ml/build_wordvecs.py       # Word2Vec (trained on the corpus) + GloVe 100d -> sent_w2v.npy, sent_glove.npy
+python ml/build_topics.py         # LDA, 20 topics -> topics.joblib, docs/results/topics.json
+python ml/build_projection.py     # PCA (2 components) for the semantic map
+
+# 3. evaluation (about 1 hour each on CPU)
+python ml/eval_semantic.py        # -> docs/results/retrieval_semantic.json
+python ml/eval_title_bonus.py     # -> docs/results/retrieval_title_bonus.json
+```
+
+The Kaggle kernel embeds `"<title>. <sentence>"` so pronoun-led sentences keep their subject. Row order matches
+`app/retrieval/layout.py` and was checked against the local corpus.
+
+Sentence retrieval on the 13,202 verifiable test claims (candidate pages from TF-IDF + title match; hit = all
+sentences of some gold evidence set are in the top k):
+
+| Retriever | Recall@1 | Recall@5 |
+|---|---|---|
+| TF-IDF (Phase 3) | 0.425 | 0.724 |
+| Word2Vec (trained here) alone | 0.320 | 0.626 |
+| GloVe 100d alone | 0.322 | 0.613 |
+| TF-IDF + Word2Vec (40/60) | 0.507 | 0.769 |
+| TF-IDF + GloVe (40/60) | 0.482 | 0.758 |
+| MiniLM alone | 0.634 | 0.874 |
+| TF-IDF + MiniLM (20/80) | 0.649 | 0.881 |
+| BGE-small alone | 0.700 | 0.899 |
+| BGE-small, global search over all sentences | 0.702 | 0.904 |
+| **BGE-small + title bonus 0.02 (default)** | **0.708** | **0.908** |
+
+Findings:
+- Averaged word vectors alone are *worse* than TF-IDF; they only help when fused with it. Sentence-level
+  transformers are far better: Recall@5 rises from 0.72 to 0.91.
+- Once BGE is used, TF-IDF adds nothing (the tuned fusion weight is 0) and candidate pages from TF-IDF add nothing over
+  global dense search. What still helps a little is knowing which page the claim names: a 0.02 bonus for sentences on
+  title-matched pages gave +0.006 Recall@1 and +0.005 Recall@5 on test (tuned on val).
+- Fusion weights and the bonus were tuned on val, not test.
+
+**Topics and map.** LDA assigns each page a dominant topic (shown as a chip on evidence cards); the topics are coherent
+(films, albums, football, species, war, ...) but LDA is unsupervised, so a chip can be loosely matched, for example
+generic "country" vocabulary is labelled with India. PCA projects the claim and evidence onto a 2-D map; two components
+keep only about 6% of the variance, so the UI says distances are approximate.
 
 ## Adding a pipeline stage
 
