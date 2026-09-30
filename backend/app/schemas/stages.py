@@ -6,11 +6,24 @@ from pydantic import BaseModel, Field
 Label = Literal["supported", "refuted", "not_enough_info"]
 
 
+class TaggedToken(BaseModel):
+    token: str
+    tag: str  # Penn Treebank tag, e.g. NNP, VBD
+
+
+class Sentiment(BaseModel):
+    polarity: float  # -1 (negative) .. 1 (positive)
+    subjectivity: float  # 0 (objective) .. 1 (subjective); a rough "sensationalism" signal
+
+
 class PreprocessOut(BaseModel):
     original: str
     sentences: list[str]
     tokens: list[str]
-    normalized: list[str]  # lowercased, stop-words removed
+    pos: list[TaggedToken] = Field(default_factory=list)
+    lemmas: list[str] = Field(default_factory=list)  # lowercased lemma per token, aligned with `tokens`
+    normalized: list[str]  # lowercased lemmas, stop-words and punctuation removed
+    sentiment: Sentiment | None = None
 
 
 class Entity(BaseModel):
@@ -20,13 +33,22 @@ class Entity(BaseModel):
     end: int
 
 
+class Triple(BaseModel):
+    subject: str
+    predicate: str
+    object: str
+
+
 class NerOut(BaseModel):
     entities: list[Entity]
+    noun_chunks: list[str] = Field(default_factory=list)  # chunking
+    triples: list[Triple] = Field(default_factory=list)  # subject-verb-object from the dependency parse
 
 
 class Keyword(BaseModel):
     term: str
     score: float
+    kind: str = "term"  # term | phrase (PMI collocation)
 
 
 class KeywordsOut(BaseModel):
@@ -50,6 +72,7 @@ class Evidence(BaseModel):
 
 class RetrievalOut(BaseModel):
     evidence: list[Evidence]
+    query: str | None = None  # the text actually searched (after any expansion)
     score_entropy: float | None = None  # entropy of the normalised retrieval score distribution
 
 
