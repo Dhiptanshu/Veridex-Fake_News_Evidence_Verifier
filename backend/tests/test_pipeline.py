@@ -2,30 +2,50 @@ import json
 
 from fastapi.testclient import TestClient
 
-from app.core.config import settings
 from app.main import app
 from app.pipeline.orchestrator import run_pipeline
 from app.schemas.pipeline import SLOTS, VerifyRequest
-
-settings.placeholder_delay_s = 0
 
 
 async def _collect(req):
     return [ev async for ev in run_pipeline(req)]
 
 
+def _out(events, slot):
+    return next(e for e in events if e.type == "stage_end" and e.slot == slot).payload
+
+
 async def test_all_slots_run_in_order():
-    events = await _collect(VerifyRequest(claim="Paris is the capital of France."))
+    events = await _collect(VerifyRequest(claim="Marie Curie won two Nobel Prizes."))
     assert events[0].type == "pipeline_start" and events[-1].type == "pipeline_end"
     assert [e.slot for e in events if e.type == "stage_end"] == SLOTS
 
 
-async def test_entities_and_query_flow_between_stages():
-    events = await _collect(VerifyRequest(claim="Marie Curie won the Nobel Prize."))
-    ner = next(e for e in events if e.type == "stage_end" and e.slot == "ner")
-    assert "Marie Curie" in [x["text"] for x in ner.payload["entities"]]
-    kw = next(e for e in events if e.type == "stage_end" and e.slot == "keywords")
-    assert "Marie Curie" in kw.payload["query"]
+async def test_stage_outputs_flow_through_to_retrieval():
+    events = await _collect(VerifyRequest(claim="Marie Curie won two Nobel Prizes."))
+    assert "Marie Curie" in [e["text"] for e in _out(events, "ner")["entities"]]
+    assert "Marie Curie" in _out(events, "keywords")["query"]
+    evidence = _out(events, "retrieval")["evidence"]
+    assert evidence[0]["title"] == "Marie Curie"
+    assert any("Nobel Prize" in s["text"] for s in evidence[0]["sentences"])
+    assert evidence[0]["url"] == "https://en.wikipedia.org/wiki/Marie_Curie"
+
+
+async def test_paren_titles_get_clean_urls():
+    events = await _collect(VerifyRequest(claim="Fox 2000 Pictures released the film Soul Food."))
+    ev = _out(events, "retrieval")["evidence"][0]
+    assert ev["title"] == "Soul Food (film)"
+    assert ev["url"] == "https://en.wikipedia.org/wiki/Soul_Food_%28film%29"
+
+
+async def test_alternative_implementations_are_selectable():
+    req = VerifyRequest(
+        claim="Paris is the capital of France.",
+        options={"preprocess": "regex", "ner": "capitalized", "keywords": "frequency", "retrieval": "tfidf_plain"},
+    )
+    events = await _collect(req)
+    assert [e.impl for e in events if e.type == "stage_end"][:4] == ["regex", "capitalized", "frequency", "tfidf_plain"]
+    assert _out(events, "retrieval")["evidence"][0]["title"] == "Paris"
 
 
 async def test_unknown_impl_yields_error_event():
@@ -37,6 +57,7 @@ def test_stages_catalog_has_one_default_per_slot():
     data = TestClient(app).get("/api/stages").json()
     for slot in SLOTS:
         assert sum(1 for s in data if s["slot"] == slot and s["is_default"]) == 1
+    assert {s["name"] for s in data if s["slot"] == "keywords"} == {"tfidf", "tfidf_pmi", "frequency"}
 
 
 def test_sse_stream_format():
