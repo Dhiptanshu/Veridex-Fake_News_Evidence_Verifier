@@ -61,6 +61,12 @@ class EvidenceSentence(BaseModel):
     score: float = Field(ge=0, le=1)
 
 
+class Topic(BaseModel):
+    id: int
+    label: str  # top words joined, e.g. "film · american · directed"
+    words: list[str]
+
+
 class Evidence(BaseModel):
     id: str
     title: str
@@ -68,12 +74,30 @@ class Evidence(BaseModel):
     url: str | None = None
     score: float
     sentences: list[EvidenceSentence]
+    topic: Topic | None = None  # dominant LDA topic of the page
+
+
+class MapPoint(BaseModel):
+    x: float
+    y: float
+    kind: str  # claim | evidence
+    label: str
+    score: float | None = None
+
+
+class Projection(BaseModel):
+    """2-D PCA of the claim and evidence sentence embeddings, over a sample of corpus sentences as backdrop."""
+
+    points: list[MapPoint]
+    background: list[tuple[float, float]]
+    explained_variance: float
 
 
 class RetrievalOut(BaseModel):
     evidence: list[Evidence]
     query: str | None = None  # the text actually searched (after any expansion)
     score_entropy: float | None = None  # entropy of the normalised retrieval score distribution
+    projection: Projection | None = None
 
 
 class EvidenceVerdict(BaseModel):
