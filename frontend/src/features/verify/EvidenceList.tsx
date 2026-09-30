@@ -42,7 +42,14 @@ export function EvidenceList({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h4 className="truncate font-medium">{ev.title}</h4>
+                    <h4 className="flex items-center gap-2 font-medium">
+                      <span className="truncate">{ev.title}</span>
+                      {ev.topic && (
+                        <span title={`LDA topic ${ev.topic.id}: ${ev.topic.words.join(", ")}`} className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] font-normal text-muted">
+                          {ev.topic.label}
+                        </span>
+                      )}
+                    </h4>
                     <p className="mt-0.5 flex items-center gap-1.5 font-mono text-[11px] text-muted">
                       {ev.source} · score {ev.score.toFixed(3)}
                       {ev.url && (

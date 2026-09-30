@@ -25,11 +25,16 @@ export interface Entity { text: string; label: string; start: number; end: numbe
 export interface Triple { subject: string; predicate: string; object: string }
 export interface NerOut { entities: Entity[]; noun_chunks: string[]; triples: Triple[] }
 export interface KeywordsOut { keywords: { term: string; score: number; kind: string }[]; query: string }
+export interface Topic { id: number; label: string; words: string[] }
 export interface Evidence {
   id: string; title: string; source: string; url: string | null; score: number;
-  sentences: { text: string; score: number }[];
+  sentences: { text: string; score: number }[]; topic: Topic | null;
 }
-export interface RetrievalOut { evidence: Evidence[]; query: string | null; score_entropy: number | null }
+export interface MapPoint { x: number; y: number; kind: "claim" | "evidence"; label: string; score: number | null }
+export interface Projection { points: MapPoint[]; background: [number, number][]; explained_variance: number }
+export interface RetrievalOut {
+  evidence: Evidence[]; query: string | null; score_entropy: number | null; projection: Projection | null;
+}
 export interface VerificationOut {
   label: Label; confidence: number; probabilities: Record<Label, number>;
   per_evidence: { evidence_id: string; supported: number; refuted: number; neutral: number }[];

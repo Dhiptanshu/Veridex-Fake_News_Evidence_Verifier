@@ -6,6 +6,7 @@ import { DataPage } from "@/features/data/DataPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
 import { OptionsPanel, type Options } from "@/features/verify/OptionsPanel";
+import { SemanticMap } from "@/features/verify/SemanticMap";
 import { StageDetails } from "@/features/verify/StageDetails";
 import { EvidenceList } from "@/features/verify/EvidenceList";
 import { PipelineTimeline } from "@/features/verify/PipelineTimeline";
@@ -75,7 +76,10 @@ export default function App() {
                   <StageDetails pre={stages.preprocess.output} ner={stages.ner.output} kw={stages.keywords.output} />
                   <EvidenceList retrieval={stages.retrieval.output} verification={stages.verification.output} placeholder={stages.retrieval.placeholder} />
                 </div>
-                <VerdictPanel verification={stages.verification.output} explanation={stages.explanation.output} placeholder={stages.verification.placeholder} />
+                <div className="space-y-6">
+                  <VerdictPanel verification={stages.verification.output} explanation={stages.explanation.output} placeholder={stages.verification.placeholder} />
+                  {stages.retrieval.output?.projection && <SemanticMap projection={stages.retrieval.output.projection} />}
+                </div>
               </div>
               {totalMs != null && <p className="text-center font-mono text-xs text-muted">Completed in {Math.round(totalMs)} ms</p>}
             </motion.div>
