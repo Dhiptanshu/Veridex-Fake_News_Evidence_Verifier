@@ -12,6 +12,10 @@ from app.nlp import topics as topics_mod
 from app.retrieval import hybrid, tfidf, vectors
 from app.retrieval import projection as projection_mod
 from app.retrieval.layout import SentenceLayout
+from app.verification import models as vmodels
+from app.verification import text as vtext
+
+from fake_models import write_fake_models
 
 settings.placeholder_delay_s = 0
 
@@ -43,7 +47,7 @@ def _raise_missing(*_a, **_k):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def tiny_resources():
+def tiny_resources(tmp_path_factory):
     try:
         resources.spacy_nlp()
         resources.stopwords()
@@ -70,9 +74,14 @@ def tiny_resources():
         index, layout, {n: vectors.VectorStore(n, matrix, hash_embed) for n in ("bge_small", "minilm", "w2v", "glove", "fake")}
     )
     mp.setattr(hybrid, "get_resources", lambda: res)
+    model_dir = tmp_path_factory.mktemp("models")
+    write_fake_models(model_dir)
+    mp.setattr(vtext, "MODEL_DIR", model_dir)
+    vmodels.load.cache_clear()
     mp.setattr(topics_mod, "get_topics", _raise_missing)
     mp.setattr(projection_mod, "get_projector", _raise_missing)
     yield index
     mp.undo()
+    vmodels.load.cache_clear()
     tfidf.get_index.cache_clear()
     pmi_mod.get_table.cache_clear()

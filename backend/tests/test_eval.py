@@ -30,3 +30,18 @@ def test_reciprocal_rank_uses_first_gold_page():
     c = _claim([("A", 0)], [("B", 0)])
     assert ev.reciprocal_rank(c, ["X", "B", "A"]) == 0.5
     assert ev.reciprocal_rank(c, ["X", "Y"]) == 0.0
+
+
+def test_classification_metrics():
+    import numpy as np
+
+    from app.eval import classification as cl
+
+    probs = np.array([[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.1, 0.1, 0.8]])
+    assert abs(cl.cross_entropy([0, 1, 2], probs) - float(-np.log([0.8, 0.7, 0.8]).mean())) < 1e-9
+    assert cl.expected_calibration_error([0, 1, 2], np.eye(3)) == 0.0  # confident and always right
+    assert cl.expected_calibration_error([1, 0, 0], np.eye(3)) > 0.5  # confident and mostly wrong
+    labels = ["supported", "refuted", "not_enough_info", "supported"]
+    preds = ["supported", "refuted", "not_enough_info", "refuted"]
+    # 2nd claim is correct but its gold evidence was not retrieved, so it does not count
+    assert cl.fever_score(labels, preds, [True, False, False, True]) == 0.5
