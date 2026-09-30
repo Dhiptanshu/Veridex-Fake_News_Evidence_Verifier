@@ -3,11 +3,13 @@
     python ml/train_claim_baseline.py
 
 Bag-of-words and TF-IDF (1-2 grams) with logistic regression; C is tuned on val, results reported on test.
-Writes docs/results/claim_only_baseline.json. This is the bar an evidence-based verifier must clear.
+Writes docs/results/claim_only_baseline.json and data/models/claim_only.joblib. This is the bar an evidence-based verifier must clear.
 """
 import json
 import sys
 from pathlib import Path
+
+import joblib
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -56,6 +58,9 @@ def main() -> None:
             "val": report(y["val"], model.predict(X["val"])),
             "test": report(y["test"], model.predict(X["test"])),
         }
+        if name == "tfidf_1-2gram":  # the stronger baseline is also served as the "claim-only" verifier
+            (ROOT / "data" / "models").mkdir(parents=True, exist_ok=True)
+            joblib.dump(model, ROOT / "data" / "models" / "claim_only.joblib")
         t = out["models"][name]["test"]
         print(f"{name}: C={best} test acc {t['accuracy']} macro-F1 {t['macro']['f1']}")
 

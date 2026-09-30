@@ -1,0 +1,1401 @@
+{
+  "test_claims": 19868,
+  "retrieval_ceiling": {
+    "gold_fully_retrieved_supported_refuted": 0.9081,
+    "note": "share of supported/refuted test claims whose whole gold evidence set is in the retrieved top 5"
+  },
+  "chance_accuracy": 0.3333,
+  "models": {
+    "claim_only": {
+      "label": "Claim-only TF-IDF (no evidence)",
+      "test": {
+        "retrieved": {
+          "accuracy": 0.5284,
+          "macro": {
+            "precision": 0.5345,
+            "recall": 0.5288,
+            "f1": 0.5273
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.4823,
+              "recall": 0.6116,
+              "f1": 0.5393,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.6315,
+              "recall": 0.5597,
+              "f1": 0.5935,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.4898,
+              "recall": 0.4149,
+              "f1": 0.4493,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                4035,
+                967,
+                1595
+              ],
+              [
+                1622,
+                3697,
+                1286
+              ],
+              [
+                2710,
+                1190,
+                2766
+              ]
+            ]
+          },
+          "cross_entropy": 1.0105,
+          "ece": 0.1222
+        }
+      }
+    },
+    "bert": {
+      "label": "BERT (fine-tuned)",
+      "val": {
+        "retrieved": {
+          "accuracy": 0.7928,
+          "macro": {
+            "precision": 0.7654,
+            "recall": 0.7464,
+            "f1": 0.7527
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.8732,
+              "recall": 0.8882,
+              "f1": 0.8807,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7795,
+              "recall": 0.6339,
+              "f1": 0.6992,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6435,
+              "recall": 0.717,
+              "f1": 0.6783,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1915,
+                51,
+                190
+              ],
+              [
+                88,
+                516,
+                210
+              ],
+              [
+                190,
+                95,
+                722
+              ]
+            ]
+          },
+          "cross_entropy": 0.6308,
+          "ece": 0.0944,
+          "fever_score": 0.7488
+        },
+        "oracle": {
+          "accuracy": 0.831,
+          "macro": {
+            "precision": 0.8061,
+            "recall": 0.7882,
+            "f1": 0.7963
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.882,
+              "recall": 0.9253,
+              "f1": 0.9031,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7989,
+              "recall": 0.7224,
+              "f1": 0.7587,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.7375,
+              "recall": 0.717,
+              "f1": 0.7271,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1995,
+                53,
+                108
+              ],
+              [
+                77,
+                588,
+                149
+              ],
+              [
+                190,
+                95,
+                722
+              ]
+            ]
+          },
+          "cross_entropy": 0.5033,
+          "ece": 0.0763
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.7928,
+          "macro": {
+            "precision": 0.7654,
+            "recall": 0.7464,
+            "f1": 0.7527
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.8732,
+              "recall": 0.8882,
+              "f1": 0.8807,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7795,
+              "recall": 0.6339,
+              "f1": 0.6992,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6435,
+              "recall": 0.717,
+              "f1": 0.6783,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1915,
+                51,
+                190
+              ],
+              [
+                88,
+                516,
+                210
+              ],
+              [
+                190,
+                95,
+                722
+              ]
+            ]
+          },
+          "cross_entropy": 0.5594,
+          "ece": 0.0169,
+          "fever_score": 0.7488
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.831,
+          "macro": {
+            "precision": 0.8061,
+            "recall": 0.7882,
+            "f1": 0.7963
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.882,
+              "recall": 0.9253,
+              "f1": 0.9031,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7989,
+              "recall": 0.7224,
+              "f1": 0.7587,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.7375,
+              "recall": 0.717,
+              "f1": 0.7271,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1995,
+                53,
+                108
+              ],
+              [
+                77,
+                588,
+                149
+              ],
+              [
+                190,
+                95,
+                722
+              ]
+            ]
+          },
+          "cross_entropy": 0.4585,
+          "ece": 0.0235
+        }
+      },
+      "test": {
+        "retrieved": {
+          "accuracy": 0.7145,
+          "macro": {
+            "precision": 0.727,
+            "recall": 0.7147,
+            "f1": 0.711
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7188,
+              "recall": 0.8842,
+              "f1": 0.793,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.828,
+              "recall": 0.5876,
+              "f1": 0.6874,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6343,
+              "recall": 0.6724,
+              "f1": 0.6528,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5833,
+                133,
+                631
+              ],
+              [
+                771,
+                3881,
+                1953
+              ],
+              [
+                1511,
+                673,
+                4482
+              ]
+            ]
+          },
+          "cross_entropy": 0.83,
+          "ece": 0.1468,
+          "fever_score": 0.6804
+        },
+        "oracle": {
+          "accuracy": 0.7617,
+          "macro": {
+            "precision": 0.7676,
+            "recall": 0.7621,
+            "f1": 0.759
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7453,
+              "recall": 0.9204,
+              "f1": 0.8237,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.8486,
+              "recall": 0.6934,
+              "f1": 0.7632,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.7087,
+              "recall": 0.6724,
+              "f1": 0.6901,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                6072,
+                144,
+                381
+              ],
+              [
+                564,
+                4580,
+                1461
+              ],
+              [
+                1511,
+                673,
+                4482
+              ]
+            ]
+          },
+          "cross_entropy": 0.6885,
+          "ece": 0.1149
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.7145,
+          "macro": {
+            "precision": 0.727,
+            "recall": 0.7147,
+            "f1": 0.711
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7188,
+              "recall": 0.8842,
+              "f1": 0.793,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.828,
+              "recall": 0.5876,
+              "f1": 0.6874,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6343,
+              "recall": 0.6724,
+              "f1": 0.6528,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5833,
+                133,
+                631
+              ],
+              [
+                771,
+                3881,
+                1953
+              ],
+              [
+                1511,
+                673,
+                4482
+              ]
+            ]
+          },
+          "cross_entropy": 0.7053,
+          "ece": 0.0486,
+          "fever_score": 0.6804
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.7617,
+          "macro": {
+            "precision": 0.7676,
+            "recall": 0.7621,
+            "f1": 0.759
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7453,
+              "recall": 0.9204,
+              "f1": 0.8237,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.8486,
+              "recall": 0.6934,
+              "f1": 0.7632,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.7087,
+              "recall": 0.6724,
+              "f1": 0.6901,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                6072,
+                144,
+                381
+              ],
+              [
+                564,
+                4580,
+                1461
+              ],
+              [
+                1511,
+                673,
+                4482
+              ]
+            ]
+          },
+          "cross_entropy": 0.602,
+          "ece": 0.0225
+        }
+      },
+      "temperature": 1.6
+    },
+    "lstm": {
+      "label": "BiLSTM + GloVe",
+      "val": {
+        "retrieved": {
+          "accuracy": 0.657,
+          "macro": {
+            "precision": 0.6382,
+            "recall": 0.5717,
+            "f1": 0.591
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.6897,
+              "recall": 0.8455,
+              "f1": 0.7597,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.701,
+              "recall": 0.4435,
+              "f1": 0.5433,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.5238,
+              "recall": 0.426,
+              "f1": 0.4699,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1823,
+                87,
+                246
+              ],
+              [
+                309,
+                361,
+                144
+              ],
+              [
+                511,
+                67,
+                429
+              ]
+            ]
+          },
+          "cross_entropy": 0.8094,
+          "ece": 0.0342,
+          "fever_score": 0.605
+        },
+        "oracle": {
+          "accuracy": 0.6716,
+          "macro": {
+            "precision": 0.6532,
+            "recall": 0.5863,
+            "f1": 0.6062
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.702,
+              "recall": 0.8622,
+              "f1": 0.7739,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7186,
+              "recall": 0.4705,
+              "f1": 0.5687,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.5389,
+              "recall": 0.426,
+              "f1": 0.4759,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1859,
+                83,
+                214
+              ],
+              [
+                278,
+                383,
+                153
+              ],
+              [
+                511,
+                67,
+                429
+              ]
+            ]
+          },
+          "cross_entropy": 0.7739,
+          "ece": 0.043
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.657,
+          "macro": {
+            "precision": 0.6382,
+            "recall": 0.5717,
+            "f1": 0.591
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.6897,
+              "recall": 0.8455,
+              "f1": 0.7597,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.701,
+              "recall": 0.4435,
+              "f1": 0.5433,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.5238,
+              "recall": 0.426,
+              "f1": 0.4699,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1823,
+                87,
+                246
+              ],
+              [
+                309,
+                361,
+                144
+              ],
+              [
+                511,
+                67,
+                429
+              ]
+            ]
+          },
+          "cross_entropy": 0.7987,
+          "ece": 0.0226,
+          "fever_score": 0.605
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.6716,
+          "macro": {
+            "precision": 0.6532,
+            "recall": 0.5863,
+            "f1": 0.6062
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.702,
+              "recall": 0.8622,
+              "f1": 0.7739,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.7186,
+              "recall": 0.4705,
+              "f1": 0.5687,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.5389,
+              "recall": 0.426,
+              "f1": 0.4759,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1859,
+                83,
+                214
+              ],
+              [
+                278,
+                383,
+                153
+              ],
+              [
+                511,
+                67,
+                429
+              ]
+            ]
+          },
+          "cross_entropy": 0.7637,
+          "ece": 0.0152
+        }
+      },
+      "test": {
+        "retrieved": {
+          "accuracy": 0.5335,
+          "macro": {
+            "precision": 0.5954,
+            "recall": 0.5341,
+            "f1": 0.5194
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.4606,
+              "recall": 0.8417,
+              "f1": 0.5954,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.7854,
+              "recall": 0.4006,
+              "f1": 0.5306,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.5401,
+              "recall": 0.36,
+              "f1": 0.432,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5553,
+                236,
+                808
+              ],
+              [
+                2723,
+                2646,
+                1236
+              ],
+              [
+                3779,
+                487,
+                2400
+              ]
+            ]
+          },
+          "cross_entropy": 1.0215,
+          "ece": 0.1365,
+          "fever_score": 0.4984
+        },
+        "oracle": {
+          "accuracy": 0.5381,
+          "macro": {
+            "precision": 0.5919,
+            "recall": 0.5388,
+            "f1": 0.5236
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.476,
+              "recall": 0.8467,
+              "f1": 0.6094,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.7898,
+              "recall": 0.4095,
+              "f1": 0.5394,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.5098,
+              "recall": 0.36,
+              "f1": 0.422,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5586,
+                233,
+                778
+              ],
+              [
+                2370,
+                2705,
+                1530
+              ],
+              [
+                3779,
+                487,
+                2400
+              ]
+            ]
+          },
+          "cross_entropy": 0.9985,
+          "ece": 0.1469
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.5335,
+          "macro": {
+            "precision": 0.5954,
+            "recall": 0.5341,
+            "f1": 0.5194
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.4606,
+              "recall": 0.8417,
+              "f1": 0.5954,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.7854,
+              "recall": 0.4006,
+              "f1": 0.5306,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.5401,
+              "recall": 0.36,
+              "f1": 0.432,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5553,
+                236,
+                808
+              ],
+              [
+                2723,
+                2646,
+                1236
+              ],
+              [
+                3779,
+                487,
+                2400
+              ]
+            ]
+          },
+          "cross_entropy": 0.9765,
+          "ece": 0.089,
+          "fever_score": 0.4984
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.5381,
+          "macro": {
+            "precision": 0.5919,
+            "recall": 0.5388,
+            "f1": 0.5236
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.476,
+              "recall": 0.8467,
+              "f1": 0.6094,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.7898,
+              "recall": 0.4095,
+              "f1": 0.5394,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.5098,
+              "recall": 0.36,
+              "f1": 0.422,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5586,
+                233,
+                778
+              ],
+              [
+                2370,
+                2705,
+                1530
+              ],
+              [
+                3779,
+                487,
+                2400
+              ]
+            ]
+          },
+          "cross_entropy": 0.9536,
+          "ece": 0.0981
+        }
+      },
+      "temperature": 1.25
+    },
+    "gru": {
+      "label": "BiGRU + GloVe",
+      "val": {
+        "retrieved": {
+          "accuracy": 0.6525,
+          "macro": {
+            "precision": 0.6202,
+            "recall": 0.5784,
+            "f1": 0.5844
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.6889,
+              "recall": 0.833,
+              "f1": 0.7541,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.5711,
+              "recall": 0.5676,
+              "f1": 0.5693,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6007,
+              "recall": 0.3347,
+              "f1": 0.4298,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1796,
+                197,
+                163
+              ],
+              [
+                291,
+                462,
+                61
+              ],
+              [
+                520,
+                150,
+                337
+              ]
+            ]
+          },
+          "cross_entropy": 0.8706,
+          "ece": 0.0971,
+          "fever_score": 0.5987
+        },
+        "oracle": {
+          "accuracy": 0.6834,
+          "macro": {
+            "precision": 0.6615,
+            "recall": 0.6013,
+            "f1": 0.61
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7073,
+              "recall": 0.8831,
+              "f1": 0.7855,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.6139,
+              "recall": 0.586,
+              "f1": 0.5996,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6634,
+              "recall": 0.3347,
+              "f1": 0.4449,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1904,
+                150,
+                102
+              ],
+              [
+                268,
+                477,
+                69
+              ],
+              [
+                520,
+                150,
+                337
+              ]
+            ]
+          },
+          "cross_entropy": 0.814,
+          "ece": 0.0964
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.6525,
+          "macro": {
+            "precision": 0.6202,
+            "recall": 0.5784,
+            "f1": 0.5844
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.6889,
+              "recall": 0.833,
+              "f1": 0.7541,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.5711,
+              "recall": 0.5676,
+              "f1": 0.5693,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6007,
+              "recall": 0.3347,
+              "f1": 0.4298,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1796,
+                197,
+                163
+              ],
+              [
+                291,
+                462,
+                61
+              ],
+              [
+                520,
+                150,
+                337
+              ]
+            ]
+          },
+          "cross_entropy": 0.8093,
+          "ece": 0.0175,
+          "fever_score": 0.5987
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.6834,
+          "macro": {
+            "precision": 0.6615,
+            "recall": 0.6013,
+            "f1": 0.61
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.7073,
+              "recall": 0.8831,
+              "f1": 0.7855,
+              "support": 2156
+            },
+            "refuted": {
+              "precision": 0.6139,
+              "recall": 0.586,
+              "f1": 0.5996,
+              "support": 814
+            },
+            "not_enough_info": {
+              "precision": 0.6634,
+              "recall": 0.3347,
+              "f1": 0.4449,
+              "support": 1007
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                1904,
+                150,
+                102
+              ],
+              [
+                268,
+                477,
+                69
+              ],
+              [
+                520,
+                150,
+                337
+              ]
+            ]
+          },
+          "cross_entropy": 0.7536,
+          "ece": 0.016
+        }
+      },
+      "test": {
+        "retrieved": {
+          "accuracy": 0.5384,
+          "macro": {
+            "precision": 0.5845,
+            "recall": 0.5394,
+            "f1": 0.5126
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.4638,
+              "recall": 0.8495,
+              "f1": 0.6,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.6725,
+              "recall": 0.5281,
+              "f1": 0.5916,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6174,
+              "recall": 0.2406,
+              "f1": 0.3463,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5604,
+                562,
+                431
+              ],
+              [
+                2554,
+                3488,
+                563
+              ],
+              [
+                3925,
+                1137,
+                1604
+              ]
+            ]
+          },
+          "cross_entropy": 1.1497,
+          "ece": 0.1942,
+          "fever_score": 0.4975
+        },
+        "oracle": {
+          "accuracy": 0.5553,
+          "macro": {
+            "precision": 0.5942,
+            "recall": 0.5564,
+            "f1": 0.5275
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.483,
+              "recall": 0.8755,
+              "f1": 0.6226,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.6944,
+              "recall": 0.5529,
+              "f1": 0.6156,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6051,
+              "recall": 0.2406,
+              "f1": 0.3443,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5776,
+                470,
+                351
+              ],
+              [
+                2257,
+                3652,
+                696
+              ],
+              [
+                3925,
+                1137,
+                1604
+              ]
+            ]
+          },
+          "cross_entropy": 1.1187,
+          "ece": 0.1962
+        },
+        "retrieved_calibrated": {
+          "accuracy": 0.5384,
+          "macro": {
+            "precision": 0.5845,
+            "recall": 0.5394,
+            "f1": 0.5126
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.4638,
+              "recall": 0.8495,
+              "f1": 0.6,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.6725,
+              "recall": 0.5281,
+              "f1": 0.5916,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6174,
+              "recall": 0.2406,
+              "f1": 0.3463,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5604,
+                562,
+                431
+              ],
+              [
+                2554,
+                3488,
+                563
+              ],
+              [
+                3925,
+                1137,
+                1604
+              ]
+            ]
+          },
+          "cross_entropy": 0.9902,
+          "ece": 0.0878,
+          "fever_score": 0.4975
+        },
+        "oracle_calibrated": {
+          "accuracy": 0.5553,
+          "macro": {
+            "precision": 0.5942,
+            "recall": 0.5564,
+            "f1": 0.5275
+          },
+          "per_class": {
+            "supported": {
+              "precision": 0.483,
+              "recall": 0.8755,
+              "f1": 0.6226,
+              "support": 6597
+            },
+            "refuted": {
+              "precision": 0.6944,
+              "recall": 0.5529,
+              "f1": 0.6156,
+              "support": 6605
+            },
+            "not_enough_info": {
+              "precision": 0.6051,
+              "recall": 0.2406,
+              "f1": 0.3443,
+              "support": 6666
+            }
+          },
+          "confusion_matrix": {
+            "labels": [
+              "supported",
+              "refuted",
+              "not_enough_info"
+            ],
+            "rows_true_cols_pred": [
+              [
+                5776,
+                470,
+                351
+              ],
+              [
+                2257,
+                3652,
+                696
+              ],
+              [
+                3925,
+                1137,
+                1604
+              ]
+            ]
+          },
+          "cross_entropy": 0.9588,
+          "ece": 0.0878
+        }
+      },
+      "temperature": 1.65
+    }
+  }
+}

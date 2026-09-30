@@ -1,0 +1,88 @@
+{
+  "features": 13,
+  "best_C": 3.0,
+  "val_cv": {
+    "0.1": {
+      "cv_accuracy": 0.8056,
+      "cv_cross_entropy": 0.5604
+    },
+    "0.3": {
+      "cv_accuracy": 0.8061,
+      "cv_cross_entropy": 0.5593
+    },
+    "1.0": {
+      "cv_accuracy": 0.8079,
+      "cv_cross_entropy": 0.558
+    },
+    "3.0": {
+      "cv_accuracy": 0.8066,
+      "cv_cross_entropy": 0.5573
+    },
+    "10.0": {
+      "cv_accuracy": 0.8061,
+      "cv_cross_entropy": 0.5573
+    },
+    "30.0": {
+      "cv_accuracy": 0.8054,
+      "cv_cross_entropy": 0.5573
+    }
+  },
+  "trained_on": 3977,
+  "class_weight": "balanced (FEVER's test set is balanced three ways)",
+  "test": {
+    "accuracy": 0.7487,
+    "macro": {
+      "precision": 0.7497,
+      "recall": 0.749,
+      "f1": 0.7465
+    },
+    "per_class": {
+      "supported": {
+        "precision": 0.7628,
+        "recall": 0.8872,
+        "f1": 0.8203,
+        "support": 6597
+      },
+      "refuted": {
+        "precision": 0.7982,
+        "recall": 0.6927,
+        "f1": 0.7417,
+        "support": 6605
+      },
+      "not_enough_info": {
+        "precision": 0.6881,
+        "recall": 0.6671,
+        "f1": 0.6774,
+        "support": 6666
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "supported",
+        "refuted",
+        "not_enough_info"
+      ],
+      "rows_true_cols_pred": [
+        [
+          5853,
+          198,
+          546
+        ],
+        [
+          560,
+          4575,
+          1470
+        ],
+        [
+          1260,
+          959,
+          4447
+        ]
+      ]
+    },
+    "cross_entropy": 0.6362,
+    "ece": 0.024,
+    "fever_score": 0.7136
+  },
+  "test_claims": 19868
+}
