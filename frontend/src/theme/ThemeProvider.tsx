@@ -1,47 +1,52 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-type Theme = "light" | "dark";
+export type ThemeMode = "system" | "light" | "dark";
+type Resolved = "light" | "dark";
 const KEY = "fnev-theme";
 
-const Ctx = createContext<{ theme: Theme; toggle: () => void } | null>(null);
+interface Ctx { theme: Resolved; mode: ThemeMode; setMode: (m: ThemeMode) => void; toggle: () => void }
+const ThemeCtx = createContext<Ctx | null>(null);
 
-function initial(): Theme {
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+const systemTheme = (): Resolved => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+function storedMode(): ThemeMode {
+  try {
+    const v = localStorage.getItem(KEY);
+    return v === "light" || v === "dark" ? v : "system";
+  } catch {
+    return "system";
+  }
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(initial);
+  const [mode, setModeState] = useState<ThemeMode>(storedMode);
+  const [system, setSystem] = useState<Resolved>(systemTheme);
+  const theme: Resolved = mode === "system" ? system : mode;
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
+  useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
 
-  // Follow the OS setting until the user makes an explicit choice.
   useEffect(() => {
     const mq = matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e: MediaQueryListEvent) => {
-      try {
-        if (!localStorage.getItem(KEY)) setTheme(e.matches ? "dark" : "light");
-      } catch { /* storage unavailable */ }
-    };
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const on = (e: MediaQueryListEvent) => setSystem(e.matches ? "dark" : "light");
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
   }, []);
 
-  const toggle = useCallback(() => {
-    setTheme((t) => {
-      const next = t === "dark" ? "light" : "dark";
-      try { localStorage.setItem(KEY, next); } catch { /* storage unavailable */ }
-      return next;
-    });
+  const setMode = useCallback((m: ThemeMode) => {
+    setModeState(m);
+    try {
+      if (m === "system") localStorage.removeItem(KEY);
+      else localStorage.setItem(KEY, m);
+    } catch { /* storage unavailable */ }
   }, []);
 
-  const value = useMemo(() => ({ theme, toggle }), [theme, toggle]);
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  const toggle = useCallback(() => setMode(theme === "dark" ? "light" : "dark"), [theme, setMode]);
+  const value = useMemo(() => ({ theme, mode, setMode, toggle }), [theme, mode, setMode, toggle]);
+  return <ThemeCtx.Provider value={value}>{children}</ThemeCtx.Provider>;
 }
 
 export function useTheme() {
-  const ctx = useContext(Ctx);
+  const ctx = useContext(ThemeCtx);
   if (!ctx) throw new Error("useTheme must be used inside ThemeProvider");
   return ctx;
 }

@@ -10,9 +10,9 @@ const C = { accent: "var(--accent)", good: "var(--supported)", bad: "var(--refut
 
 function Section({ title, finding, children }: { title: string; finding?: ReactNode; children: ReactNode }) {
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <Eyebrow>{title}</Eyebrow>
-      {finding && <p className="mt-2 max-w-3xl font-serif text-xl leading-snug">{finding}</p>}
+      {finding && <p className="mt-2 max-w-3xl text-base font-semibold leading-snug">{finding}</p>}
       <div className="mt-5">{children}</div>
     </Card>
   );
@@ -66,7 +66,7 @@ export function InsightsPage() {
     return () => ctl.abort();
   }, []);
 
-  if (error) return <p role="alert" className="rounded-xl border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>;
+  if (error) return <p role="alert" className="rounded-md border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>;
   if (!m) return <p className="text-sm text-muted">Loading results...</p>;
 
   const vRows = verificationRows(m);
@@ -83,7 +83,6 @@ export function InsightsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl">Insights</h1>
         <p className="mt-1 text-sm text-muted">
           Every number here is read from the saved evaluation files in <code className="font-mono text-xs">docs/results</code>, on FEVER's
           balanced test set (chance = 33.3%).
@@ -244,7 +243,7 @@ export function InsightsPage() {
         <Section title="LDA topics of the evidence pages" finding={`${m.topics.n_topics} latent topics over ${m.topics.pages.toLocaleString()} pages (perplexity ${Math.round(m.topics.perplexity)}).`}>
           <ul className="grid gap-2 sm:grid-cols-2">
             {m.topics.topics.map((t: M) => (
-              <li key={t.id} className="rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm">
+              <li key={t.id} className="rounded-md border border-line bg-bg/60 px-3 py-2 text-sm">
                 <span className="font-mono text-[11px] text-accent">#{t.id}</span>{" "}
                 <span className="text-ink/90">{t.words.slice(0, 6).join(", ")}</span>
                 <span className="ml-1 text-xs text-muted">({t.pages.toLocaleString()} pages)</span>

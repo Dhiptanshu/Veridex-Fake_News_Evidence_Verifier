@@ -65,7 +65,7 @@ export function AskPanel({
   const llmOn = status?.llm_configured;
 
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Eyebrow>Ask about this result</Eyebrow>
         <select
@@ -89,9 +89,9 @@ export function AskPanel({
       <ul className="mt-4 space-y-4">
         {turns.map((t, i) => (
           <motion.li key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-            <p className="ml-auto w-fit max-w-[90%] rounded-2xl rounded-br-sm bg-accent px-3.5 py-2 text-sm text-accentink">{t.question}</p>
+            <p className="ml-auto w-fit max-w-[90%] rounded-lg rounded-br-sm bg-accent px-3.5 py-2 text-sm text-accentink">{t.question}</p>
             {t.answer && (
-              <div className="max-w-[95%] rounded-2xl rounded-bl-sm border border-line bg-bg/60 px-3.5 py-2.5">
+              <div className="max-w-[95%] rounded-lg rounded-bl-sm border border-line bg-bg/60 px-3.5 py-2.5">
                 <p className="whitespace-pre-line text-sm leading-relaxed">{t.answer.answer}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
                   <span className="rounded-full border border-line px-2 py-0.5">{t.answer.method}</span>
@@ -105,7 +105,7 @@ export function AskPanel({
                 </div>
               </div>
             )}
-            {t.error && <p role="alert" className="max-w-[95%] rounded-xl border border-refuted/40 bg-refuted/10 px-3 py-2 text-sm text-refuted">{t.error}</p>}
+            {t.error && <p role="alert" className="max-w-[95%] rounded-md border border-refuted/40 bg-refuted/10 px-3 py-2 text-sm text-refuted">{t.error}</p>}
             {!t.answer && !t.error && <p className="flex items-center gap-2 text-xs text-muted"><Loader2 size={13} className="animate-spin" /> thinking...</p>}
           </motion.li>
         ))}

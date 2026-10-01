@@ -18,7 +18,7 @@ export function EvidenceList({
   retrieval, verification, placeholder, citations = [],
 }: { retrieval: RetrievalOut | null; verification: VerificationOut | null; placeholder: boolean; citations?: Citation[] }) {
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <div className="mb-4 flex items-center gap-2">
         <Eyebrow>Evidence</Eyebrow>
         {retrieval && placeholder && <PlaceholderTag />}
@@ -39,7 +39,7 @@ export function EvidenceList({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 }}
-                className="rounded-xl border border-line bg-bg/60 p-4"
+                className="rounded-md border border-line bg-bg/60 p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

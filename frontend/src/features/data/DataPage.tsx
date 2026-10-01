@@ -16,12 +16,9 @@ export function DataPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-serif text-3xl">Data</h1>
-        <p className="mt-1 text-sm text-muted">FEVER claims with gold evidence sentences from Wikipedia. Everything here is real data.</p>
-      </div>
+      <p className="text-[13px] text-muted">FEVER claims with gold evidence sentences from Wikipedia. Everything here is real data.</p>
       {error ? (
-        <p role="alert" className="rounded-xl border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>
+        <p role="alert" className="rounded-md border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>
       ) : (
         <>
           {stats && <StatsPanel stats={stats} />}

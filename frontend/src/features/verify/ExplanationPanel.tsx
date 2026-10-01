@@ -63,7 +63,7 @@ function Why({ a, citations }: { a: Attribution; citations: Citation[] }) {
       </p>
       <div>
         <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">Claim</p>
-        <p className="font-serif text-lg"><Heat words={a.claim} /></p>
+        <p className="text-base font-medium"><Heat words={a.claim} /></p>
       </div>
       <div>
         <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -82,7 +82,7 @@ function Why({ a, citations }: { a: Attribution; citations: Citation[] }) {
 
 export function ExplanationPanel({ explanation, placeholder }: { explanation: ExplanationOut | null; placeholder: boolean }) {
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <div className="mb-4 flex items-center gap-2">
         <Eyebrow>Why</Eyebrow>
         {explanation && placeholder && <PlaceholderTag />}

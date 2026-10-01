@@ -1,4 +1,4 @@
-import type { AskRequest, AskResponse, AskStatus, ClaimPage, DataStats, Label, PipelineEvent, SplitName, StageInfo } from "./types";
+import type { AskRequest, AskResponse, AskStatus, ClaimPage, SystemStatus, DataStats, Label, PipelineEvent, SplitName, StageInfo } from "./types";
 
 export async function fetchStages(signal?: AbortSignal): Promise<StageInfo[]> {
   const res = await fetch("/api/stages", { signal });
@@ -73,3 +73,5 @@ export async function askQuestion(req: AskRequest, signal?: AbortSignal): Promis
   }
   return res.json();
 }
+
+export const fetchSystemStatus = (signal?: AbortSignal) => getJson<SystemStatus>("/api/system/status", signal);

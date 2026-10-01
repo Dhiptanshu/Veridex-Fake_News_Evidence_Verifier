@@ -43,7 +43,7 @@ export function StageDetails({
 }: { pre: PreprocessOut | null; ner: NerOut | null; kw: KeywordsOut | null }) {
   if (!pre && !ner && !kw) return null;
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <Eyebrow>How it got here</Eyebrow>
       <div className="mt-4 grid gap-6 md:grid-cols-2">
         {pre && (

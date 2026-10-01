@@ -11,9 +11,9 @@ const SPLITS: SplitName[] = ["test", "val", "train"];
 function ClaimRow({ c }: { c: ClaimView }) {
   const meta = LABEL_META[c.label];
   return (
-    <li className="rounded-xl border border-line bg-bg/60 p-4">
+    <li className="rounded-md border border-line bg-bg/60 p-4">
       <div className="flex items-start justify-between gap-3">
-        <p className="font-serif text-lg leading-snug">{c.claim}</p>
+        <p className="text-base font-medium leading-snug">{c.claim}</p>
         <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.className}`}>{meta.text}</span>
       </div>
       {c.evidence_sets.length === 0 ? (
@@ -73,7 +73,7 @@ export function ClaimBrowser() {
     `rounded-full border px-3 py-1 text-xs font-medium transition ${active ? "border-accent bg-accent text-accentink" : "border-line bg-surface text-muted hover:text-ink"}`;
 
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <div className="flex flex-wrap items-center gap-2">
         {SPLITS.map((s) => (
           <button key={s} className={chip(split === s)} onClick={() => setSplit(s)}>{s}</button>
@@ -95,7 +95,7 @@ export function ClaimBrowser() {
         </label>
       </div>
 
-      {error && <p role="alert" className="mt-4 rounded-xl border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>}
+      {error && <p role="alert" className="mt-4 rounded-md border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>}
       <p className="mt-4 font-mono text-xs text-muted">{total.toLocaleString()} matching claims</p>
       <ul className="mt-3 space-y-3">{items.map((c) => <ClaimRow key={c.id} c={c} />)}</ul>
 

@@ -9,7 +9,7 @@ const BAR: Record<string, string> = { supported: "bg-supported", refuted: "bg-re
 function Tile({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="font-serif text-3xl">{value}</p>
+      <p className="text-2xl font-semibold">{value}</p>
       <p className="text-xs text-muted">{label}</p>
     </div>
   );
@@ -19,7 +19,7 @@ export function StatsPanel({ stats }: { stats: DataStats }) {
   const c = stats.corpus;
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-      <Card className="p-6">
+      <Card className="p-4">
         <Eyebrow>Evidence corpus</Eyebrow>
         <div className="mt-4 grid grid-cols-2 gap-5">
           <Tile label="pages" value={nf.format(c.pages)} />
@@ -33,7 +33,7 @@ export function StatsPanel({ stats }: { stats: DataStats }) {
         </p>
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-4">
         <Eyebrow>Claim splits</Eyebrow>
         <ul className="mt-4 space-y-4">
           {(Object.keys(stats.splits) as SplitName[]).map((name) => {

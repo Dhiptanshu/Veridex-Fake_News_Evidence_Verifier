@@ -89,3 +89,7 @@ export interface AskRequest {
 }
 export interface AskResponse { answer: string; method: string; cited: number[]; note: string | null }
 export interface AskStatus { llm_configured: boolean; llm_model: string; local_qa_ready: boolean }
+
+// --- system status (backend/app/api/system_routes.py) ---
+export interface Check { key: string; label: string; ready: boolean; detail: string; fix: string | null }
+export interface SystemStatus { resources: Check[]; services: Check[] }

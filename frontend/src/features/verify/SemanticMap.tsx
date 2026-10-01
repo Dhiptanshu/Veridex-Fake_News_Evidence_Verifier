@@ -19,9 +19,9 @@ export function SemanticMap({ projection }: { projection: Projection }) {
   let n = 0;
 
   return (
-    <Card className="p-6">
+    <Card className="p-4">
       <Eyebrow>Semantic map</Eyebrow>
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full rounded-xl bg-bg/60" role="img" aria-label="2-D map of the claim and its evidence">
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full rounded-md bg-bg/60" role="img" aria-label="2-D map of the claim and its evidence">
         {projection.background.map(([x, y], i) => (
           <circle key={i} cx={sx(x)} cy={sy(y)} r={1.6} fill="var(--muted)" opacity={0.3} />
         ))}
