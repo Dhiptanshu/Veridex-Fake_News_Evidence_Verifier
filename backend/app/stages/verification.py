@@ -2,7 +2,7 @@ import asyncio
 
 import numpy as np
 
-from app.schemas.stages import EvidenceVerdict, RetrievalOut, VerificationOut
+from app.schemas.stages import EvidenceVerdict, RetrievalOut, SentenceVerdict, VerificationOut
 from app.stages.base import Stage, StageContext, register
 from app.verification import models, stack
 from app.verification import text as vtext
@@ -56,7 +56,15 @@ def verify_stacked(claim: str, ret: RetrievalOut) -> VerificationOut:
         if page_id not in per_page or max(p[0], p[1]) > max(per_page[page_id][0], per_page[page_id][1]):
             per_page[page_id] = p
     neutral = np.array([0.0, 0.0, 1.0])
+    per_sentence = [
+        SentenceVerdict(
+            evidence_id=pid, title=t, text=x, retrieval_score=round(float(sc), 4),
+            supported=round(float(p[0]), 4), refuted=round(float(p[1]), 4), neutral=round(float(p[2]), 4),
+        )
+        for (sc, pid, t, x), p in zip(top, sent)
+    ]
     return VerificationOut(
+        per_sentence=per_sentence,
         label=vtext.LABELS[k],  # type: ignore[arg-type]
         confidence=round(float(overall[k]), 4),
         probabilities={lab: round(float(p), 4) for lab, p in zip(vtext.LABELS, overall)},  # type: ignore[misc]

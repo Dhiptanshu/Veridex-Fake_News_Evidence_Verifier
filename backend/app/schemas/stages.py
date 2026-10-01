@@ -107,14 +107,64 @@ class EvidenceVerdict(BaseModel):
     neutral: float
 
 
+class SentenceVerdict(BaseModel):
+    """The verifier's opinion of the claim given ONE evidence sentence on its own."""
+
+    evidence_id: str
+    title: str
+    text: str
+    retrieval_score: float
+    supported: float
+    refuted: float
+    neutral: float
+
+
 class VerificationOut(BaseModel):
     label: Label
     confidence: float = Field(ge=0, le=1)
     probabilities: dict[Label, float]
     per_evidence: list[EvidenceVerdict]
+    per_sentence: list[SentenceVerdict] = Field(default_factory=list)  # empty for verifiers that do not score sentences
+
+
+class Citation(BaseModel):
+    n: int  # the [n] marker used in the rationale text
+    evidence_id: str
+    title: str
+    text: str
+    role: Literal["decisive", "closest", "context"]  # decisive: drove the verdict; closest: nearest evidence when nothing decides
+    supported: float | None = None
+    refuted: float | None = None
+    neutral: float | None = None
+
+
+class Differences(BaseModel):
+    """Informative words that differ between the claim and the first cited sentence (a plain set difference)."""
+
+    cite: int
+    claim_only: list[str]
+    evidence_only: list[str]
+
+
+class WordScore(BaseModel):
+    word: str
+    score: float = Field(ge=0, le=1)  # relative importance for the verdict, 1 = the most important word
+
+
+class Attribution(BaseModel):
+    """Which words mattered, by occlusion: delete one word at a time and see how much the verdict probability drops."""
+
+    cite: int
+    target: Label
+    claim: list[WordScore]
+    evidence: list[WordScore]
 
 
 class ExplanationOut(BaseModel):
     summary: str
-    rationale: str
+    summary_method: str = "none"
+    rationale: str  # plain text with [n] citation markers
     cited_evidence_ids: list[str]
+    citations: list[Citation] = Field(default_factory=list)
+    differences: Differences | None = None
+    attribution: Attribution | None = None
