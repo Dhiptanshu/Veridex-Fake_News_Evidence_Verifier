@@ -105,12 +105,47 @@ def article_items(a: Article) -> list[live.Item]:
     return [live.Item(doc_id=doc, title=a.title.strip(), url=a.url, source=label, text=s) for s in unique]
 
 
-def news_items(query: str) -> list[live.Item]:
-    return [it for a in search(query) for it in article_items(a)]
+_NUMERIC = re.compile(r"[\d\s,./-]+")
+_MONTHS = {"january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"}
+
+
+def _is_date_like(text: str) -> bool:
+    """'1889', '12 May 2020', 'March 3rd': nothing left once numbers, ordinals and month names are removed."""
+    words = [w for w in re.findall(r"[A-Za-z]+", text.lower()) if w not in _MONTHS and w not in {"st", "nd", "rd", "th"}]
+    return not words
+
+
+def candidate_queries(keyword_query: str, entity_texts: list[str]) -> list[str]:
+    """At most two short queries. News search is strict (all terms must match), so long keyword strings find nothing:
+    first the claim's main entities as exact phrases, then its first few keywords."""
+    ents: list[str] = []
+    for e in entity_texts:
+        e = re.sub(r"^(?:the|a|an)\s+", "", e.strip(), flags=re.I)
+        if len(e) > 2 and re.search(r"[A-Za-z]", e) and not _NUMERIC.fullmatch(e) and not _is_date_like(e) and e.lower() not in {x.lower() for x in ents}:
+            ents.append(e)
+    out = []
+    if ents:
+        out.append(" ".join(f'"{e}"' for e in ents[:2]))
+    kw = " ".join(keyword_query.split()[:4])
+    if kw:
+        out.append(kw)
+    return list(dict.fromkeys(out))[:2]
+
+
+def news_items(queries: list[str] | str) -> list[live.Item]:
+    """Items for the first query that returns articles (each attempt costs one request of the daily quota)."""
+    for q in [queries] if isinstance(queries, str) else queries:
+        items = [it for a in search(q) for it in article_items(a)]
+        if items:
+            return items
+    return []
 
 
 def news_search(res: hybrid.Resources, claim: str, entity_texts: list[str], query: str, **kw) -> RetrievalOut:
-    return live.rank_items(res, claim, entity_texts, news_items(query or claim), **kw)
+    items = news_items(candidate_queries(query, entity_texts) or [claim])
+    if not items:
+        raise RuntimeError("No recent news articles matched this claim's main terms. Try Live Wikipedia, or rephrase the claim.")
+    return live.rank_items(res, claim, entity_texts, items, **kw)
 
 
 def combined_search(res: hybrid.Resources, claim: str, entity_texts: list[str], query: str, **kw) -> RetrievalOut:
@@ -119,7 +154,7 @@ def combined_search(res: hybrid.Resources, claim: str, entity_texts: list[str], 
     if settings.wikipedia_contact.strip():
         items += live.wikipedia_items(claim, entity_texts)
     if provider():
-        items += news_items(query or claim)
+        items += news_items(candidate_queries(query, entity_texts) or [claim])
     if not items:
         raise RuntimeError("Nothing is configured: set FNEV_WIKIPEDIA_CONTACT and/or a news API key in backend/.env.")
     return live.rank_items(res, claim, entity_texts, items, **kw)

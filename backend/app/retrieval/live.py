@@ -7,6 +7,7 @@ Privacy: the claim text and entity names are sent to the chosen service(s) as se
 """
 import hashlib
 import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from urllib.parse import quote
 
@@ -85,10 +86,9 @@ def intro_sentences(text: str) -> list[str]:
 def wikipedia_items(claim: str, entity_texts: list[str]) -> list[Item]:
     queries = [claim, *dict.fromkeys(e for e in entity_texts if len(e) > 2)][:4]
     titles: list[str] = []
-    for q in queries:
-        for t in search_titles(q, limit=4 if q == claim else 3):
-            if t not in titles:
-                titles.append(t)
+    with ThreadPoolExecutor(max_workers=len(queries)) as pool:  # the searches are independent network calls
+        for found in pool.map(lambda q: search_titles(q, limit=4 if q == claim else 3), queries):
+            titles += [t for t in found if t not in titles]
     intros = fetch_intros(titles[:MAX_PAGES])
     if not intros:
         raise RuntimeError("Wikipedia returned no pages for this claim.")
@@ -113,6 +113,8 @@ def rank_items(
     res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], *, store_name: str = "bge_small",
     k_sentences: int = 5, project: bool = True,
 ) -> RetrievalOut:
+    seen: set[str] = set()  # syndicated stories and copied sentences would otherwise fill the top 5 with one fact
+    items = [it for it in items if not ((k := " ".join(it.text.lower().split())) in seen or seen.add(k))]
     if not items:
         raise RuntimeError("No evidence was found for this claim.")
     store = hybrid.get_store(res, store_name)

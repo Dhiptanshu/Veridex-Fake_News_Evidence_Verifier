@@ -88,6 +88,34 @@ async def test_pipeline_runs_end_to_end_in_news_mode(tiny_resources, keys):
     assert next(e for e in events if e.type == "stage_end" and e.slot == "retrieval").payload["evidence"][0]["url"].startswith("https://news.example")
 
 
+def test_candidate_queries_are_short_entity_phrases_then_a_few_keywords():
+    q = news.candidate_queries("Eiffel Tower 1889 complete tower built", ["the Eiffel Tower", "1889", "Paris"])
+    assert q == ['"Eiffel Tower" "Paris"', "Eiffel Tower 1889 complete"]
+    assert news.candidate_queries("", []) == []
+    assert news.candidate_queries("alpha beta", ["12 May 2020"]) == ["alpha beta"]  # dates are not entities worth searching
+
+
+def test_news_items_falls_back_to_the_next_query_only_when_the_first_finds_nothing(monkeypatch):
+    calls = []
+
+    def fake(query):
+        calls.append(query)
+        return [] if len(calls) == 1 else [news.Article("Headline of the story", "A description of the story here.", "", "https://n/1", "Src", "2026-09-01")]
+
+    monkeypatch.setattr(news, "search", fake)
+    assert news.news_items(["first", "second"]) and calls == ["first", "second"]
+    calls.clear()
+    monkeypatch.setattr(news, "search", lambda q: calls.append(q) or [news.Article("Another headline here", "Some description of it.", "", "https://n/2", "S", "")])
+    news.news_items(["first", "second"])
+    assert calls == ["first"]  # no wasted request
+
+
+def test_no_matching_articles_gives_an_actionable_error(tiny_resources, keys, monkeypatch):
+    monkeypatch.setattr(news, "search", lambda q: [])
+    with pytest.raises(RuntimeError, match="Try Live Wikipedia"):
+        news.news_search(hybrid.get_resources(), "Some claim here", ["Entity"], "keywords here")
+
+
 def test_combined_search_uses_only_what_is_configured(tiny_resources, keys, monkeypatch):
     called = []
     monkeypatch.setattr(live, "wikipedia_items", lambda c, e: called.append("wiki") or [])
@@ -96,3 +124,11 @@ def test_combined_search_uses_only_what_is_configured(tiny_resources, keys, monk
     monkeypatch.setattr(settings, "gnews_api_key", "")
     with pytest.raises(RuntimeError, match="Nothing is configured"):
         news.combined_search(hybrid.get_resources(), "x y z", [], "x")
+
+
+def test_identical_sentences_from_syndicated_copies_are_ranked_once(tiny_resources):
+    items = [live.Item(doc_id=f"d{i}", title=f"Copy {i}", url=f"https://n/{i}", source="S", text="Marie Curie won two Nobel Prizes.") for i in range(3)]
+    items.append(live.Item(doc_id="x", title="Other", url="https://n/x", source="S", text="Paris is the capital of France."))
+    out = live.rank_items(hybrid.get_resources(), "Marie Curie won two Nobel Prizes", ["Marie Curie"], items, project=False)
+    texts = [s.text for e in out.evidence for s in e.sentences]
+    assert texts.count("Marie Curie won two Nobel Prizes.") == 1 and len(texts) == 2
