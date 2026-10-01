@@ -3,9 +3,10 @@
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
 
-**Status: Phase 5 (verification) done.** Preprocessing, NER, keywords, retrieval and claim verification (BiLSTM/BiGRU,
-fine-tuned BERT) are real and run on the FEVER subset; only the explanation generator is still a labelled placeholder
-(Phase 6).
+**Status: Phases 1-7 done, Phase 8 (polish and deploy) mostly done.** The full pipeline is real: preprocessing, NER,
+keywords, retrieval (lexical, word-vector, transformer, live Wikipedia), verification (BiLSTM/BiGRU, fine-tuned BERT)
+and a grounded explanation. Open the **Insights** tab for the results. Also see [docs/REPORT.md](docs/REPORT.md) (lab report with
+syllabus mapping) and [docs/DEMO.md](docs/DEMO.md) (demo script).
 
 ## Run
 
@@ -67,9 +68,9 @@ python ml/train_claim_baseline.py # claim-only classifiers -> docs/results/claim
 | preprocess | NLTK tokens, POS, WordNet lemmas, TextBlob sentiment | regex tokenizer |
 | ner | spaCy entities, noun chunks, SVO triples (dependency parse) | capitalised-span heuristic |
 | keywords | TF-IDF weights filtered by POS | TF-IDF + PMI phrases, term frequency |
-| retrieval | BGE-small dense search + title bonus (Phase 4) | TF-IDF (+title), TF-IDF only, MiniLM, TF-IDF + MiniLM, TF-IDF + Word2Vec, TF-IDF + GloVe |
+| retrieval | BGE-small dense search + title bonus (Phase 4) | TF-IDF (+title), TF-IDF only, MiniLM, TF-IDF + MiniLM, TF-IDF + Word2Vec, TF-IDF + GloVe, live Wikipedia |
 | verification | BERT + stacker (Phase 5) | BERT concatenated, BiLSTM, BiGRU, claim-only TF-IDF |
-| explanation | placeholder (Phase 6) | |
+| explanation | grounded rationale + extractive summary | DistilBART abstractive summary |
 
 Retrieval on the 13,202 verifiable test claims, on the subset corpus (Recall@k = all pages or sentences of some
 gold evidence set are in the top k):
@@ -198,6 +199,34 @@ Findings and caveats:
 - **Calibration:** raw BERT is overconfident (ECE 0.147); temperature scaling (fitted on val) or the stacker fixes it.
 - The stacker is trained on the validation split that also chose BERT's checkpoint; test was used once.
 - Prior correction for the train/test label shift was tried and changed BERT by only +0.3 points, so it is not applied.
+
+## Explanation (Phase 6)
+
+The explanation is assembled from checkable parts, so it cannot invent facts: **citations** (sentences the verifier itself
+reads as supporting or refuting), a **template** filled with quoted evidence and set differences between claim and
+evidence, **word importance by occlusion** (delete a word, re-score the verdict) and an evidence **summary** (extractive
+MMR by default; `python ml/setup_nlp.py --summarizer` downloads DistilBART for the abstractive option).
+
+```bash
+python ml/eval_explanation.py     # citations, ROUGE/BLEU, faithfulness, attribution check, review samples (about 30 min)
+```
+
+On the test set: the decisive sentences contain gold evidence for 90.0% of claims (top-2 retrieved: 89.5%, but with
+precision 0.49 vs 0.60); deleting the 2 words ranked most important lowers the verdict probability by 0.67 vs 0.07 for 2
+random words. Reading 30 random explanations found two real bugs (an unrelated page's sentence glued into a summary, and
+dates deleted by text cleanup), both fixed with regression tests. `docs/results/explanation_samples.md` has the samples;
+10 of those 30 verdicts disagreed with FEVER's label. Details and the summary table are in the report.
+
+## Live Wikipedia search and deployment (Phase 8)
+
+* **Live mode** (retrieval option "Live Wikipedia search") searches Wikipedia's public API for claims outside the FEVER
+  subset and ranks page introductions with BGE. Wikimedia requires contact details in the User-Agent, so it stays off
+  until you set `FNEV_WIKIPEDIA_CONTACT` (your email or a URL, for example in `backend/.env`). The claim text and entity
+  names are sent to en.wikipedia.org. Verdicts on real-world claims are demonstrations, not fact-checking.
+* **One process serves everything:** after `npm run build` in `frontend/`, `uvicorn app.main:app` also serves the UI at `/`.
+* **Docker:** `Dockerfile` and `docker-compose.yml` package this (mount `./data/{indexes,models,processed}`). They have **not
+  been built or run**: the Docker daemon was not running and disk space was limited. Treat them as untested.
+* News APIs (NewsAPI, GNews) are not integrated; they need a key and are a possible extension.
 
 ## Adding a pipeline stage
 
