@@ -33,12 +33,12 @@ which is how we compare them.
 | III (13-18) | Word similarity, WordNet | WordNet synonym query expansion | +0.005 page MRR: marginal, so not in the default |
 | III | PMI, co-occurrence | PMI collocations from the corpus as keyword phrases | "TF-IDF + PMI phrases" keyword option |
 | III | Word2Vec, GloVe | Word2Vec trained on our corpus, pretrained GloVe-100; IDF-weighted sentence vectors | alone worse than TF-IDF; fused: recall@5 72.4% -> 76.9% |
-| III | Text classification | claim-only BoW/TF-IDF + logistic regression | 52.8% (the baseline evidence must beat) |
+| III | Text classification | claim-only BoW/TF-IDF + logistic regression on FEVER and on LIAR | FEVER 52.8% (the baseline evidence must beat); LIAR 24.7% (6 classes), 62.8% (binary) |
 | IV (19-24) | RNN, LSTM, GRU | BiLSTM and BiGRU verifiers over GloVe | 53.4% / 53.8% test accuracy |
 | IV | Transformers, BERT, transfer learning | `bert-base-uncased` fine-tuned on claim-evidence pairs; BGE/MiniLM sentence encoders | BERT 71.5%, with stacker 74.9% |
 | IV | NER, dependency parsing | spaCy NER; subject-verb-object triples from the dependency parse | shown in the UI |
 | IV | Sequence labeling, chunking | POS tags (NLTK) and noun chunks (spaCy) | shown in the UI |
-| V (25-27) | Text generation, summarization | templated grounded rationale; extractive (MMR) and abstractive (DistilBART) evidence summaries | see section 5 |
+| V (25-27) | Text generation, summarization, chatbots | templated grounded rationale; extractive (MMR) and abstractive (DistilBART) evidence summaries; a follow-up question box (intent router + local extractive QA, optional LLM via AICredits) | see section 5 |
 | V (28) | Accuracy, precision, recall, F1, BLEU | all reported, plus ROUGE, calibration error and the FEVER score | sections 4 and 5 |
 | V (29-30) | Deployment | FastAPI service with streaming (SSE); one-container Docker setup (see section 7) | API + UI run locally |
 
@@ -111,6 +111,25 @@ evidence **summary** (extractive MMR by default, DistilBART as an option).
   verifier-relevant sentences and name the source page of each sentence; and a text-cleanup step deleted dates when
   removing pronunciation guides, producing a false "not found in any retrieved sentence". Both have regression tests.
 
+## 5b. A second dataset: LIAR (and why FEVER does not transfer)
+
+LIAR (Wang, 2017) has 12,836 PolitiFact statements with six truthfulness labels. Two experiments (`ml/eval_liar.py`,
+`docs/results/liar.json`):
+
+* **Claim-only text classification (Module III).** Logistic regression on bag-of-words or TF-IDF: 24.7% accuracy on the
+  6 classes (always guessing the biggest class: 20.9%; uniform chance: 16.7%) and 62.8% on true-ish vs false-ish (majority
+  56.4%). Adding speaker, party and subject as tokens lifts the binary result to 66.5%, which shows how much of LIAR's
+  signal sits in *who said it* rather than in the text.
+* **Cross-domain transfer of our pipeline.** On 500 LIAR statements with a clear truth value (mostly-true/true ->
+  supported, false/pants-fire -> refuted), the FEVER-trained evidence pipeline answers "not enough info" for **490 of 500**
+  and is right on 5 of the 10 it commits to (chance). A claim-only model trained on LIAR gets 70.6% on the same sample
+  (majority class 56.0%).
+
+Interpretation: the verifier is not broken; the task is different. FEVER claims are about encyclopedic facts that an
+article states or contradicts, while LIAR statements are about voting records, budgets and statistics that an offline
+Wikipedia subset does not contain, so "not enough info" is arguably the honest answer. It also shows that a high score on
+one benchmark says little about fact-checking in general.
+
 ## 6. Limitations and ethics
 
 * The verifier is FEVER-trained and leans on word overlap. "The capital of Australia is Sydney" is judged *supported*
@@ -121,7 +140,8 @@ evidence **summary** (extractive MMR by default, DistilBART as an option).
   is a first-class verdict.
 * An automated verdict can be mistaken for authority. The UI always shows the evidence, the confidence, and a warning
   when the model is uncertain, and the README states that outputs are demonstrations, not fact-checking.
-* Live Wikipedia search sends the claim's text to Wikipedia's public API; it is off until the user configures it.
+* Live Wikipedia, news and LLM follow-up modes send the claim (and, for the LLM, the evidence shown) to third-party APIs; each
+  is off until the user configures it, and the default follow-up answerer runs locally and sends nothing.
 
 ## 7. Reproducibility and deployment
 

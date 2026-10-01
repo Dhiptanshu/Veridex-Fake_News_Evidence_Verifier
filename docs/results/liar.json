@@ -1,0 +1,70 @@
+{
+  "sizes": {
+    "train": 10240,
+    "valid": 1284,
+    "test": 1267
+  },
+  "chance_6class": 0.1667,
+  "six_class_text_only": {
+    "bag_of_words": {
+      "C": 0.1,
+      "accuracy": 0.247,
+      "macro_f1": 0.2145
+    },
+    "tfidf_1-2gram": {
+      "C": 10.0,
+      "accuracy": 0.2447,
+      "macro_f1": 0.2326
+    },
+    "majority_class_accuracy": 0.2092
+  },
+  "binary_text_only": {
+    "bag_of_words": {
+      "C": 0.1,
+      "accuracy": 0.6283,
+      "macro_f1": 0.6137
+    },
+    "tfidf_1-2gram": {
+      "C": 0.3,
+      "accuracy": 0.6219,
+      "macro_f1": 0.5782
+    },
+    "majority_class_accuracy": 0.5635
+  },
+  "binary_with_metadata": {
+    "bag_of_words": {
+      "C": 0.1,
+      "accuracy": 0.6519,
+      "macro_f1": 0.6401
+    },
+    "tfidf_1-2gram": {
+      "C": 1.0,
+      "accuracy": 0.6646,
+      "macro_f1": 0.6426
+    },
+    "majority_class_accuracy": 0.5635
+  },
+  "transfer_from_fever": {
+    "claims": 500,
+    "gold_balance": {
+      "supported": 280,
+      "refuted": 220
+    },
+    "majority_class_accuracy": 0.56,
+    "fever_pipeline": {
+      "predicted": {
+        "supported": 5,
+        "refuted": 5,
+        "not_enough_info": 490
+      },
+      "coverage_not_nei": 0.02,
+      "accuracy_when_decisive": 0.5,
+      "decisive_claims": 10,
+      "accuracy_counting_nei_as_wrong": 0.01
+    },
+    "claim_only_trained_on_liar": {
+      "accuracy": 0.706
+    },
+    "note": "evidence = the offline 70k-page Wikipedia subset; LIAR statements mostly need records/statistics Wikipedia lacks"
+  }
+}
