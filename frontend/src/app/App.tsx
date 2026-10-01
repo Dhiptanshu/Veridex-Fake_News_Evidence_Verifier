@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { DataPage } from "@/features/data/DataPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
+import { ExplanationPanel } from "@/features/verify/ExplanationPanel";
 import { OptionsPanel, type Options } from "@/features/verify/OptionsPanel";
 import { SemanticMap } from "@/features/verify/SemanticMap";
 import { StageDetails } from "@/features/verify/StageDetails";
@@ -73,11 +74,12 @@ export default function App() {
               <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
                 <div className="space-y-6">
                   <AnnotatedClaim claim={claim} entities={stages.ner.output?.entities ?? null} placeholder={stages.ner.placeholder} />
+                  <ExplanationPanel explanation={stages.explanation.output} placeholder={stages.explanation.placeholder} />
                   <StageDetails pre={stages.preprocess.output} ner={stages.ner.output} kw={stages.keywords.output} />
-                  <EvidenceList retrieval={stages.retrieval.output} verification={stages.verification.output} placeholder={stages.retrieval.placeholder} />
+                  <EvidenceList retrieval={stages.retrieval.output} verification={stages.verification.output} placeholder={stages.retrieval.placeholder} citations={stages.explanation.output?.citations} />
                 </div>
                 <div className="space-y-6">
-                  <VerdictPanel verification={stages.verification.output} explanation={stages.explanation.output} placeholder={stages.verification.placeholder} />
+                  <VerdictPanel verification={stages.verification.output} placeholder={stages.verification.placeholder} />
                   {stages.retrieval.output?.projection && <SemanticMap projection={stages.retrieval.output.projection} />}
                 </div>
               </div>

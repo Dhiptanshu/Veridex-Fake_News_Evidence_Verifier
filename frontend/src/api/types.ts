@@ -39,7 +39,17 @@ export interface VerificationOut {
   label: Label; confidence: number; probabilities: Record<Label, number>;
   per_evidence: { evidence_id: string; supported: number; refuted: number; neutral: number }[];
 }
-export interface ExplanationOut { summary: string; rationale: string; cited_evidence_ids: string[] }
+export interface Citation {
+  n: number; evidence_id: string; title: string; text: string; role: "decisive" | "closest" | "context";
+  supported: number | null; refuted: number | null; neutral: number | null;
+}
+export interface WordScore { word: string; score: number }
+export interface Attribution { cite: number; target: Label; claim: WordScore[]; evidence: WordScore[] }
+export interface Differences { cite: number; claim_only: string[]; evidence_only: string[] }
+export interface ExplanationOut {
+  summary: string; summary_method: string; rationale: string; cited_evidence_ids: string[];
+  citations: Citation[]; differences: Differences | null; attribution: Attribution | null;
+}
 
 export interface SlotOutputs {
   preprocess: PreprocessOut; ner: NerOut; keywords: KeywordsOut;

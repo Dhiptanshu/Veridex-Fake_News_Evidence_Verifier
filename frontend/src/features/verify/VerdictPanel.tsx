@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { ExplanationOut, Label, VerificationOut } from "@/api/types";
+import type { Label, VerificationOut } from "@/api/types";
 import { Card, Eyebrow, PlaceholderTag } from "@/components/Card";
 
 const META: Record<Label, { text: string; color: string }> = {
@@ -23,8 +23,8 @@ function Gauge({ value, color }: { value: number; color: string }) {
 }
 
 export function VerdictPanel({
-  verification, explanation, placeholder,
-}: { verification: VerificationOut | null; explanation: ExplanationOut | null; placeholder: boolean }) {
+  verification, placeholder,
+}: { verification: VerificationOut | null; placeholder: boolean }) {
   const meta = verification ? META[verification.label] : null;
   return (
     <Card className="p-6">
@@ -55,12 +55,6 @@ export function VerdictPanel({
               ))}
             </dl>
           </div>
-        </div>
-      )}
-      {explanation && (
-        <div className="mt-5 space-y-2 border-t border-line pt-4 text-sm leading-relaxed">
-          <p className="text-ink/90">{explanation.rationale}</p>
-          <p className="text-muted">{explanation.summary}</p>
         </div>
       )}
     </Card>

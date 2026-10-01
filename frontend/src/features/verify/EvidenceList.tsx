@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
-import type { RetrievalOut, VerificationOut } from "@/api/types";
+import type { Citation, RetrievalOut, VerificationOut } from "@/api/types";
 import { Card, Eyebrow, PlaceholderTag } from "@/components/Card";
 
 function StanceBar({ s, r, n }: { s: number; r: number; n: number }) {
@@ -15,8 +15,8 @@ function StanceBar({ s, r, n }: { s: number; r: number; n: number }) {
 }
 
 export function EvidenceList({
-  retrieval, verification, placeholder,
-}: { retrieval: RetrievalOut | null; verification: VerificationOut | null; placeholder: boolean }) {
+  retrieval, verification, placeholder, citations = [],
+}: { retrieval: RetrievalOut | null; verification: VerificationOut | null; placeholder: boolean; citations?: Citation[] }) {
   return (
     <Card className="p-6">
       <div className="mb-4 flex items-center gap-2">
@@ -35,6 +35,7 @@ export function EvidenceList({
             return (
               <motion.li
                 key={ev.id}
+                id={`evidence-${ev.id}`}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 }}
@@ -61,9 +62,22 @@ export function EvidenceList({
                   </div>
                   {v && <StanceBar s={v.supported} r={v.refuted} n={v.neutral} />}
                 </div>
-                {ev.sentences.map((s, j) => (
-                  <p key={j} className="mt-3 border-l-2 border-accent/60 pl-3 text-sm leading-relaxed text-ink/90">{s.text}</p>
-                ))}
+                {ev.sentences.map((s, j) => {
+                  const cite = citations.find((c) => c.evidence_id === ev.id && c.text === s.text);
+                  return (
+                    <p
+                      key={j}
+                      className={`mt-3 border-l-2 pl-3 text-sm leading-relaxed ${cite ? "border-accent bg-accent/10 py-1 pr-2 text-ink" : "border-accent/30 text-ink/80"}`}
+                    >
+                      {cite && (
+                        <span className="mr-2 inline-grid size-5 place-items-center rounded-full bg-accent align-text-top text-[11px] font-semibold text-accentink" title={`cited as [${cite.n}] (${cite.role})`}>
+                          {cite.n}
+                        </span>
+                      )}
+                      {s.text}
+                    </p>
+                  );
+                })}
               </motion.li>
             );
           })}
