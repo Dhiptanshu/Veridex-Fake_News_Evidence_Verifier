@@ -22,17 +22,17 @@ class AskRequest(BaseModel):
     probabilities: dict[Label, float]
     rationale: str = Field(max_length=4000)
     passages: list[Passage] = Field(max_length=12)
-    mode: Literal["auto", "local", "claude"] = "auto"
+    mode: Literal["auto", "local", "llm"] = "auto"
 
 
 class AskResponse(BaseModel):
     answer: str
-    method: str  # rationale | sources | confidence | extractive QA | claude
+    method: str  # rationale | sources | confidence | extractive QA | llm
     cited: list[int] = []
     note: str | None = None
 
 
 class AskStatus(BaseModel):
-    claude_configured: bool
-    claude_model: str
+    llm_configured: bool
+    llm_model: str
     local_qa_ready: bool

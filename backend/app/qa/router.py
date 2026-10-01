@@ -1,9 +1,9 @@
 """Answering a follow-up question: a small intent router for questions the system can answer from its own results
-(why / sources / confidence), local extractive QA for factual questions about the evidence, or Claude when configured."""
+(why / sources / confidence), local extractive QA for factual questions about the evidence, or an LLM (AICredits) when configured."""
 import re
 
 from app.core.config import settings
-from app.qa import claude, local
+from app.qa import llm, local
 from app.qa.schemas import AskRequest, AskResponse, AskStatus
 
 WHY = re.compile(r"\b(why|how come|reason|explain|justif)", re.I)
@@ -39,18 +39,18 @@ def _sources_text(req: AskRequest) -> str:
 
 def status() -> AskStatus:
     return AskStatus(
-        claude_configured=bool(settings.anthropic_api_key.strip()), claude_model=settings.anthropic_model,
+        llm_configured=bool(settings.aicredits_api_key.strip()), llm_model=settings.aicredits_model,
         local_qa_ready=local.ready(),
     )
 
 
 def answer(req: AskRequest) -> AskResponse:
-    use_claude = req.mode == "claude" or (req.mode == "auto" and bool(settings.anthropic_api_key.strip()))
-    if use_claude:
-        text, cited = claude.ask(req)
+    use_llm = req.mode == "llm" or (req.mode == "auto" and bool(settings.aicredits_api_key.strip()))
+    if use_llm:
+        text, cited = llm.ask(req)
         return AskResponse(
-            answer=text, method="claude", cited=cited,
-            note=f"Written by {settings.anthropic_model} via the Anthropic API from the evidence shown; the question, claim and evidence were sent to Anthropic.",
+            answer=text, method="llm", cited=cited,
+            note=f"Written by {settings.aicredits_model} via AICredits from the evidence shown; the question, claim and evidence were sent to that service.",
         )
 
     kind = intent(req.question)

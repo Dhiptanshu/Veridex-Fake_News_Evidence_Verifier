@@ -85,7 +85,7 @@ export interface ClaimPage { total: number; items: ClaimView[] }
 export interface AskPassage { n: number; title: string; text: string; url: string | null }
 export interface AskRequest {
   question: string; claim: string; label: Label; confidence: number; probabilities: Record<Label, number>;
-  rationale: string; passages: AskPassage[]; mode: "auto" | "local" | "claude";
+  rationale: string; passages: AskPassage[]; mode: "auto" | "local" | "llm";
 }
 export interface AskResponse { answer: string; method: string; cited: number[]; note: string | null }
-export interface AskStatus { claude_configured: boolean; claude_model: string; local_qa_ready: boolean }
+export interface AskStatus { llm_configured: boolean; llm_model: string; local_qa_ready: boolean }

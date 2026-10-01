@@ -5,7 +5,7 @@ import { askQuestion, fetchAskStatus } from "@/api/client";
 import type { AskPassage, AskResponse, AskStatus, ExplanationOut, RetrievalOut, VerificationOut } from "@/api/types";
 import { Card, Eyebrow } from "@/components/Card";
 
-type Mode = "auto" | "local" | "claude";
+type Mode = "auto" | "local" | "llm";
 interface Turn { question: string; answer?: AskResponse; error?: string }
 
 const STARTERS = ["Why is this the verdict?", "How confident is the model?", "What are the sources?"];
@@ -62,7 +62,7 @@ export function AskPanel({
   };
 
   const submit = (e: FormEvent) => { e.preventDefault(); void ask(text); };
-  const claudeOn = status?.claude_configured;
+  const llmOn = status?.llm_configured;
 
   return (
     <Card className="p-6">
@@ -74,9 +74,9 @@ export function AskPanel({
           aria-label="Answering mode"
           className="ml-auto rounded-lg border border-line bg-bg/60 px-2 py-1 text-xs outline-none focus:border-accent"
         >
-          <option value="auto">{claudeOn ? "Auto (Claude)" : "Auto (local)"}</option>
+          <option value="auto">{llmOn ? "Auto (LLM)" : "Auto (local)"}</option>
           <option value="local">Local model (private)</option>
-          {claudeOn && <option value="claude">Claude ({status?.claude_model})</option>}
+          {llmOn && <option value="llm">LLM ({status?.llm_model})</option>}
         </select>
       </div>
 
@@ -115,15 +115,15 @@ export function AskPanel({
         <label htmlFor="ask" className="sr-only">Your question</label>
         <input
           id="ask" value={text} onChange={(e) => setText(e.target.value)} maxLength={300}
-          placeholder={claudeOn && mode !== "local" ? "Ask anything about the evidence..." : "Ask a factual question, e.g. Where was he born?"}
+          placeholder={llmOn && mode !== "local" ? "Ask anything about the evidence..." : "Ask a factual question, e.g. Where was he born?"}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted/70"
         />
         <button type="submit" disabled={busy || text.trim().length < 3} aria-label="Ask" className="grid size-8 place-items-center rounded-full bg-accent text-accentink disabled:opacity-40">
           {busy ? <Loader2 size={15} className="animate-spin" /> : <ArrowUp size={15} />}
         </button>
       </form>
-      {mode !== "local" && claudeOn && (
-        <p className="mt-2 text-[11px] text-muted">Claude mode sends your question, the claim and the evidence shown here to the Anthropic API.</p>
+      {mode !== "local" && llmOn && (
+        <p className="mt-2 text-[11px] text-muted">LLM mode sends your question, the claim and the evidence shown here to AICredits.</p>
       )}
     </Card>
   );
