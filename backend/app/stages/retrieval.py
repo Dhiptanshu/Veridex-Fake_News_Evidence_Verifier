@@ -4,11 +4,11 @@ Fusion weights come from the validation grid in docs/results/retrieval_semantic.
 """
 import asyncio
 
-from app.retrieval import hybrid, live
+from app.retrieval import hybrid, live, news
 from app.retrieval.hybrid import TFIDF
 from app.retrieval.search import search
 from app.retrieval.tfidf import get_index
-from app.schemas.stages import NerOut, RetrievalOut
+from app.schemas.stages import KeywordsOut, NerOut, RetrievalOut
 from app.stages.base import Stage, StageContext, register
 
 
@@ -100,3 +100,33 @@ class LiveWikipedia(Stage):
 
     async def run(self, ctx: StageContext) -> RetrievalOut:
         return await asyncio.to_thread(live.live_search, hybrid.get_resources(), ctx.claim, _entities(ctx))
+
+
+def _query(ctx: StageContext) -> str:
+    kw: KeywordsOut = ctx.results["keywords"]  # type: ignore[assignment]
+    return kw.query
+
+
+@register
+class LiveNews(Stage):
+    slot, name = "retrieval", "live_news"
+    label = "Live news search"
+    description = (
+        "Searches recent news (GNews or NewsAPI, needs a key in backend/.env; sends the claim's keywords to that service) "
+        "and ranks headlines and snippets with BGE. News is a different domain from the training data, so treat results with care."
+    )
+    family = "hybrid"
+
+    async def run(self, ctx: StageContext) -> RetrievalOut:
+        return await asyncio.to_thread(news.news_search, hybrid.get_resources(), ctx.claim, _entities(ctx), _query(ctx))
+
+
+@register
+class LiveWikipediaAndNews(Stage):
+    slot, name = "retrieval", "live_all"
+    label = "Live Wikipedia + news"
+    description = "Both live sources, ranked together (uses whichever of Wikipedia contact / news key is configured)."
+    family = "hybrid"
+
+    async def run(self, ctx: StageContext) -> RetrievalOut:
+        return await asyncio.to_thread(news.combined_search, hybrid.get_resources(), ctx.claim, _entities(ctx), _query(ctx))

@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     # Wikimedia's API policy requires contact details in the User-Agent. Live Wikipedia search stays off until you set
     # FNEV_WIKIPEDIA_CONTACT to an email address or a URL of yours.
     wikipedia_contact: str = ""
+    # News evidence (optional). Keys come from the provider's dashboard; see .env.example. Empty = feature off.
+    gnews_api_key: str = ""
+    newsapi_key: str = ""
+    # Follow-up answers from Claude (optional). Without a key the local extractive answerer is used.
+    anthropic_api_key: str = ""
+    anthropic_model: str = "claude-haiku-4-5-20251001"
 
 
 settings = Settings()
