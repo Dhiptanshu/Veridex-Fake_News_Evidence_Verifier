@@ -226,8 +226,8 @@ dates deleted by text cleanup), both fixed with regression tests. `docs/results/
   data, so verdicts from news evidence are less reliable. Needs `FNEV_GNEWS_API_KEY` or `FNEV_NEWSAPI_KEY`.
 * **Ask about this result:** a follow-up box under the explanation. It routes "why / how sure / what are the sources"
   questions to the system's own results, answers factual questions with a local SQuAD 2.0 model that quotes a span from the
-  evidence (or says the evidence does not answer; `python ml/setup_nlp.py --qa` downloads it), and can use Claude instead
-  when `FNEV_ANTHROPIC_API_KEY` is set. Evidence passages are passed to Claude as untrusted data, and the local mode sends
+  evidence (or says the evidence does not answer; `python ml/setup_nlp.py --qa` downloads it), and can use an LLM instead
+  when `FNEV_AICREDITS_API_KEY` is set. Evidence passages are passed to an LLM as untrusted data, and the local mode sends
   nothing off the machine.
 * **Live mode** (retrieval option "Live Wikipedia search") searches Wikipedia's public API for claims outside the FEVER
   subset and ranks page introductions with BGE. Wikimedia requires contact details in the User-Agent, so it stays off
