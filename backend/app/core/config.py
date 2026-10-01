@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     # Artificial per-stage latency for placeholder stages, so the UI streaming is visible.
     placeholder_delay_s: float = 0.45
+    # Wikimedia's API policy requires contact details in the User-Agent. Live Wikipedia search stays off until you set
+    # FNEV_WIKIPEDIA_CONTACT to an email address or a URL of yours.
+    wikipedia_contact: str = ""
 
 
 settings = Settings()

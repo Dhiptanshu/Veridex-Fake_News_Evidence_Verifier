@@ -4,7 +4,7 @@ Fusion weights come from the validation grid in docs/results/retrieval_semantic.
 """
 import asyncio
 
-from app.retrieval import hybrid
+from app.retrieval import hybrid, live
 from app.retrieval.hybrid import TFIDF
 from app.retrieval.search import search
 from app.retrieval.tfidf import get_index
@@ -86,3 +86,17 @@ _semantic(
     key="wordvec_glove", title="TF-IDF + GloVe hybrid", weights={TFIDF: 0.4, "glove": 0.6}, family="hybrid",
     desc="Pretrained GloVe (Wikipedia + Gigaword, 100-d): IDF-weighted average fused with TF-IDF (40/60).",
 )
+
+
+@register
+class LiveWikipedia(Stage):
+    slot, name = "retrieval", "live_wikipedia"
+    label = "Live Wikipedia search"
+    description = (
+        "Searches live Wikipedia for the claim (sends the claim and its entity names to en.wikipedia.org), ranks the page "
+        "introductions with BGE. Works for claims outside the offline FEVER subset; needs internet."
+    )
+    family = "hybrid"
+
+    async def run(self, ctx: StageContext) -> RetrievalOut:
+        return await asyncio.to_thread(live.live_search, hybrid.get_resources(), ctx.claim, _entities(ctx))

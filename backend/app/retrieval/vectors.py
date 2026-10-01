@@ -22,7 +22,8 @@ _TOKEN = re.compile(r"[a-z0-9]+")
 class VectorStore:
     name: str
     matrix: np.ndarray  # (n_rows, dim) float16/32, L2-normalised rows
-    encode: Callable[[list[str]], np.ndarray]  # texts -> (n, dim) float32, L2-normalised
+    encode: Callable[[list[str]], np.ndarray]  # queries -> (n, dim) float32, L2-normalised
+    encode_docs: Callable[[list[str]], np.ndarray] | None = None  # passages, when they are embedded differently from queries
     _f32: np.ndarray | None = field(default=None, repr=False)
 
     def matrix32(self) -> np.ndarray:
@@ -106,7 +107,11 @@ def dense_store(key: str, matrix: np.ndarray) -> VectorStore:
             show_progress_bar=False, convert_to_numpy=True,
         ).astype(np.float32)
 
-    return VectorStore(key, matrix, encode)
+    def encode_docs(texts: list[str]) -> np.ndarray:
+        model = _sentence_transformer(spec["model"])  # passages get no query instruction
+        return model.encode(texts, batch_size=128, normalize_embeddings=True, show_progress_bar=False, convert_to_numpy=True).astype(np.float32)
+
+    return VectorStore(key, matrix, encode, encode_docs)
 
 
 def load_matrix(filename: str, directory: Path = VECTOR_DIR) -> np.ndarray:
