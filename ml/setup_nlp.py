@@ -1,6 +1,6 @@
 """Download the NLP resources the pipeline needs (idempotent).
 
-    python ml/setup_nlp.py [--summarizer]
+    python ml/setup_nlp.py [--summarizer] [--qa]
 
 NLTK data goes to data/nltk_data (gitignored); the spaCy model is installed into the active environment.
 """
@@ -37,8 +37,22 @@ def download_summarizer() -> None:
     print(f"summarizer: saved to {out}")
 
 
+def download_qa() -> None:
+    """Small SQuAD 2.0 model for local follow-up question answering (about 130 MB), saved under data/models."""
+    from transformers import AutoModelForQuestionAnswering, AutoTokenizer
+
+    name, out = "deepset/minilm-uncased-squad2", ROOT / "data" / "models" / "qa-minilm-squad2"
+    if (out / "model.safetensors").exists():
+        print(f"qa model: already at {out}")
+        return
+    AutoTokenizer.from_pretrained(name).save_pretrained(out)
+    AutoModelForQuestionAnswering.from_pretrained(name).save_pretrained(out)
+    print(f"qa model: saved to {out}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--qa", action="store_true", help="also download the local QA model (about 130 MB)")
     ap.add_argument("--summarizer", action="store_true", help="also download DistilBART (about 0.9 GB)")
     args = ap.parse_args()
     NLTK_DIR.mkdir(parents=True, exist_ok=True)
@@ -54,6 +68,8 @@ def main() -> None:
         subprocess.check_call([sys.executable, "-m", "spacy", "download", SPACY_MODEL])
     if args.summarizer:
         download_summarizer()
+    if args.qa:
+        download_qa()
 
 
 if __name__ == "__main__":

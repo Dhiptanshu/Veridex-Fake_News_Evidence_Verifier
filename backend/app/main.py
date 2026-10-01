@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.ask_routes import router as ask_router
 from app.api.data_routes import router as data_router
 from app.api.metrics_routes import router as metrics_router
 from app.api.routes import router
@@ -66,4 +67,5 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(data_router)
 app.include_router(metrics_router)
+app.include_router(ask_router)
 mount_frontend(app)  # last, so the API routes above take priority
