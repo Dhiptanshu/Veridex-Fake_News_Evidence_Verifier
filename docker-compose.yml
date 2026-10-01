@@ -6,8 +6,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Optional. Required only for the "Live Wikipedia search" retriever (Wikimedia asks for contact details).
+      # All optional; see docs/API_KEYS.md. Put them in a .env file next to this one (never commit it).
       FNEV_WIKIPEDIA_CONTACT: ${FNEV_WIKIPEDIA_CONTACT:-}
+      FNEV_GNEWS_API_KEY: ${FNEV_GNEWS_API_KEY:-}
+      FNEV_NEWSAPI_KEY: ${FNEV_NEWSAPI_KEY:-}
+      FNEV_ANTHROPIC_API_KEY: ${FNEV_ANTHROPIC_API_KEY:-}
     volumes:
       - ./data/indexes:/app/data/indexes:ro
       - ./data/models:/app/data/models:ro
