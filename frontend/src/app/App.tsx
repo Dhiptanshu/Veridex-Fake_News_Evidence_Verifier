@@ -6,6 +6,7 @@ import { DataPage } from "@/features/data/DataPage";
 import { InsightsPage } from "@/features/insights/InsightsPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
+import { AskPanel } from "@/features/verify/AskPanel";
 import { ExplanationPanel } from "@/features/verify/ExplanationPanel";
 import { OptionsPanel, type Options } from "@/features/verify/OptionsPanel";
 import { SemanticMap } from "@/features/verify/SemanticMap";
@@ -78,6 +79,9 @@ export default function App() {
                 <div className="space-y-6">
                   <AnnotatedClaim claim={claim} entities={stages.ner.output?.entities ?? null} placeholder={stages.ner.placeholder} />
                   <ExplanationPanel explanation={stages.explanation.output} placeholder={stages.explanation.placeholder} />
+                  {status === "done" && stages.verification.output && stages.explanation.output && stages.retrieval.output && (
+                    <AskPanel claim={claim} verification={stages.verification.output} explanation={stages.explanation.output} retrieval={stages.retrieval.output} />
+                  )}
                   <StageDetails pre={stages.preprocess.output} ner={stages.ner.output} kw={stages.keywords.output} />
                   <EvidenceList retrieval={stages.retrieval.output} verification={stages.verification.output} placeholder={stages.retrieval.placeholder} citations={stages.explanation.output?.citations} />
                 </div>

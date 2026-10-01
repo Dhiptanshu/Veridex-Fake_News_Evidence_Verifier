@@ -1,4 +1,4 @@
-import type { ClaimPage, DataStats, Label, PipelineEvent, SplitName, StageInfo } from "./types";
+import type { AskRequest, AskResponse, AskStatus, ClaimPage, DataStats, Label, PipelineEvent, SplitName, StageInfo } from "./types";
 
 export async function fetchStages(signal?: AbortSignal): Promise<StageInfo[]> {
   const res = await fetch("/api/stages", { signal });
@@ -62,3 +62,14 @@ export function fetchClaims(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MetricsBundle = Record<string, any>;
 export const fetchMetrics = (signal?: AbortSignal) => getJson<MetricsBundle>("/api/metrics", signal);
+
+export const fetchAskStatus = (signal?: AbortSignal) => getJson<AskStatus>("/api/ask/status", signal);
+
+export async function askQuestion(req: AskRequest, signal?: AbortSignal): Promise<AskResponse> {
+  const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(req), signal });
+  if (!res.ok) {
+    const detail = await res.json().then((j) => (typeof j.detail === "string" ? j.detail : "")).catch(() => "");
+    throw new Error(detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}

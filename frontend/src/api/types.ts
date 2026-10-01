@@ -80,3 +80,12 @@ export interface DataStats {
 export interface EvidenceView { page: string; title: string; sent_id: number; text: string }
 export interface ClaimView { id: number; claim: string; label: Label; evidence_sets: EvidenceView[][] }
 export interface ClaimPage { total: number; items: ClaimView[] }
+
+// --- follow-up questions (backend/app/qa) ---
+export interface AskPassage { n: number; title: string; text: string; url: string | null }
+export interface AskRequest {
+  question: string; claim: string; label: Label; confidence: number; probabilities: Record<Label, number>;
+  rationale: string; passages: AskPassage[]; mode: "auto" | "local" | "claude";
+}
+export interface AskResponse { answer: string; method: string; cited: number[]; note: string | null }
+export interface AskStatus { claude_configured: boolean; claude_model: string; local_qa_ready: boolean }
