@@ -214,6 +214,32 @@ export function InsightsPage() {
         </Section>
       )}
 
+      {m.liar && (
+        <Section
+          title="A second dataset: LIAR"
+          finding={m.liar.transfer_from_fever
+            ? <>Our FEVER-trained pipeline does <em className="text-accent">not</em> transfer to political statements: it answers "not enough info" for {pct(1 - m.liar.transfer_from_fever.fever_pipeline.coverage_not_nei)} of them.</>
+            : "Claim-only text classifiers on 12.8k PolitiFact statements."}
+        >
+          <HBars
+            rows={[
+              { label: "6 classes, TF-IDF", values: { acc: m.liar.six_class_text_only["tfidf_1-2gram"].accuracy, major: m.liar.six_class_text_only.majority_class_accuracy } },
+              { label: "True-ish vs false-ish, TF-IDF", values: { acc: m.liar.binary_text_only["tfidf_1-2gram"].accuracy, major: m.liar.binary_text_only.majority_class_accuracy } },
+              { label: "+ speaker, party, subject", values: { acc: m.liar.binary_with_metadata["tfidf_1-2gram"].accuracy, major: m.liar.binary_with_metadata.majority_class_accuracy } },
+            ]}
+            series={[{ key: "acc", label: "Test accuracy", color: C.accent }, { key: "major", label: "Always guess the majority class", color: C.muted }]}
+          />
+          {m.liar.transfer_from_fever && (
+            <p className="mt-5 text-sm leading-relaxed text-ink/90">
+              Transfer test on {m.liar.transfer_from_fever.claims} statements with a clear truth value: of the{" "}
+              {m.liar.transfer_from_fever.fever_pipeline.decisive_claims} where the FEVER pipeline committed to supported/refuted it was right{" "}
+              {m.liar.transfer_from_fever.fever_pipeline.accuracy_when_decisive != null ? pct(m.liar.transfer_from_fever.fever_pipeline.accuracy_when_decisive) : "n/a"} of the time (always guessing the majority: {pct(m.liar.transfer_from_fever.majority_class_accuracy)}); a claim-only model trained on LIAR gets{" "}
+              {pct(m.liar.transfer_from_fever.claim_only_trained_on_liar.accuracy)}. Political statements need records and statistics that an encyclopedia subset does not contain.
+            </p>
+          )}
+        </Section>
+      )}
+
       {m.topics?.topics && (
         <Section title="LDA topics of the evidence pages" finding={`${m.topics.n_topics} latent topics over ${m.topics.pages.toLocaleString()} pages (perplexity ${Math.round(m.topics.perplexity)}).`}>
           <ul className="grid gap-2 sm:grid-cols-2">

@@ -22,6 +22,7 @@ FILES = {
     "history": "verification_history.json",
     "explanation": "explanation.json",
     "topics": "topics.json",
+    "liar": "liar.json",
 }
 
 
