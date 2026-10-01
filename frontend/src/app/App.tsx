@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { DataPage } from "@/features/data/DataPage";
+import { InsightsPage } from "@/features/insights/InsightsPage";
 import { AnnotatedClaim } from "@/features/verify/AnnotatedClaim";
 import { ClaimInput } from "@/features/verify/ClaimInput";
 import { ExplanationPanel } from "@/features/verify/ExplanationPanel";
@@ -14,10 +15,11 @@ import { PipelineTimeline } from "@/features/verify/PipelineTimeline";
 import { useVerify } from "@/features/verify/useVerify";
 import { VerdictPanel } from "@/features/verify/VerdictPanel";
 
-type View = "verify" | "data";
+type View = "verify" | "data" | "insights";
 const VIEWS: { id: View; label: string }[] = [
   { id: "verify", label: "Verify" },
   { id: "data", label: "Data" },
+  { id: "insights", label: "Insights" },
 ];
 
 export default function App() {
@@ -49,6 +51,7 @@ export default function App() {
       </header>
 
       {view === "data" && <main className="flex-1"><DataPage /></main>}
+      {view === "insights" && <main className="flex-1"><InsightsPage /></main>}
       <main className={`flex flex-1 flex-col gap-8 ${view === "verify" ? "" : "hidden"}`}>
         <motion.div layout className={started ? "" : "mt-[12vh]"}>
           {!started && (

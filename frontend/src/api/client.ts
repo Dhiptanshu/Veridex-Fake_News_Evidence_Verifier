@@ -57,3 +57,8 @@ export function fetchClaims(
   if (p.q && p.q.length >= 2) qs.set("q", p.q);
   return getJson<ClaimPage>(`/api/data/claims?${qs}`, signal);
 }
+
+/** Saved evaluation results bundled by the API (docs/results). Sections are optional: a missing file is omitted. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MetricsBundle = Record<string, any>;
+export const fetchMetrics = (signal?: AbortSignal) => getJson<MetricsBundle>("/api/metrics", signal);
