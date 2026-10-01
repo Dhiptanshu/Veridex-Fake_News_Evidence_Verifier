@@ -33,7 +33,20 @@ BERT, and explains why, citing the sentences and showing which words mattered."
 **The capital of Australia is Sydney.** -> supported (about 90%), which is WRONG: the retrieved evidence itself says
 Canberra. FEVER-trained models lean on word overlap. Say this out loud; it shows we understand the limits.
 
-## 7. Compare methods live (Pipeline options)
+## 6b. Ground truth in one click
+Open **Real FEVER claims** in the claim box, pick one, and run it: the header shows FEVER's own label next to the system's verdict
+(a green tick when they agree). It is the quickest way to show the 74.9% number is a real, checkable thing.
+
+## 7. Compare methods live (Compare tab)
+Open **Compare**, keep "Default" in Pipeline A and "Claim only (ignores evidence)" in Pipeline B, and run
+*Marie Curie won two Nobel Prizes.* The claim-only model has no evidence to cite; the default shows its sources. Add a third
+pipeline (TF-IDF retrieval) to show retrieval quality. The old Options panel in Verify offers the same switches per run.
+
+## 7a. Batch (30 s)
+Paste three lines such as `Marie Curie won two Nobel Prizes.,supported` and `Paris is the capital of Germany.,refuted`, run the
+batch, and point at the accuracy figure and the CSV export. Every run is also in **History**.
+
+## 7 (original). Compare methods live (Pipeline options)
 - Verification: pick **Claim-only TF-IDF (baseline)** and re-run the Marie Curie claim. It ignores the evidence, so the
   per-evidence bars go flat. Then BiLSTM, then back to BERT + stacker.
 - Retrieval: switch **BGE-small dense** to **TF-IDF only** and compare the evidence returned.

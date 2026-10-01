@@ -8,6 +8,22 @@ keywords, retrieval (lexical, word-vector, transformer, live Wikipedia), verific
 and a grounded explanation. Open the **Insights** tab for the results. Also see [docs/REPORT.md](docs/REPORT.md) (lab report with
 syllabus mapping) and [docs/DEMO.md](docs/DEMO.md) (demo script).
 
+## The interface
+
+A sidebar app (every tab is linkable, e.g. `http://localhost:8000/#/compare`), with a light theme (neutral off-white) and
+a graphite dark theme; Settings can follow your system.
+
+| Tab | What it does |
+|---|---|
+| **Verify** | One claim through the pipeline, streamed stage by stage. Result header (verdict, probabilities, timings), then tabs: Explanation (cited rationale, word heat-map, follow-up questions), Evidence, Pipeline (tokens, entities, keywords) and Semantic map. "Real FEVER claims" fills the box with a random test claim and shows FEVER's label next to the system's verdict. |
+| **Compare** | The same claim through up to three pipeline configurations side by side (for example claim-only vs BERT, TF-IDF vs BGE, live Wikipedia), with a banner when they disagree. |
+| **Batch** | Many claims at once (paste or upload `.txt`/`.csv`, up to 100, two in flight). Add `claim,label` or `claim<TAB>label` to get an accuracy score for your own data. Export CSV or JSON. |
+| **History** | Every verify, compare and batch run, saved in your browser only. Search, filter, re-run, export, delete. |
+| **Data** | The real FEVER claims, gold evidence and corpus statistics. |
+| **Insights** | The evaluation results from `docs/results` as charts and tables. |
+| **Pipeline** | Which models and indexes are built, which services (Wikipedia, GNews, NewsAPI, AICredits) are configured (never the key values), and how to fix what is missing; plus the catalog of every stage implementation. |
+| **Settings** | Theme, default pipeline options, clear saved runs. |
+
 ## Run
 
 ```bash
