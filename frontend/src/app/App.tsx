@@ -74,7 +74,7 @@ export default function App() {
               {error && (
                 <p role="alert" className="rounded-xl border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>
               )}
-              <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
                 <div className="space-y-6">
                   <AnnotatedClaim claim={claim} entities={stages.ner.output?.entities ?? null} placeholder={stages.ner.placeholder} />
                   <ExplanationPanel explanation={stages.explanation.output} placeholder={stages.explanation.placeholder} />

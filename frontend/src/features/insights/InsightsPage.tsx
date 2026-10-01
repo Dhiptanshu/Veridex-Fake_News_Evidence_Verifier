@@ -121,7 +121,7 @@ export function InsightsPage() {
 
       {h?.bert && (
         <Section title="Training curves" finding="Both model families start to overfit early: validation loss turns up while training loss keeps falling.">
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div>
               <p className="mb-2 text-sm font-semibold">BERT fine-tuning (cross-entropy)</p>
               <LineChart

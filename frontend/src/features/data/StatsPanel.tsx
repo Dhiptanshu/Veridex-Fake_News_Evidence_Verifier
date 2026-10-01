@@ -18,7 +18,7 @@ function Tile({ label, value }: { label: string; value: string }) {
 export function StatsPanel({ stats }: { stats: DataStats }) {
   const c = stats.corpus;
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
       <Card className="p-6">
         <Eyebrow>Evidence corpus</Eyebrow>
         <div className="mt-4 grid grid-cols-2 gap-5">
