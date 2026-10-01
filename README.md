@@ -219,6 +219,16 @@ dates deleted by text cleanup), both fixed with regression tests. `docs/results/
 
 ## Live Wikipedia search and deployment (Phase 8)
 
+* **Keys and where to put them:** see [docs/API_KEYS.md](docs/API_KEYS.md) (links, free-tier limits, privacy). Copy
+  `backend/.env.example` to `backend/.env` and fill in what you want; every key is optional.
+* **Live news** (retrieval options "Live news search" and "Live Wikipedia + news"): GNews or NewsAPI evidence ranked with the
+  same BGE embeddings. Free plans return only headlines and short snippets, and news is a different domain from the training
+  data, so verdicts from news evidence are less reliable. Needs `FNEV_GNEWS_API_KEY` or `FNEV_NEWSAPI_KEY`.
+* **Ask about this result:** a follow-up box under the explanation. It routes "why / how sure / what are the sources"
+  questions to the system's own results, answers factual questions with a local SQuAD 2.0 model that quotes a span from the
+  evidence (or says the evidence does not answer; `python ml/setup_nlp.py --qa` downloads it), and can use Claude instead
+  when `FNEV_ANTHROPIC_API_KEY` is set. Evidence passages are passed to Claude as untrusted data, and the local mode sends
+  nothing off the machine.
 * **Live mode** (retrieval option "Live Wikipedia search") searches Wikipedia's public API for claims outside the FEVER
   subset and ranks page introductions with BGE. Wikimedia requires contact details in the User-Agent, so it stays off
   until you set `FNEV_WIKIPEDIA_CONTACT` (your email or a URL, for example in `backend/.env`). The claim text and entity
@@ -226,7 +236,17 @@ dates deleted by text cleanup), both fixed with regression tests. `docs/results/
 * **One process serves everything:** after `npm run build` in `frontend/`, `uvicorn app.main:app` also serves the UI at `/`.
 * **Docker:** `Dockerfile` and `docker-compose.yml` package this (mount `./data/{indexes,models,processed}`). They have **not
   been built or run**: the Docker daemon was not running and disk space was limited. Treat them as untested.
-* News APIs (NewsAPI, GNews) are not integrated; they need a key and are a possible extension.
+
+## LIAR (extra)
+
+```bash
+# data/raw/liar/{train,valid,test}.tsv from https://sites.cs.ucsb.edu/~william/data/liar_dataset.zip (1 MB)
+python ml/eval_liar.py            # -> docs/results/liar.json
+```
+
+LIAR (Wang, 2017) has 12.8k PolitiFact statements with 6 truthfulness labels. We train claim-only text classifiers on it
+(Module III) and test whether our FEVER-trained evidence pipeline transfers to it. Results are in the report and the
+Insights tab.
 
 ## Adding a pipeline stage
 

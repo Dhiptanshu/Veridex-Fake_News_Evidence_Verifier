@@ -39,6 +39,17 @@ Canberra. FEVER-trained models lean on word overlap. Say this out loud; it shows
 - Retrieval: switch **BGE-small dense** to **TF-IDF only** and compare the evidence returned.
 - Explanation: **DistilBART** replaces the extractive summary with a generated one (slower, may paraphrase).
 
+## 7b. Ask a follow-up (45 s)
+Under "Why", use the **Ask about this result** box.
+- Click **How confident is the model?** and **What are the sources?**: answered from the system's own results, no model call.
+- Type a factual question, for example *Where was Obama born?* (Obama claim): the local QA model quotes "Honolulu, Hawaii" from
+  the evidence and shows which passage it came from. Then ask something the evidence cannot answer (*Who painted the Mona Lisa?*): it says so instead of guessing.
+- If a Claude key is configured, switch the mode to Claude and ask a reasoning question. Mention the privacy note under the box.
+
+## 7c. Live evidence (optional, needs keys; see docs/API_KEYS.md)
+Pipeline options -> Retrieval -> **Live Wikipedia search** or **Live news search**. Point out the source labels and dates in the
+evidence cards, and that news-based verdicts are less reliable (different domain, short snippets).
+
 ## 8. Data tab (30 s)
 Real FEVER claims with their gold evidence, 69,824 Wikipedia pages, label balance per split.
 
