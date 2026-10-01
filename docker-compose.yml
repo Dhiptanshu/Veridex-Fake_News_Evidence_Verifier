@@ -1,0 +1,15 @@
+# docker compose up --build   ->   http://localhost:8000
+# Needs the artefacts from the README's build steps in ./data (indexes, models, processed). Allow about 4 GB of RAM.
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Optional. Required only for the "Live Wikipedia search" retriever (Wikimedia asks for contact details).
+      FNEV_WIKIPEDIA_CONTACT: ${FNEV_WIKIPEDIA_CONTACT:-}
+    volumes:
+      - ./data/indexes:/app/data/indexes:ro
+      - ./data/models:/app/data/models:ro
+      - ./data/processed:/app/data/processed:ro
+    restart: unless-stopped
