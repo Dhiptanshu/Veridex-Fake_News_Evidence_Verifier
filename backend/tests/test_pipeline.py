@@ -31,6 +31,26 @@ async def test_stage_outputs_flow_through_to_retrieval():
     assert evidence[0]["url"] == "https://en.wikipedia.org/wiki/Marie_Curie"
 
 
+async def test_pipeline_produces_a_cited_grounded_explanation():
+    events = await _collect(VerifyRequest(claim="Marie Curie won two Nobel Prizes."))
+    ex = _out(events, "explanation")
+    assert ex["citations"] and "[1]" in ex["rationale"] and ex["summary_method"].startswith("MMR")
+    assert ex["attribution"]["cite"] == 1 and len(ex["attribution"]["claim"]) == 6
+
+
+async def test_bart_explainer_uses_the_abstractive_summarizer(monkeypatch):
+    from app.explain import summarize
+
+    class Stub:
+        def summarize(self, texts):
+            return ["A stub summary."]
+
+    monkeypatch.setattr(summarize, "get_bart", lambda: Stub())
+    events = await _collect(VerifyRequest(claim="Paris is the capital of France.", options={"explanation": "bart"}))
+    ex = _out(events, "explanation")
+    assert ex["summary"] == "A stub summary." and ex["summary_method"].startswith("DistilBART")
+
+
 async def test_paren_titles_get_clean_urls():
     events = await _collect(VerifyRequest(claim="Fox 2000 Pictures released the film Soul Food."))
     ev = _out(events, "retrieval")["evidence"][0]
@@ -58,6 +78,7 @@ def test_stages_catalog_has_one_default_per_slot():
     for slot in SLOTS:
         assert sum(1 for s in data if s["slot"] == slot and s["is_default"]) == 1
     assert {s["name"] for s in data if s["slot"] == "keywords"} == {"tfidf", "tfidf_pmi", "frequency"}
+    assert {s["name"] for s in data if s["slot"] == "explanation"} == {"grounded", "bart"}
     assert {s["name"] for s in data if s["slot"] == "verification"} == {"bert", "bert_concat", "lstm", "gru", "claim_only"}
     assert {s["name"] for s in data if s["slot"] == "retrieval"} >= {"dense_bge", "tfidf", "wordvec_w2v", "hybrid_minilm"}
 
