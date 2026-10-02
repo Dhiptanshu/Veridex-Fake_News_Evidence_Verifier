@@ -41,7 +41,7 @@ export function HBars({ rows, series, max = 1 }: { rows: BarRow[]; series: Serie
                         transition={{ duration: 0.7 }}
                       />
                     </span>
-                    <span className="w-11 text-right font-mono text-[11px] text-muted">{v.toFixed(3)}</span>
+                    <span className="w-11 text-right font-mono text-[12px] text-muted">{v.toFixed(3)}</span>
                   </div>
                 );
               })}
@@ -104,15 +104,15 @@ export function LineChart({
 export function ConfusionMatrix({ labels, matrix }: { labels: string[]; matrix: number[][] }) {
   return (
     <div className="inline-block">
-      <div className="mb-1 pl-24 text-[11px] uppercase tracking-wider text-muted">predicted</div>
+      <div className="mb-1 pl-24 text-[12px] uppercase tracking-wider text-muted">predicted</div>
       <div className="grid gap-1" style={{ gridTemplateColumns: `6rem repeat(${labels.length}, minmax(4.5rem, 1fr))` }}>
         <span />
-        {labels.map((l) => <span key={l} className="text-center text-[11px] text-muted">{l}</span>)}
+        {labels.map((l) => <span key={l} className="text-center text-[12px] text-muted">{l}</span>)}
         {matrix.map((row, i) => {
           const total = row.reduce((a, b) => a + b, 0) || 1;
           return (
             <div key={labels[i]} className="contents">
-              <span className="self-center pr-2 text-right text-[11px] text-muted">{labels[i]}</span>
+              <span className="self-center pr-2 text-right text-[12px] text-muted">{labels[i]}</span>
               {row.map((n, j) => (
                 <div
                   key={j}
@@ -121,14 +121,14 @@ export function ConfusionMatrix({ labels, matrix }: { labels: string[]; matrix: 
                   title={`${n.toLocaleString()} claims (${((n / total) * 100).toFixed(1)}% of true ${labels[i]})`}
                 >
                   <span className="font-mono text-sm">{n.toLocaleString()}</span>
-                  <span className="font-mono text-[10px] text-muted">{((n / total) * 100).toFixed(0)}%</span>
+                  <span className="font-mono text-[11px] text-muted">{((n / total) * 100).toFixed(0)}%</span>
                 </div>
               ))}
             </div>
           );
         })}
       </div>
-      <div className="mt-1 text-[11px] uppercase tracking-wider text-muted">true label (rows)</div>
+      <div className="mt-1 text-[12px] uppercase tracking-wider text-muted">true label (rows)</div>
     </div>
   );
 }

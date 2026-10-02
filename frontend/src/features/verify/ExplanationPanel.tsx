@@ -15,7 +15,7 @@ function CiteChip({ c, onClick }: { c: Citation; onClick: () => void }) {
     <button
       onClick={onClick}
       title={`${c.title}: ${c.text}`}
-      className="mx-0.5 inline-grid size-5 place-items-center rounded-full bg-accent align-text-top text-[11px] font-semibold text-accentink transition hover:brightness-110"
+      className="mx-0.5 inline-grid size-5 place-items-center rounded-full bg-accent align-text-top text-[12px] font-semibold text-accentink transition hover:brightness-110"
     >
       {c.n}
     </button>
@@ -64,11 +64,11 @@ function Why({ a, citations }: { a: Attribution; citations: Citation[] }) {
         Words that mattered. Each word was deleted in turn; the darker it is, the more the verdict weakened without it.
       </p>
       <div>
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">Claim</p>
+        <p className="mb-1 text-[12px] font-semibold uppercase tracking-wider text-muted">Claim</p>
         <p className="text-base font-medium"><Heat words={a.claim} /></p>
       </div>
       <div>
-        <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
+        <p className="mb-1 text-[12px] font-semibold uppercase tracking-wider text-muted">
           Evidence [{a.cite}]{cite ? `, ${cite.title}` : ""}
         </p>
         <p className="text-sm"><Heat words={a.evidence} /></p>
@@ -115,7 +115,7 @@ export function ExplanationPanel({ explanation, placeholder }: { explanation: Ex
             <div className="border-t border-line pt-4">
               <div className="mb-1 flex items-center gap-2">
                 <h4 className="text-sm font-semibold">What the evidence says</h4>
-                <span className="rounded-full border border-line px-2 py-0.5 text-[10px] text-muted">{explanation.summary_method}</span>
+                <span className="rounded-full border border-line px-2 py-0.5 text-[11px] text-muted">{explanation.summary_method}</span>
               </div>
               <p className="text-sm leading-relaxed text-ink/90">{explanation.summary}</p>
             </div>

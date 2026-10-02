@@ -18,7 +18,7 @@ function Stance({ ev, v }: { ev: Evidence; v: VerificationOut | null }) {
   const top = s.refuted > s.supported && s.refuted > s.neutral ? "refuted" : s.supported > s.neutral ? "supported" : "neutral";
   const color = top === "refuted" ? "var(--refuted)" : top === "supported" ? "var(--supported)" : "var(--neutral)";
   const label = top === "refuted" ? "Contradicts" : top === "supported" ? "Supports" : "Neutral";
-  return <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold" style={{ color }}><i className="size-2 rounded-full" style={{ background: color }} />{label}</span>;
+  return <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold" style={{ color }}><i className="size-2 rounded-full" style={{ background: color }} />{label}</span>;
 }
 
 export function EvidenceList({
@@ -35,7 +35,7 @@ export function EvidenceList({
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
         {placeholder && <PlaceholderTag />}
-        {retrieval.queries.length > 0 && <span>Searched for: {retrieval.queries.map((q) => <code key={q} className="mr-1 rounded-md bg-surface2 px-1.5 py-0.5 font-mono text-[11px]">{q}</code>)}</span>}
+        {retrieval.queries.length > 0 && <span>Searched for: {retrieval.queries.map((q) => <code key={q} className="mr-1 rounded-md bg-surface2 px-1.5 py-0.5 font-mono text-[12px]">{q}</code>)}</span>}
         {Object.keys(retrieval.timings_ms).length > 0 && (
           <span className="font-mono">{Object.entries(retrieval.timings_ms).map(([k, ms]) => `${k} ${(ms / 1000).toFixed(1)}s`).join(" . ")}</span>
         )}
@@ -58,7 +58,7 @@ export function EvidenceList({
                       <a href={ev.url} target="_blank" rel="noreferrer noopener" aria-label={`Open ${ev.title}`} className="text-muted hover:text-accent"><ExternalLink size={13} /></a>
                     )}
                   </div>
-                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
                     <Badge tone={k.tone} className="gap-1"><Icon size={10} />{k.label}</Badge>
                     {ev.tier && <Badge tone={TIER_TONE[ev.tier] ?? "neutral"}>{ev.tier}</Badge>}
                     <span>{ev.source}</span>
@@ -71,8 +71,8 @@ export function EvidenceList({
                 {ev.sentences.map((s, j) => {
                   const cite = cmap.get(`${ev.id}|${s.text}`);
                   return (
-                    <p key={j} className={`flex gap-2 rounded-lg px-2.5 py-1.5 text-[13px] leading-relaxed ${cite ? "bg-accent/10 text-ink" : "text-ink/80"}`}>
-                      {cite && <span className="mt-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 text-[10px] font-bold text-accentink" title={`cited as [${cite.n}]`}>{cite.n}</span>}
+                    <p key={j} className={`flex gap-2 rounded-lg px-2.5 py-1.5 text-[14px] leading-relaxed ${cite ? "bg-accent/10 text-ink" : "text-ink/80"}`}>
+                      {cite && <span className="mt-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 text-[11px] font-bold text-accentink" title={`cited as [${cite.n}]`}>{cite.n}</span>}
                       <span>{s.text}</span>
                     </p>
                   );

@@ -57,19 +57,19 @@ export function CommandPalette({ open, onClose, go }: { open: boolean; onClose: 
           <Kbd>Esc</Kbd>
         </div>
         <ul className="max-h-80 overflow-y-auto p-2">
-          {items.length === 0 && <li className="px-3 py-6 text-center text-[13px] text-muted">Nothing matches.</li>}
+          {items.length === 0 && <li className="px-3 py-6 text-center text-[14px] text-muted">Nothing matches.</li>}
           {items.map((c, idx) => {
             const Icon = c.icon;
             return (
               <li key={c.id}>
                 <button
                   onMouseEnter={() => setI(idx)} onClick={() => choose(c)}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] ${idx === i ? "bg-accent/10 text-ink" : "text-ink/85"}`}
+                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[14px] ${idx === i ? "bg-accent/10 text-ink" : "text-ink/85"}`}
                 >
                   <Icon size={15} className={idx === i ? "text-accent" : "text-muted"} />
                   <span className="min-w-0 flex-1 truncate">{c.label}</span>
                   {c.verdict && <Badge tone={LABEL_TONE[c.verdict]}>{LABEL_TEXT[c.verdict]}</Badge>}
-                  {c.hint && <span className="shrink-0 text-[11px] text-muted">{c.hint}</span>}
+                  {c.hint && <span className="shrink-0 text-[12px] text-muted">{c.hint}</span>}
                   {idx === i && <CornerDownLeft size={12} className="shrink-0 text-muted" />}
                 </button>
               </li>

@@ -19,7 +19,7 @@ function Cited({ text, sources, onJump }: { text: string; sources: ChatSource[];
           <button
             key={i} onClick={() => (onJump ? onJump(src) : src.url && window.open(src.url, "_blank", "noopener"))}
             title={`${src.title} (${src.source})`}
-            className="mx-0.5 inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 align-text-top text-[10px] font-bold text-accentink"
+            className="mx-0.5 inline-grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 align-text-top text-[11px] font-bold text-accentink"
           >
             {src.n}
           </button>
@@ -35,7 +35,7 @@ function SourceCard({ s }: { s: ChatSource }) {
       <SourceMark url={s.url} name={s.source || s.title} size={24} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-xs font-semibold">[{s.n}] {s.title}</p>
-        <p className="truncate text-[11px] text-muted">{s.source}{s.date ? ` . ${s.date}` : ""}{s.tier && s.tier !== "unrated" ? ` . ${s.tier}` : ""}</p>
+        <p className="truncate text-[12px] text-muted">{s.source}{s.date ? ` . ${s.date}` : ""}{s.tier && s.tier !== "unrated" ? ` . ${s.tier}` : ""}</p>
       </div>
       {s.url && <ExternalLink size={12} className="mt-1 shrink-0 text-muted" />}
     </div>
@@ -129,7 +129,7 @@ export function ChatThread({
         {msgs.length === 0 && (
           <div className="grid place-items-center gap-3 py-8 text-center">
             <span className="grid size-11 place-items-center rounded-2xl bg-brand text-accentink shadow-brand"><Sparkles size={20} /></span>
-            <p className="max-w-sm text-[13px] text-muted">
+            <p className="max-w-sm text-[14px] text-muted">
               Ask anything about this result, or any factual question. If the evidence here is not enough, I search news, fact-checkers and Wikipedia and cite what I find.
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -142,7 +142,7 @@ export function ChatThread({
         {msgs.map((m, i) => (
           <div key={i} className={`rise flex flex-col gap-1.5 ${m.role === "user" ? "items-end" : "items-start"}`}>
             {m.role === "user" ? (
-              <p className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[13.5px] leading-relaxed text-accentink shadow-brand">{m.content}</p>
+              <p className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[14.5px] leading-relaxed text-accentink shadow-brand">{m.content}</p>
             ) : (
               <div className="w-full max-w-[96%] space-y-2">
                 {(m.tools ?? []).length > 0 && (
@@ -159,7 +159,7 @@ export function ChatThread({
                   </ul>
                 )}
                 {(m.content || m.streaming) && (
-                  <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-[13.5px] leading-relaxed shadow-card">
+                  <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-[14.5px] leading-relaxed shadow-card">
                     <p className="whitespace-pre-wrap">
                       <Cited text={m.content} sources={sources} onJump={onJump} />
                       {m.streaming && <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-accent align-middle" />}
@@ -177,7 +177,7 @@ export function ChatThread({
                     )}
                   </div>
                 )}
-                {m.error && <p role="alert" className="rounded-xl border border-refuted/30 bg-refuted/10 px-3 py-2 text-[13px] text-refuted">{m.error}</p>}
+                {m.error && <p role="alert" className="rounded-xl border border-refuted/30 bg-refuted/10 px-3 py-2 text-[14px] text-refuted">{m.error}</p>}
                 {(m.cited ?? []).length > 0 && (
                   <div className="grid gap-1.5 sm:grid-cols-2">
                     {m.cited!.map((n) => sources.find((s) => s.n === n)).filter((s): s is ChatSource => !!s).map((s) => <SourceCard key={s.n} s={s} />)}
@@ -195,7 +195,7 @@ export function ChatThread({
         <textarea
           id={`chat-${resetKey}`} value={text} onChange={(e) => setText(e.target.value)} rows={1} maxLength={1500} placeholder={placeholder}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(text); } }}
-          className="max-h-32 min-h-9 flex-1 resize-none self-center bg-transparent py-1.5 text-[13.5px] outline-none placeholder:text-muted/70"
+          className="max-h-32 min-h-9 flex-1 resize-none self-center bg-transparent py-1.5 text-[14.5px] outline-none placeholder:text-muted/70"
         />
         {busy ? (
           <button type="button" onClick={() => ctl.current?.abort()} aria-label="Stop" className="grid size-9 place-items-center rounded-xl bg-surface2 text-ink"><Square size={14} /></button>
@@ -203,7 +203,7 @@ export function ChatThread({
           <button type="submit" disabled={text.trim().length < 2} aria-label="Send" className="grid size-9 place-items-center rounded-xl bg-brand text-accentink shadow-brand disabled:opacity-40"><ArrowUp size={16} /></button>
         )}
       </form>
-      <p className="mt-1.5 px-1 text-[11px] text-muted">
+      <p className="mt-1.5 px-1 text-[12px] text-muted">
         {modelHint ? `${modelHint}. ` : ""}Answers can be wrong; check the cited sources. Your question and the evidence shown are sent to AICredits.
       </p>
     </div>

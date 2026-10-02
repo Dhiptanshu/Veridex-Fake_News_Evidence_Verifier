@@ -1,45 +1,48 @@
 @import "tailwindcss";
 
 /* Design tokens. Every colour in the UI comes from here, so a theme is just a set of values.
-   Light: a cool, barely-tinted off-white canvas with white cards. Dark: deep blue-black with luminous violet. No yellow in either. */
+   Light: a pale cool sage-grey canvas with near-white cards. Dark: deep navy with soft periwinkle accents.
+   Text is deliberately high contrast; muted text stays readable (>= 4.5:1). */
 :root,
 :root[data-theme="light"] {
-  --bg: #f5f6fb;
-  --surface: #ffffff;
-  --surface-2: #f0f1f9;
-  --ink: #12142a;
-  --muted: #62668a;
-  --border: #e3e5f1;
-  --accent: #5b4bf0;
-  --accent-2: #8a6cff;
+  --bg: #e8eef0;
+  --surface: #f8f9f8;
+  --surface-2: #edf1f2;
+  --ink: #0e1a38;
+  --muted: #475676;
+  --border: #d3dce1;
+  --accent: #2f5ce6;
+  --accent-2: #5a8bff;
   --accent-ink: #ffffff;
-  --supported: #11845b;
-  --refuted: #d42f49;
-  --neutral: #68708f;
-  --warn: #b0701a;
-  --shadow: 0 1px 2px rgb(18 20 42 / 0.05), 0 10px 28px -14px rgb(40 36 120 / 0.18);
-  --shadow-lg: 0 2px 6px rgb(18 20 42 / 0.06), 0 24px 48px -20px rgb(40 36 120 / 0.28);
-  --glow: radial-gradient(1100px 420px at 50% -8%, rgb(91 75 240 / 0.09), transparent 70%);
+  --supported: #0c8a5c;
+  --refuted: #cb2c47;
+  --neutral: #55668a;
+  --warn: #a5620c;
+  --shadow: 0 1px 2px rgb(14 26 56 / 0.05), 0 12px 30px -16px rgb(28 52 110 / 0.22);
+  --shadow-lg: 0 2px 6px rgb(14 26 56 / 0.06), 0 28px 56px -22px rgb(28 52 110 / 0.34);
+  --wash: radial-gradient(900px 520px at 8% -8%, rgb(90 139 255 / 0.16), transparent 62%),
+    radial-gradient(900px 600px at 100% 100%, rgb(40 170 140 / 0.12), transparent 60%);
   color-scheme: light;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0a0d18;
-  --surface: #121629;
-  --surface-2: #1a1f38;
-  --ink: #e9ebfa;
-  --muted: #9aa0c3;
-  --border: #262c4b;
-  --accent: #8c82ff;
-  --accent-2: #b39dff;
-  --accent-ink: #0a0c16;
-  --supported: #3ddc97;
-  --refuted: #ff6b81;
-  --neutral: #9aa6c8;
-  --warn: #f2b24c;
-  --shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px -18px rgb(0 0 0 / 0.7);
-  --shadow-lg: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 28px 56px -24px rgb(0 0 0 / 0.85);
-  --glow: radial-gradient(1100px 460px at 50% -10%, rgb(140 130 255 / 0.16), transparent 70%);
+  --bg: #070d21;
+  --surface: #0e1631;
+  --surface-2: #15204a;
+  --ink: #f1f4ff;
+  --muted: #a9b4d9;
+  --border: #243062;
+  --accent: #6c88ff;
+  --accent-2: #9db4ff;
+  --accent-ink: #060e2b;
+  --supported: #43e0a0;
+  --refuted: #ff7088;
+  --neutral: #a6b3d8;
+  --warn: #f5b95a;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 16px 36px -20px rgb(0 0 0 / 0.75);
+  --shadow-lg: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 32px 64px -26px rgb(0 0 0 / 0.9);
+  --wash: radial-gradient(900px 520px at 8% -8%, rgb(108 136 255 / 0.2), transparent 62%),
+    radial-gradient(900px 600px at 100% 100%, rgb(45 190 160 / 0.1), transparent 60%);
   color-scheme: dark;
 }
 
@@ -57,8 +60,9 @@
   --color-refuted: var(--refuted);
   --color-neutral: var(--neutral);
   --color-warn: var(--warn);
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --shadow-card: var(--shadow);
   --shadow-pop: var(--shadow-lg);
@@ -66,22 +70,40 @@
 
 html {
   background: var(--bg);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--bg) var(--glow) no-repeat;
+  background: var(--bg) var(--wash) fixed no-repeat;
   color: var(--ink);
   font-family: var(--font-sans);
-  font-feature-settings: "cv11", "ss01", "tnum";
+  font-feature-settings: "tnum";
   letter-spacing: -0.003em;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* brand gradient, used for the primary button, logo and focus accents */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+/* A card with a soft coloured glow in its lower-right corner. --tint picks the colour (default: the accent). */
+.card {
+  --tint: var(--accent);
+  background:
+    radial-gradient(130% 110% at 100% 110%, color-mix(in srgb, var(--tint) 13%, transparent), transparent 62%),
+    var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.card-flat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
 .bg-brand {
   background-image: linear-gradient(135deg, var(--accent), var(--accent-2));
 }
@@ -92,7 +114,7 @@ body {
   color: transparent;
 }
 .shadow-brand {
-  box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--accent) 75%, transparent);
 }
 
 ::selection {
@@ -106,7 +128,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--muted) 35%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--muted) 40%, transparent) transparent;
 }
 
 @keyframes shimmer {
@@ -118,7 +140,7 @@ body {
   background: linear-gradient(90deg, var(--surface-2) 25%, color-mix(in srgb, var(--surface-2) 55%, var(--surface)) 50%, var(--surface-2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 @keyframes rise {

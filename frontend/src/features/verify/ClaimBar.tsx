@@ -69,9 +69,9 @@ export function ClaimBar({
         <div ref={boxRef} className="relative">
           <Button size="sm" variant="ghost" icon={<Dices size={14} />} onClick={() => void loadExamples()} aria-expanded={menu}>Real FEVER claims</Button>
           {menu && (
-            <div className="absolute left-0 top-9 z-30 w-[min(34rem,90vw)] rounded-lg border border-line bg-surface p-1 shadow-lg">
+            <div className="absolute left-0 top-9 z-30 w-[min(34rem,90vw)] card rounded-[22px] p-1 shadow-lg">
               <div className="flex items-center justify-between px-2 py-1.5">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-muted">Random test claims, with FEVER's label</p>
+                <p className="text-[12px] font-medium uppercase tracking-wide text-muted">Random test claims, with FEVER's label</p>
                 <Button size="sm" variant="ghost" onClick={() => void shuffle()} loading={loadingEx}>Shuffle</Button>
               </div>
               {examples && examples.length === 0 && <p className="px-3 py-3 text-xs text-muted">Data not built yet (see the Pipeline tab).</p>}
@@ -80,7 +80,7 @@ export function ClaimBar({
                   <li key={c.id}>
                     <button
                       onClick={() => { onChange(c.claim); setGold(c.label); setMenu(false); }}
-                      className="flex w-full items-start justify-between gap-3 rounded-md px-2 py-2 text-left text-[13px] hover:bg-surface2"
+                      className="flex w-full items-start justify-between gap-3 rounded-md px-2 py-2 text-left text-[14px] hover:bg-surface2"
                     >
                       <span>{c.claim}</span>
                       <Badge tone={LABEL_TONE[c.label]} className="shrink-0">{LABEL_TEXT[c.label]}</Badge>
@@ -96,7 +96,7 @@ export function ClaimBar({
           <Button size="sm" variant="ghost" icon={<SlidersHorizontal size={14} />} onClick={onToggleOptions} aria-expanded={optionsOpen}>
             Options{changedOptions > 0 ? ` (${changedOptions})` : ""}
           </Button>
-          <span className="hidden items-center gap-1 text-[11px] text-muted sm:flex"><Kbd>Enter</Kbd> to run</span>
+          <span className="hidden items-center gap-1 text-[12px] text-muted sm:flex"><Kbd>Enter</Kbd> to run</span>
           <Button variant="primary" onClick={submit} disabled={!valid} loading={running} icon={<CornerDownLeft size={14} />}>
             {running ? "Running" : "Verify"}
           </Button>

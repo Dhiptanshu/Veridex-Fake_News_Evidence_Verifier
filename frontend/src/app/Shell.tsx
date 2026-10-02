@@ -2,33 +2,41 @@ import {
   BarChart3, Boxes, ChevronsLeft, ChevronsRight, Columns2, Database, History, ListChecks, Menu, Moon, Search, Settings, ShieldCheck, Sparkles, Sun,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 import { Kbd } from "@/components/ui";
 import { useTheme } from "@/theme/ThemeProvider";
 import { CommandPalette } from "./CommandPalette";
-import { ROUTES, type Route } from "./routes";
+import { type Route } from "./routes";
 
 interface Item { route: Route; label: string; icon: LucideIcon }
-const GROUPS: { title: string; items: Item[] }[] = [
-  { title: "Workspace", items: [
+const GROUPS: Item[][] = [
+  [
     { route: "verify", label: "Verify", icon: ShieldCheck },
     { route: "assistant", label: "Assistant", icon: Sparkles },
     { route: "compare", label: "Compare", icon: Columns2 },
     { route: "batch", label: "Batch", icon: ListChecks },
     { route: "history", label: "History", icon: History },
-  ] },
-  { title: "Analysis", items: [
+  ],
+  [
     { route: "data", label: "Data", icon: Database },
     { route: "insights", label: "Insights", icon: BarChart3 },
-  ] },
-  { title: "System", items: [
+  ],
+  [
     { route: "pipeline", label: "Pipeline", icon: Boxes },
     { route: "settings", label: "Settings", icon: Settings },
-  ] },
+  ],
 ];
-const TITLES: Record<Route, string> = {
-  verify: "Verify a claim", assistant: "Assistant", compare: "Compare pipelines", batch: "Batch verification", history: "History",
-  data: "Data", insights: "Insights", pipeline: "Pipeline and services", settings: "Settings",
+const PAGE: Record<Route, { title: string; sub: string }> = {
+  verify: { title: "Verify a claim", sub: "Check a claim against live news, fact-checkers and an AI judge" },
+  assistant: { title: "Assistant", sub: "Ask anything. It searches news, fact-checkers and Wikipedia and cites its sources" },
+  compare: { title: "Compare pipelines", sub: "Run one claim through different evidence and verdict engines side by side" },
+  batch: { title: "Batch verification", sub: "Check many claims at once, with accuracy scoring for labelled data" },
+  history: { title: "History", sub: "Every claim you have checked, saved in this browser only" },
+  data: { title: "Data", sub: "The FEVER benchmark claims and Wikipedia evidence corpus" },
+  insights: { title: "Insights", sub: "Evaluation results for every model and experiment" },
+  pipeline: { title: "Pipeline and services", sub: "What is built, what is configured, and how to fix what is missing" },
+  settings: { title: "Settings", sub: "Appearance, default pipeline and data on this device" },
 };
 
 function useApiStatus() {
@@ -41,14 +49,6 @@ function useApiStatus() {
     return () => { alive = false; clearInterval(t); };
   }, []);
   return ok;
-}
-
-function Logo({ small = false }: { small?: boolean }) {
-  return (
-    <span className={`grid shrink-0 place-items-center rounded-xl bg-brand text-accentink shadow-brand ${small ? "size-8" : "size-9"}`}>
-      <ShieldCheck size={small ? 16 : 18} strokeWidth={2.2} />
-    </span>
-  );
 }
 
 export function Shell({ route, go, children }: { route: Route; go: (r: Route) => void; children: ReactNode }) {
@@ -66,86 +66,101 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
   }, []);
   useEffect(() => setMenu(false), [route]);
 
+  const brand = (compact: boolean) => (
+    <div className={`flex items-center gap-3 ${compact ? "justify-center" : "px-2"}`}>
+      <Logo size={compact ? 40 : 46} />
+      {!compact && (
+        <div className="min-w-0 leading-none">
+          <p className="font-display text-[22px] font-bold tracking-[0.08em]">EVIDENCE</p>
+          <p className="mt-1.5 truncate text-[13px] font-medium text-accent">Fake-news verifier</p>
+        </div>
+      )}
+    </div>
+  );
+
   const nav = (compact: boolean, onPick?: () => void) => (
-    <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 py-4">
-      {GROUPS.map((g) => (
-        <div key={g.title} className="mb-5">
-          {!compact && <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">{g.title}</p>}
-          <ul className="space-y-1">
-            {g.items.map(({ route: r, label, icon: Icon }) => (
+    <nav aria-label="Main" className="flex-1 overflow-y-auto py-2">
+      {GROUPS.map((g, gi) => (
+        <Fragment key={gi}>
+          {gi > 0 && <div className="mx-2 my-3 h-px bg-line" />}
+          <ul className="space-y-1.5">
+            {g.map(({ route: r, label, icon: Icon }) => (
               <li key={r}>
                 <a
                   href={`#/${r}`} onClick={(e) => { e.preventDefault(); go(r); onPick?.(); }} aria-current={route === r ? "page" : undefined}
                   title={compact ? label : undefined}
-                  className={`flex h-10 items-center gap-3 rounded-xl text-[13.5px] font-medium transition ${compact ? "justify-center" : "px-3"} ${
-                    route === r ? "bg-accent/12 text-accent" : "text-muted hover:bg-surface2 hover:text-ink"}`}
+                  className={`flex h-12 items-center gap-3.5 rounded-2xl border text-[15px] font-medium transition ${compact ? "justify-center" : "px-4"} ${
+                    route === r ? "border-accent/45 bg-accent/12 text-ink" : "border-transparent text-ink/80 hover:bg-surface2 hover:text-ink"}`}
                 >
-                  <Icon size={17} strokeWidth={route === r ? 2.3 : 1.9} />
+                  <Icon size={19} strokeWidth={route === r ? 2.2 : 1.8} className={route === r ? "text-accent" : "text-muted"} />
                   {!compact && label}
                 </a>
               </li>
             ))}
           </ul>
-        </div>
+        </Fragment>
       ))}
     </nav>
   );
 
   return (
-    <div className="flex min-h-dvh">
-      <aside className={`sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-surface/80 backdrop-blur-xl md:flex ${collapsed ? "w-[4.5rem]" : "w-64"} transition-[width] duration-200`}>
-        <div className={`flex h-16 items-center gap-3 ${collapsed ? "justify-center" : "px-5"}`}>
-          <Logo />
-          {!collapsed && <div className="leading-tight"><p className="text-sm font-bold tracking-tight">Evidence</p><p className="text-sm font-bold tracking-tight text-brand">Verifier</p></div>}
-        </div>
+    <div className="flex min-h-dvh gap-5 p-3 md:p-5">
+      <aside className={`card-flat sticky top-5 hidden h-[calc(100dvh-2.5rem)] shrink-0 flex-col rounded-[28px] p-4 md:flex ${collapsed ? "w-[5.5rem]" : "w-[17.5rem]"} transition-[width] duration-200`}>
+        <div className="pb-4 pt-1">{brand(collapsed)}</div>
         {nav(collapsed)}
-        <div className={`flex items-center border-t border-line p-3 ${collapsed ? "flex-col gap-2" : "justify-between"}`}>
+        <div className="mt-2 border-t border-line pt-3">
           {!collapsed && (
-            <span className="flex items-center gap-2 px-2 text-xs text-muted">
-              <i className={`size-2 rounded-full ${online === null ? "bg-neutral" : online ? "bg-supported" : "bg-refuted"}`} />
-              {online === null ? "Connecting" : online ? "API online" : "API offline"}
-            </span>
+            <p className="px-2 pb-3 text-[11.5px] leading-snug text-muted">
+              NLP Lab 2026 . Live news, fact-checks and an AI judge, with the FEVER benchmark underneath.
+            </p>
           )}
-          <button onClick={toggleNav} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="grid size-8 place-items-center rounded-lg text-muted hover:bg-surface2 hover:text-ink">
-            {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
-          </button>
+          <div className={`flex items-center ${collapsed ? "flex-col gap-2" : "justify-between"} px-1`}>
+            <span className="flex items-center gap-2 text-[12.5px] text-muted" title={online ? "API online" : "API offline"}>
+              <i className={`size-2.5 rounded-full ${online === null ? "bg-neutral" : online ? "bg-supported" : "bg-refuted"}`} />
+              {!collapsed && (online === null ? "Connecting" : online ? "API online" : "API offline")}
+            </span>
+            <button onClick={toggleNav} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="grid size-9 place-items-center rounded-xl text-muted hover:bg-surface2 hover:text-ink">
+              {collapsed ? <ChevronsRight size={17} /> : <ChevronsLeft size={17} />}
+            </button>
+          </div>
         </div>
       </aside>
 
       {menu && (
         <div className="fixed inset-0 z-40 md:hidden" onClick={() => setMenu(false)}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <aside className="rise absolute inset-y-0 left-0 flex w-72 flex-col bg-surface shadow-pop" onClick={(e) => e.stopPropagation()}>
-            <div className="flex h-16 items-center gap-3 px-5"><Logo /><p className="text-sm font-bold">Evidence <span className="text-brand">Verifier</span></p></div>
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" />
+          <aside className="card-flat rise absolute inset-y-3 left-3 flex w-72 flex-col rounded-[28px] p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="pb-4 pt-1">{brand(false)}</div>
             {nav(false, () => setMenu(false))}
           </aside>
         </div>
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-line bg-bg/70 px-4 backdrop-blur-xl md:px-8">
-          <div className="flex min-w-0 items-center gap-3">
-            <button onClick={() => setMenu(true)} aria-label="Open menu" className="grid size-9 place-items-center rounded-xl border border-line bg-surface md:hidden"><Menu size={17} /></button>
-            <h1 className="truncate text-[15px] font-semibold tracking-tight">{TITLES[route]}</h1>
+        <header className="flex items-start justify-between gap-4 px-1 pb-5 pt-1 md:pb-6">
+          <div className="flex min-w-0 items-start gap-3">
+            <button onClick={() => setMenu(true)} aria-label="Open menu" className="card-flat mt-0.5 grid size-11 shrink-0 place-items-center rounded-2xl md:hidden"><Menu size={19} /></button>
+            <div className="min-w-0">
+              <h1 className="truncate font-display text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{PAGE[route].title}</h1>
+              <p className="mt-1 text-[14px] text-muted md:text-[15px]">{PAGE[route].sub}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2.5">
             <button
               onClick={() => setPalette(true)}
-              className="hidden h-9 items-center gap-2 rounded-xl border border-line bg-surface px-3 text-[13px] text-muted shadow-card transition hover:text-ink sm:flex"
+              className="card-flat hidden h-12 items-center gap-2.5 rounded-2xl px-4 text-[14px] text-muted transition hover:text-ink sm:flex"
             >
-              <Search size={14} /> Search or run a claim <Kbd>Ctrl K</Kbd>
+              <Search size={16} /> Search or run a claim <Kbd>Ctrl K</Kbd>
             </button>
-            <button onClick={() => setPalette(true)} aria-label="Search" className="grid size-9 place-items-center rounded-xl border border-line bg-surface sm:hidden"><Search size={16} /></button>
-            <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} className="grid size-9 place-items-center rounded-xl border border-line bg-surface text-muted shadow-card transition hover:text-ink">
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            <button onClick={() => setPalette(true)} aria-label="Search" className="card-flat grid size-11 place-items-center rounded-2xl sm:hidden"><Search size={18} /></button>
+            <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} className="card-flat grid size-12 place-items-center rounded-2xl text-muted transition hover:text-ink">
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1240px] flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="w-full max-w-[1280px] flex-1 pb-8">{children}</main>
       </div>
       <CommandPalette open={palette} onClose={() => setPalette(false)} go={go} />
     </div>
   );
 }
-
-export { ROUTES };

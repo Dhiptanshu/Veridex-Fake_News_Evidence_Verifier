@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { askQuestion, fetchAskStatus } from "@/api/client";
 import type { AskPassage, AskResponse, AskStatus, ExplanationOut, RetrievalOut, VerificationOut } from "@/api/types";
 import { Card, Eyebrow } from "@/components/Card";
+import { Select } from "@/components/ui";
 
 type Mode = "auto" | "local" | "llm";
 interface Turn { question: string; answer?: AskResponse; error?: string }
@@ -68,16 +69,11 @@ export function AskPanel({
     <Card className="p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <Eyebrow>Ask about this result</Eyebrow>
-        <select
-          value={mode}
-          onChange={(e) => setMode(e.target.value as Mode)}
-          aria-label="Answering mode"
-          className="ml-auto rounded-lg border border-line bg-bg/60 px-2 py-1 text-xs outline-none focus:border-accent"
-        >
+        <Select value={mode} onChange={(v) => setMode(v as Mode)} ariaLabel="Answering mode" className="ml-auto h-9 text-xs">
           <option value="auto">{llmOn ? "Auto (LLM)" : "Auto (local)"}</option>
           <option value="local">Local model (private)</option>
-          {llmOn && <option value="llm">LLM ({status?.llm_model})</option>}
-        </select>
+          {llmOn ? <option value="llm">{`LLM (${status?.llm_model})`}</option> : <option value="auto" hidden>-</option>}
+        </Select>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -93,7 +89,7 @@ export function AskPanel({
             {t.answer && (
               <div className="max-w-[95%] rounded-lg rounded-bl-sm border border-line bg-bg/60 px-3.5 py-2.5">
                 <p className="whitespace-pre-line text-sm leading-relaxed">{t.answer.answer}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
                   <span className="rounded-full border border-line px-2 py-0.5">{t.answer.method}</span>
                   {t.answer.cited.map((n) => {
                     const p = passages.find((x) => x.n === n);
@@ -123,7 +119,7 @@ export function AskPanel({
         </button>
       </form>
       {mode !== "local" && llmOn && (
-        <p className="mt-2 text-[11px] text-muted">LLM mode sends your question, the claim and the evidence shown here to AICredits.</p>
+        <p className="mt-2 text-[12px] text-muted">LLM mode sends your question, the claim and the evidence shown here to AICredits.</p>
       )}
     </Card>
   );

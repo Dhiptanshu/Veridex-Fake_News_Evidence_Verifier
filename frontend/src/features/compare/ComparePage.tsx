@@ -68,7 +68,7 @@ export function ComparePage() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-line bg-surface focus-within:border-accent">
+      <div className="card rounded-[22px] focus-within:border-accent">
         <label htmlFor="cmp-claim" className="sr-only">Claim</label>
         <textarea
           id="cmp-claim" value={claim} onChange={(e) => setClaim(e.target.value)} rows={2} maxLength={2000}
@@ -85,7 +85,7 @@ export function ComparePage() {
         </div>
       </div>
 
-      {disagree && <p className="rounded-lg border border-warn/30 bg-warn/10 px-3 py-2 text-[13px] text-warn">The pipelines disagree on this claim.</p>}
+      {disagree && <p className="rounded-lg border border-warn/30 bg-warn/10 px-3 py-2 text-[14px] text-warn">The pipelines disagree on this claim.</p>}
 
       <div className={`grid gap-4 ${cfgs.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
         {cfgs.map((c, i) => {
@@ -113,26 +113,26 @@ export function ComparePage() {
                 </details>
 
                 <div className="min-h-40 border-t border-line pt-3">
-                  {o === "running" && <p className="text-[13px] text-muted">Running...</p>}
-                  {o && o !== "running" && o.error && <p role="alert" className="text-[13px] text-refuted">{o.error}</p>}
-                  {run?.error && <p role="alert" className="text-[13px] text-refuted">{run.error}</p>}
+                  {o === "running" && <p className="text-[14px] text-muted">Running...</p>}
+                  {o && o !== "running" && o.error && <p role="alert" className="text-[14px] text-refuted">{o.error}</p>}
+                  {run?.error && <p role="alert" className="text-[14px] text-refuted">{run.error}</p>}
                   {v && run && (
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge tone={LABEL_TONE[v.label]} className="px-2 py-1 text-[13px]">{LABEL_TEXT[v.label]}</Badge>
+                        <Badge tone={LABEL_TONE[v.label]} className="px-2 py-1 text-[14px]">{LABEL_TEXT[v.label]}</Badge>
                         <span className="font-mono text-sm text-muted">{(v.confidence * 100).toFixed(0)}%</span>
-                        <span className="ml-auto font-mono text-[11px] text-muted">{run.totalMs != null ? `${(run.totalMs / 1000).toFixed(2)}s` : ""}</span>
+                        <span className="ml-auto font-mono text-[12px] text-muted">{run.totalMs != null ? `${(run.totalMs / 1000).toFixed(2)}s` : ""}</span>
                       </div>
                       <ProbBar values={[{ label: "supported", value: v.probabilities.supported }, { label: "refuted", value: v.probabilities.refuted }, { label: "not_enough_info", value: v.probabilities.not_enough_info }]} />
-                      <p className="font-mono text-[11px] text-muted">{run.impl.retrieval} / {run.impl.verification}</p>
-                      {run.out.explanation && <p className="text-[13px] leading-relaxed text-ink/90">{run.out.explanation.rationale.replace(/\[\d+\]/g, "")}</p>}
+                      <p className="font-mono text-[12px] text-muted">{run.impl.retrieval} / {run.impl.verification}</p>
+                      {run.out.explanation && <p className="text-[14px] leading-relaxed text-ink/90">{run.out.explanation.rationale.replace(/\[\d+\]/g, "")}</p>}
                       <button onClick={() => setOpen(open === c.id ? null : c.id)} className="text-xs font-semibold text-accent hover:underline">
                         {open === c.id ? "Hide full result" : "Show full result (explanation and all evidence)"}
                       </button>
                       {open === c.id && <div className="rounded-xl border border-line bg-bg/60 p-3"><ResultDetail run={run} /></div>}
                       {ret && open !== c.id && (
                         <div>
-                          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted">Top evidence</p>
+                          <p className="mb-1 text-[12px] font-semibold uppercase tracking-wide text-muted">Top evidence</p>
                           <ul className="space-y-1.5">
                             {ret.evidence.slice(0, 3).map((e) => (
                               <li key={e.id} className="rounded-md border border-line bg-bg/60 px-2.5 py-1.5 text-xs">
@@ -145,7 +145,7 @@ export function ComparePage() {
                       )}
                     </div>
                   )}
-                  {!o && <p className="text-[13px] text-muted">Pick a preset, then Run all.</p>}
+                  {!o && <p className="text-[14px] text-muted">Pick a preset, then Run all.</p>}
                 </div>
               </div>
             </Panel>

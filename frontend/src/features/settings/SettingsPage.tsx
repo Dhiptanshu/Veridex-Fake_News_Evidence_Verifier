@@ -14,7 +14,7 @@ export function SettingsPage() {
       <Panel title="Appearance">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[13px] font-medium">Theme</p>
+            <p className="text-[14px] font-medium">Theme</p>
             <p className="text-xs text-muted">System follows your operating system setting.</p>
           </div>
           <Segmented<ThemeMode>
@@ -39,7 +39,7 @@ export function SettingsPage() {
       <Panel title="Data on this device">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[13px] font-medium">Saved runs</p>
+            <p className="text-[14px] font-medium">Saved runs</p>
             <p className="text-xs text-muted">{history.length} run{history.length === 1 ? "" : "s"} stored in this browser only (localStorage). Nothing is uploaded.</p>
           </div>
           <Button disabled={!history.length} onClick={() => { if (confirm(`Delete all ${history.length} saved runs?`)) clearHistory(); }}>Clear history</Button>
@@ -47,7 +47,7 @@ export function SettingsPage() {
       </Panel>
 
       <Panel title="About">
-        <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-[13px]">
+        <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-[14px]">
           <dt className="text-muted">Project</dt><dd>Fake News Evidence Verifier (NLP Lab, Semester VII)</dd>
           <dt className="text-muted">Reports</dt><dd className="font-mono text-xs">docs/REPORT.md, docs/DEMO.md, docs/API_KEYS.md</dd>
           <dt className="text-muted">Results</dt><dd className="font-mono text-xs">docs/results/*.json (shown in Insights)</dd>

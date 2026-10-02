@@ -225,7 +225,7 @@ export function InsightsPage() {
             series={[{ key: "acc", label: "Correct on claims with a known answer (10 claims)", color: C.accent }]}
           />
           <div className="mt-5 overflow-x-auto">
-            <table className="w-full text-[13px]">
+            <table className="w-full text-[14px]">
               <thead>
                 <tr className="text-left text-xs text-muted">
                   <th className="pb-2 font-normal">Claim</th>
@@ -291,7 +291,7 @@ export function InsightsPage() {
           <ul className="grid gap-2 sm:grid-cols-2">
             {m.topics.topics.map((t: M) => (
               <li key={t.id} className="rounded-md border border-line bg-bg/60 px-3 py-2 text-sm">
-                <span className="font-mono text-[11px] text-accent">#{t.id}</span>{" "}
+                <span className="font-mono text-[12px] text-accent">#{t.id}</span>{" "}
                 <span className="text-ink/90">{t.words.slice(0, 6).join(", ")}</span>
                 <span className="ml-1 text-xs text-muted">({t.pages.toLocaleString()} pages)</span>
               </li>

@@ -52,7 +52,7 @@ export function StageDetails({
               {(pre.pos.length ? pre.pos : pre.tokens.map((t) => ({ token: t, tag: "" }))).map((p, i) => (
                 <span key={i} className="rounded-md border border-line bg-bg/60 px-1.5 py-0.5 text-sm">
                   {p.token}
-                  {p.tag && <sub className="ml-1 font-mono text-[10px]" style={{ color: tagColor(p.tag) }}>{p.tag}</sub>}
+                  {p.tag && <sub className="ml-1 font-mono text-[11px]" style={{ color: tagColor(p.tag) }}>{p.tag}</sub>}
                 </span>
               ))}
             </div>
@@ -75,7 +75,7 @@ export function StageDetails({
             <div className="flex flex-wrap gap-1.5">
               {ner.entities.map((e, i) => (
                 <span key={i} className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs">
-                  {e.text} <span className="font-mono text-[10px] text-accent">{e.label}</span>
+                  {e.text} <span className="font-mono text-[11px] text-accent">{e.label}</span>
                 </span>
               ))}
               {ner.entities.length === 0 && <span className="text-xs text-muted">No entities found.</span>}
@@ -98,11 +98,11 @@ export function StageDetails({
                 const top = Math.max(...kw.keywords.map((x) => x.score));
                 return (
                   <li key={k.term} className="flex items-center gap-2 text-sm">
-                    <span className="w-36 truncate">{k.term}{k.kind === "phrase" && <span className="ml-1 text-[10px] text-muted">phrase</span>}</span>
+                    <span className="w-36 truncate">{k.term}{k.kind === "phrase" && <span className="ml-1 text-[11px] text-muted">phrase</span>}</span>
                     <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface2">
                       <motion.span className="block h-full rounded-full bg-accent" initial={{ width: 0 }} animate={{ width: `${(k.score / top) * 100}%` }} />
                     </span>
-                    <span className="w-10 text-right font-mono text-[11px] text-muted">{k.score}</span>
+                    <span className="w-10 text-right font-mono text-[12px] text-muted">{k.score}</span>
                   </li>
                 );
               })}

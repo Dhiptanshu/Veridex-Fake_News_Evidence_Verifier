@@ -1,7 +1,8 @@
 import { Download, History as HistoryIcon, RotateCcw, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Label } from "@/api/types";
-import { Badge, Button, Empty, LABEL_COLOR, LABEL_TEXT, LABEL_TONE, Panel, Select, Stat } from "@/components/ui";
+import { CheckCircle2, CircleHelp, History as RunsIcon, Target, XCircle } from "lucide-react";
+import { Badge, Button, Empty, LABEL_TEXT, LABEL_TONE, Panel, Select, StatCard } from "@/components/ui";
 import { download, stamp, toCSV } from "@/lib/download";
 import { useAppState } from "@/state/AppState";
 
@@ -37,15 +38,16 @@ export function HistoryPage({ go }: { go: (r: "verify") => void }) {
 
   return (
     <div className="space-y-4">
-      <Panel>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-          <Stat label="Runs" value={history.length} />
-          {(["supported", "refuted", "not_enough_info"] as Label[]).map((l) => (
-            <Stat key={l} label={LABEL_TEXT[l]} value={<span style={{ color: LABEL_COLOR[l] }}>{counts[l]}</span>} />
-          ))}
-          <Stat label="Agree with FEVER label" value={graded.length ? `${((agree / graded.length) * 100).toFixed(0)}%` : "n/a"} hint={graded.length ? `${agree}/${graded.length} labelled runs` : "no labelled runs yet"} />
-        </div>
-      </Panel>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        <StatCard icon={<RunsIcon size={22} />} value={history.length} label="Runs" hint="saved in this browser" />
+        <StatCard icon={<CheckCircle2 size={22} />} value={counts.supported} label="Supported" tint="var(--supported)" />
+        <StatCard icon={<XCircle size={22} />} value={counts.refuted} label="Refuted" tint="var(--refuted)" />
+        <StatCard icon={<CircleHelp size={22} />} value={counts.not_enough_info} label="Not enough info" tint="var(--neutral)" />
+        <StatCard
+          icon={<Target size={22} />} tint="var(--warn)" value={graded.length ? ((agree / graded.length) * 100).toFixed(0) : "n/a"} unit={graded.length ? "%" : undefined}
+          label="Agree with FEVER" hint={graded.length ? `${agree}/${graded.length} labelled runs` : "no labelled runs yet"}
+        />
+      </div>
 
       <Panel
         flush title={`${rows.length} run${rows.length === 1 ? "" : "s"}`}
@@ -58,7 +60,7 @@ export function HistoryPage({ go }: { go: (r: "verify") => void }) {
         <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-2.5">
           <input
             value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search claims" aria-label="Search claims"
-            className="h-8 w-56 rounded-md border border-line bg-bg/60 px-2.5 text-[13px] outline-none focus:border-accent"
+            className="h-8 w-56 rounded-md border border-line bg-bg/60 px-2.5 text-[14px] outline-none focus:border-accent"
           />
           <Select ariaLabel="Verdict" value={label} onChange={(v) => setLabel(v as typeof label)}>
             <option value="all">All verdicts</option><option value="supported">Supported</option><option value="refuted">Refuted</option><option value="not_enough_info">Not enough info</option>
@@ -72,8 +74,8 @@ export function HistoryPage({ go }: { go: (r: "verify") => void }) {
             <li key={h.id}>
               <div className="flex items-start gap-3 px-4 py-2.5">
                 <button onClick={() => setOpen(open === h.id ? null : h.id)} className="min-w-0 flex-1 text-left">
-                  <p className="text-[13px] font-medium">{h.claim}</p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
+                  <p className="text-[14px] font-medium">{h.claim}</p>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted">
                     <span>{new Date(h.ts).toLocaleString()}</span>
                     <Badge>{h.source}</Badge>
                     {h.impl.retrieval && <span className="font-mono">{h.impl.retrieval} / {h.impl.verification}</span>}
@@ -88,7 +90,7 @@ export function HistoryPage({ go }: { go: (r: "verify") => void }) {
                 </div>
               </div>
               {open === h.id && (
-                <div className="border-t border-line bg-bg/60 px-4 py-3 text-[13px] leading-relaxed">
+                <div className="border-t border-line bg-bg/60 px-4 py-3 text-[14px] leading-relaxed">
                   {h.rationale && <p>{h.rationale}</p>}
                   {h.topSource && (
                     <p className="mt-2 text-muted">Top source: <b className="text-ink">{h.topSource.title}</b> {h.topSource.url && <a className="text-accent hover:underline" href={h.topSource.url} target="_blank" rel="noreferrer">open</a>}</p>
@@ -98,7 +100,7 @@ export function HistoryPage({ go }: { go: (r: "verify") => void }) {
               )}
             </li>
           ))}
-          {rows.length === 0 && <li className="px-4 py-8 text-center text-[13px] text-muted">No runs match these filters.</li>}
+          {rows.length === 0 && <li className="px-4 py-8 text-center text-[14px] text-muted">No runs match these filters.</li>}
         </ul>
       </Panel>
     </div>

@@ -16,7 +16,7 @@ export function DataPage() {
 
   return (
     <div className="space-y-6">
-      <p className="text-[13px] text-muted">FEVER claims with gold evidence sentences from Wikipedia. Everything here is real data.</p>
+      <p className="text-[14px] text-muted">FEVER claims with gold evidence sentences from Wikipedia. Everything here is real data.</p>
       {error ? (
         <p role="alert" className="rounded-md border border-refuted/40 bg-refuted/10 px-4 py-3 text-sm text-refuted">{error}</p>
       ) : (
