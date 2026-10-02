@@ -1,0 +1,405 @@
+{
+  "summary": {
+    "openai/gpt-4o-mini": {
+      "correct": 8,
+      "scored": 10,
+      "mean_seconds": 3.8
+    },
+    "openai/gpt-4o": {
+      "correct": 8,
+      "scored": 10,
+      "mean_seconds": 3.6
+    },
+    "anthropic/claude-sonnet-4.6": {
+      "correct": 9,
+      "scored": 10,
+      "mean_seconds": 5.7
+    }
+  },
+  "rows": {
+    "openai/gpt-4o-mini": [
+      {
+        "claim": "The Eiffel Tower is located in Paris.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.6,
+        "reasoning": "The Eiffel Tower is described as a lattice tower located on the Champ de Mars in Paris, France, which directly supports the claim that it is located in Paris [1]. Other passages mention the Eiffel Tower in the context of Paris, reinforcing its location [3][5]."
+      },
+      {
+        "claim": "Marie Curie won two Nobel Prizes.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.7,
+        "nuance": null,
+        "seconds": 3.5,
+        "reasoning": "Marie Curie is noted as the first person to win a Nobel Prize twice and the only person to win in two different scientific fields [1]. The evidence confirms she won the Nobel Prize in Physics in 1903 and implies she won another Nobel Prize, which is typically known to be in Chemistry in 1911. Therefore, the claim that she won two Nobel Prizes is supported."
+      },
+      {
+        "claim": "The Taj Mahal is located in Agra.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.1,
+        "reasoning": "The evidence clearly states that the Taj Mahal is located in Agra, Uttar Pradesh, India, as mentioned in passage [1]. Additionally, passage [2] reinforces the significance of Agra by noting that it is home to the Taj Mahal and the Agra Fort, both UNESCO World Heritage Sites."
+      },
+      {
+        "claim": "Mahatma Gandhi was born in Porbandar.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.3,
+        "reasoning": "Multiple reliable sources confirm that Mahatma Gandhi was born in Porbandar, Gujarat. For instance, passages [3], [4], and [8] explicitly state that he was born in Porbandar on October 2, 1869. This consistent information across established news outlets supports the claim."
+      },
+      {
+        "claim": "The Eiffel Tower is in Berlin.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 1.0,
+        "nuance": null,
+        "seconds": 3.5,
+        "reasoning": "The evidence clearly states that the Eiffel Tower is located in Paris, France, as mentioned in passage [1]. This directly contradicts the claim that it is in Berlin."
+      },
+      {
+        "claim": "Albert Einstein was born in France.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 1.0,
+        "nuance": null,
+        "seconds": 4.8,
+        "reasoning": "Albert Einstein was born in the Kingdom of W\u00fcrttemberg, which was part of the German Empire, as stated in passage [1]. Additionally, passage [2] confirms that he was a German-born theoretical physicist, further refuting the claim that he was born in France."
+      },
+      {
+        "claim": "The Great Wall of China is visible from space with the naked eye.",
+        "gold": "refuted",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.8,
+        "reasoning": "The evidence passages do not address the visibility of the Great Wall of China from space. They focus on unrelated topics, such as art installations and historical context of the wall without confirming or denying the claim. Therefore, there is insufficient information to make a determination."
+      },
+      {
+        "claim": "Mumbai is the capital of India.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.5,
+        "reasoning": "The claim that Mumbai is the capital of India is contradicted by evidence stating that New Delhi is the capital of India, as mentioned in passages [3], [4], [5], and [6]. While Mumbai is the capital of the state of Maharashtra and a financial hub, it is not the national capital."
+      },
+      {
+        "claim": "Drinking hot water kills the coronavirus.",
+        "gold": "refuted",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.2,
+        "reasoning": "The evidence passages do not directly address the claim about drinking hot water killing the coronavirus. They discuss misinformation and unproven methods related to COVID-19, but do not provide specific information about the effects of hot water on the virus. Therefore, there is insufficient information to verify or refute the claim."
+      },
+      {
+        "claim": "Tilda Swinton ate a sandwich yesterday.",
+        "gold": "not_enough_info",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 3.3,
+        "reasoning": "The evidence provided does not mention anything about Tilda Swinton eating a sandwich or any specific activities she engaged in yesterday. The passages focus on her background and filmography without addressing the claim directly."
+      },
+      {
+        "claim": "India won the T20 World Cup.",
+        "gold": "?",
+        "verdict": "refuted",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 3.9,
+        "reasoning": "The claim that India won the T20 World Cup is contradicted by evidence stating that India has won the T20 World Cup thrice in 2007, 2024, and 2026, but does not confirm a win in 2026 as the event is still ongoing or has not concluded yet. Therefore, the claim is refuted as it implies a current win without evidence of completion [1][2]."
+      },
+      {
+        "claim": "RBI cut the repo rate in its latest policy meeting.",
+        "gold": "?",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.7,
+        "reasoning": "The evidence passages discuss the RBI's policy stances and interest rate expectations but do not confirm whether the repo rate was cut in the latest meeting. They mention discussions about potential rate hikes and the current neutral stance, but no specific action regarding a rate cut is provided in the passages."
+      },
+      {
+        "claim": "Modi held talks with Trump on trade.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.0,
+        "reasoning": "Multiple passages confirm that Modi and Trump held talks regarding trade, among other topics. For instance, passages [1], [3], and [6] explicitly mention that they discussed bilateral cooperation in trade, defense, and other areas. Modi himself described the conversation as 'productive' in passage [5]."
+      },
+      {
+        "claim": "The Eiffel Tower chief is stepping down.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.3,
+        "reasoning": "The evidence clearly states that the Eiffel Tower chief, Patrick Branco Ruivo, is stepping down at the end of 2026 due to a controversial incident involving the treatment of female employees during a Hindu sect visit [3][4][7]. This confirms the claim that the chief is stepping down."
+      }
+    ],
+    "openai/gpt-4o": [
+      {
+        "claim": "The Eiffel Tower is located in Paris.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.0,
+        "reasoning": "The claim that the Eiffel Tower is located in Paris is supported by multiple passages. Passage [1] explicitly states that the Eiffel Tower is a lattice tower on the Champ de Mars in Paris, France. Additionally, passages [3], [5], and [7] mention activities and events related to the Eiffel Tower in Paris, further supporting its location in the city."
+      },
+      {
+        "claim": "Marie Curie won two Nobel Prizes.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.2,
+        "reasoning": "The evidence from [1] states that Marie Curie was the first person to win a Nobel Prize twice and the only person to win in two different scientific fields. This supports the claim that she won two Nobel Prizes. The other passages focus on her first Nobel Prize in Physics in 1903 but do not contradict the claim of her winning a second prize."
+      },
+      {
+        "claim": "The Taj Mahal is located in Agra.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 2.6,
+        "reasoning": "The evidence from Wikipedia clearly states that the Taj Mahal is located in Agra, Uttar Pradesh, India [1][2]. Both passages consistently affirm this location, providing reliable support for the claim."
+      },
+      {
+        "claim": "Mahatma Gandhi was born in Porbandar.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.95,
+        "nuance": null,
+        "seconds": 4.5,
+        "reasoning": "Multiple reliable sources confirm that Mahatma Gandhi was born in Porbandar. The Times of India, an established outlet, states this fact in several articles [3][4][5]. Additionally, ANI, a major wire service, also refers to Porbandar as Gandhi's birthplace [6][7]. These consistent affirmations from credible sources strongly support the claim."
+      },
+      {
+        "claim": "The Eiffel Tower is in Berlin.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 1.0,
+        "nuance": null,
+        "seconds": 2.8,
+        "reasoning": "The evidence clearly states that the Eiffel Tower is located in Paris, France, not Berlin, Germany. Passage [1] specifies that the Eiffel Tower is on the Champ de Mars in Paris, while passage [2] confirms that Berlin is a separate city in Germany. Therefore, the claim is refuted."
+      },
+      {
+        "claim": "Albert Einstein was born in France.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 1.0,
+        "nuance": null,
+        "seconds": 3.8,
+        "reasoning": "The claim that Albert Einstein was born in France is refuted by the evidence. According to [1] and [2], Albert Einstein was born in the Kingdom of W\u00fcrttemberg, part of the German Empire, and is described as a German-born theoretical physicist. There is no mention of France in relation to his birthplace."
+      },
+      {
+        "claim": "The Great Wall of China is visible from space with the naked eye.",
+        "gold": "refuted",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.2,
+        "reasoning": "The evidence provided does not address the claim about the visibility of the Great Wall of China from space. The passages focus on unrelated topics, such as an art installation in New York's Chinatown. There is no information about the visibility of the Great Wall from space."
+      },
+      {
+        "claim": "Mumbai is the capital of India.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 1.0,
+        "nuance": null,
+        "seconds": 3.0,
+        "reasoning": "The claim that Mumbai is the capital of India is refuted by evidence indicating that New Delhi is the capital of India. Passages [3] and [4] from Al Jazeera English clearly state that New Delhi is the Indian capital."
+      },
+      {
+        "claim": "Drinking hot water kills the coronavirus.",
+        "gold": "refuted",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.3,
+        "reasoning": "The evidence provided does not directly address the claim that drinking hot water kills the coronavirus. The passages discuss general misinformation and unproven methods against COVID-19 but do not specifically mention or evaluate the effectiveness of drinking hot water against the virus."
+      },
+      {
+        "claim": "Tilda Swinton ate a sandwich yesterday.",
+        "gold": "not_enough_info",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 3.1,
+        "reasoning": "The evidence provided does not address the claim about Tilda Swinton eating a sandwich yesterday. The passages only provide background information about her career and do not mention any recent activities or events related to the claim."
+      },
+      {
+        "claim": "India won the T20 World Cup.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.1,
+        "reasoning": "The claim that India won the T20 World Cup is supported by evidence from a reliable source. Passage [2] from Wikipedia states that India has won the Men's T20 World Cup three times, including in 2026. This aligns with the claim and provides a direct confirmation."
+      },
+      {
+        "claim": "RBI cut the repo rate in its latest policy meeting.",
+        "gold": "?",
+        "verdict": "not_enough_info",
+        "confidence": 0.8,
+        "nuance": null,
+        "seconds": 4.3,
+        "reasoning": "The evidence does not provide any specific information about the RBI's latest policy meeting or any decision to cut the repo rate. The passages discuss general central bank stances and market expectations of a rate hike, but do not confirm any action taken by the RBI in its latest meeting [1][2][3][4][5][6][7]."
+      },
+      {
+        "claim": "Modi held talks with Trump on trade.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.95,
+        "nuance": null,
+        "seconds": 3.8,
+        "reasoning": "Multiple reliable sources confirm that Modi and Trump held talks on trade. The Hindu and The Financial Express both report that Modi and Trump discussed bilateral cooperation in trade, among other areas, during a phone call [1][3][4][5][6][7][8]. These reports consistently describe the conversation as productive and focused on reviewing progress in trade relations."
+      },
+      {
+        "claim": "The Eiffel Tower chief is stepping down.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.9,
+        "nuance": null,
+        "seconds": 3.4,
+        "reasoning": "The claim that the Eiffel Tower chief is stepping down is supported by multiple passages. These passages consistently report that Patrick Branco Ruivo, the director of SETE, which operates the Eiffel Tower, announced his resignation following an incident involving the removal of female staff for a Hindu sect visit [1][3][4][7]. The resignation is set to occur at the end of 2026, indicating a planned transition [3][4]."
+      }
+    ],
+    "anthropic/claude-sonnet-4.6": [
+      {
+        "claim": "The Eiffel Tower is located in Paris.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.99,
+        "nuance": null,
+        "seconds": 5.2,
+        "reasoning": "Passage [1] explicitly states that the Eiffel Tower is 'a lattice tower on the Champ de Mars in Paris, France,' directly confirming the claim. Multiple other passages [3][5][7] also associate the Eiffel Tower with Paris, further corroborating this well-established fact."
+      },
+      {
+        "claim": "Marie Curie won two Nobel Prizes.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.98,
+        "nuance": null,
+        "seconds": 6.3,
+        "reasoning": "Passage [1] explicitly states that Marie Curie was 'the first person to win a Nobel Prize twice,' directly confirming the claim. Passages [2]\u2013[8] confirm her 1903 Physics Nobel Prize, and passage [1] further notes she won in two different scientific fields, consistent with her well-documented 1911 Chemistry Nobel Prize."
+      },
+      {
+        "claim": "The Taj Mahal is located in Agra.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.99,
+        "nuance": null,
+        "seconds": 3.7,
+        "reasoning": "Both passages confirm the Taj Mahal's location in Agra. Passage [1] explicitly states it is 'on the right bank of the river Yamuna in Agra, Uttar Pradesh, India,' and passage [2] associates the Taj Mahal directly with Agra."
+      },
+      {
+        "claim": "Mahatma Gandhi was born in Porbandar.",
+        "gold": "supported",
+        "verdict": "supported",
+        "confidence": 0.99,
+        "nuance": null,
+        "seconds": 4.5,
+        "reasoning": "Multiple established and wire-service sources consistently confirm that Mahatma Gandhi was born in Porbandar. The Times of India [3][4][5], ANI [6][7], NDTV Profit [8], and Wikipedia entries [1][2] all explicitly state Porbandar as his birthplace."
+      },
+      {
+        "claim": "The Eiffel Tower is in Berlin.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 0.98,
+        "nuance": null,
+        "seconds": 4.3,
+        "reasoning": "Passage [1] clearly states that the Eiffel Tower is located on the Champ de Mars in Paris, France, not in Berlin. Passage [2] confirms that Berlin is the capital of Germany, a entirely different country. These two passages together directly contradict the claim."
+      },
+      {
+        "claim": "Albert Einstein was born in France.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 0.96,
+        "nuance": null,
+        "seconds": 4.2,
+        "reasoning": "Passages [1] and [2] clearly establish that Albert Einstein was born as a subject of the Kingdom of W\u00fcrttemberg, part of the German Empire, and is described as a 'German-born theoretical physicist.' This directly contradicts the claim that he was born in France."
+      },
+      {
+        "claim": "The Great Wall of China is visible from space with the naked eye.",
+        "gold": "refuted",
+        "verdict": "not_enough_info",
+        "confidence": 0.85,
+        "nuance": null,
+        "seconds": 6.2,
+        "reasoning": "None of the evidence passages address the visibility of the Great Wall of China from space. Passages [1] and [2] mention the Great Wall only in passing as a series of fortifications, and passages [3]\u2013[8] are entirely unrelated to the claim. While this claim is widely considered a myth by scientists and astronauts, the provided evidence does not contain any information to support or refute it."
+      },
+      {
+        "claim": "Mumbai is the capital of India.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 0.97,
+        "nuance": "partly_true",
+        "seconds": 5.7,
+        "reasoning": "Evidence [1] clearly states that Mumbai is the capital of the Indian state of Maharashtra and the financial capital of India, not the national capital. Evidence [3] and [4] from a major wire service (Al Jazeera) explicitly identify New Delhi as 'the Indian capital,' directly contradicting the claim that Mumbai is the capital of India."
+      },
+      {
+        "claim": "Drinking hot water kills the coronavirus.",
+        "gold": "refuted",
+        "verdict": "refuted",
+        "confidence": 0.82,
+        "nuance": "misleading",
+        "seconds": 6.6,
+        "reasoning": "The evidence passages reference COVID-19 misinformation and unproven methods against COVID-19, contextually placing claims like 'drinking hot water kills coronavirus' in the category of misinformation or unproven remedies [1][2]. Arthur Caplan's advice to ignore online COVID-19 product claims further signals that such remedies lack scientific backing [2]. While the passages do not explicitly name 'hot water' as a debunked claim, the broader context of COVID-19 misinformation strongly implies this falls into that category, and no credible evidence supports the claim."
+      },
+      {
+        "claim": "Tilda Swinton ate a sandwich yesterday.",
+        "gold": "not_enough_info",
+        "verdict": "not_enough_info",
+        "confidence": 0.95,
+        "nuance": "unverifiable_future",
+        "seconds": 4.6,
+        "reasoning": "The evidence passages only provide biographical and filmography information about Tilda Swinton [1][2]. There is no information whatsoever about her activities on October 1, 2026, including whether she ate a sandwich."
+      },
+      {
+        "claim": "India won the T20 World Cup.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.78,
+        "nuance": null,
+        "seconds": 9.8,
+        "reasoning": "Passages [1] and [2] from Wikipedia state that India has won the Men's T20 World Cup three times, in 2007, 2024, and 2026, making it the only team to win it thrice. The claim that 'India won the T20 World Cup' is therefore supported, as India has won it on multiple occasions. However, these are unrated Wikipedia sources, which reduces confidence somewhat."
+      },
+      {
+        "claim": "RBI cut the repo rate in its latest policy meeting.",
+        "gold": "?",
+        "verdict": "not_enough_info",
+        "confidence": 0.85,
+        "nuance": null,
+        "seconds": 6.5,
+        "reasoning": "None of the evidence passages report the outcome of the RBI's latest policy meeting or confirm a repo rate cut. The passages from BusinessLine [1]-[7] discuss central bank stances and rate hike expectations in a general/educational context, and [8] describes the MPC framework. No passage states that the RBI cut the repo rate in its most recent meeting."
+      },
+      {
+        "claim": "Modi held talks with Trump on trade.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.99,
+        "nuance": null,
+        "seconds": 5.1,
+        "reasoning": "Multiple established outlets [1][3][6][8] consistently report that PM Modi and President Trump held a phone call on September 30, 2026, during which they discussed bilateral cooperation including trade, defence, energy, and critical technologies. Modi himself confirmed the conversation as 'productive' in a post on X [5][7]."
+      },
+      {
+        "claim": "The Eiffel Tower chief is stepping down.",
+        "gold": "?",
+        "verdict": "supported",
+        "confidence": 0.92,
+        "nuance": null,
+        "seconds": 6.7,
+        "reasoning": "Multiple passages from Breitbart News Network (2026-09-30) consistently report that Patrick Branco Ruivo, the director of SETE (the group that operates the Eiffel Tower), announced he is stepping down at the end of 2026 [3][4]. The resignation followed an incident in which female employees were ordered to be invisible during a Hindu sect visit [8]. The Paris Mayor's office acknowledged the decision [1][6], confirming the claim."
+      }
+    ]
+  }
+}

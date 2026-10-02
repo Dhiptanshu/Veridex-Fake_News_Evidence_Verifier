@@ -25,7 +25,9 @@ class Settings(BaseSettings):
     aicredits_api_key: str = ""
     aicredits_base_url: str = "https://api.aicredits.in/v1"
     aicredits_model: str = "openai/gpt-4o-mini"
-    aicredits_judge_model: str = ""  # model for verdicts; empty = same as aicredits_model. A stronger one judges better.
+    # Verdict model. claude-sonnet-4.6 scored best and was best calibrated in docs/results/judge_bench.json; set it to
+    # openai/gpt-4o-mini (or leave empty to reuse aicredits_model) for lower cost.
+    aicredits_judge_model: str = "anthropic/claude-sonnet-4.6"
 
 
 settings = Settings()

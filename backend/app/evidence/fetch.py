@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import httpx
 
 MAX_BYTES = 1_500_000
-TIMEOUT_S = 8.0
+TIMEOUT_S = 5.0
 UA = "Mozilla/5.0 (compatible; FakeNewsEvidenceVerifier/0.1; university NLP lab project)"
 
 

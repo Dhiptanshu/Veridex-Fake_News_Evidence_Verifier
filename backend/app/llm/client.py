@@ -89,3 +89,58 @@ def chat_json(messages: list[dict[str, Any]], **kw) -> Any:
             return extract_json(fixed.get("content") or "")
         except ValueError as exc:
             raise LLMError("The model did not return valid JSON.") from exc
+
+
+def chat_stream(
+    messages: list[dict[str, Any]], *, model: str | None = None, tools: list[dict] | None = None, max_tokens: int = 700,
+    temperature: float = 0.3, timeout: float = 60.0,
+):
+    """Streaming chat completion. Yields {"content": str} chunks as they arrive, then one {"tool_calls": [...]} item if the
+    model asked to call tools (arguments are assembled from the streamed fragments). Falls back to a single non-streamed call
+    if the endpoint rejects streaming."""
+    key = settings.aicredits_api_key.strip()
+    if not key:
+        raise LLMError("The LLM is not configured: set FNEV_AICREDITS_API_KEY in backend/.env (key from https://aicredits.in).")
+    body: dict[str, Any] = {
+        "model": model or settings.aicredits_model, "messages": messages, "max_tokens": max_tokens,
+        "temperature": temperature, "stream": True,
+    }
+    if tools:
+        body["tools"] = tools
+    url = settings.aicredits_base_url.rstrip("/") + "/chat/completions"
+    calls: dict[int, dict[str, Any]] = {}
+    try:
+        with httpx.stream("POST", url, json=body, headers={"Authorization": f"Bearer {key}"}, timeout=timeout) as r:
+            if r.status_code >= 400:
+                r.read()
+                if r.status_code == 400:  # streaming not accepted: one normal call instead
+                    msg = chat(messages, model=model, tools=tools, max_tokens=max_tokens, temperature=temperature, timeout=timeout)
+                    if msg.get("content"):
+                        yield {"content": msg["content"]}
+                    if msg.get("tool_calls"):
+                        yield {"tool_calls": msg["tool_calls"]}
+                    return
+                _raise_for(r)
+            for line in r.iter_lines():
+                if not line.startswith("data:"):
+                    continue
+                payload = line[5:].strip()
+                if payload == "[DONE]":
+                    break
+                try:
+                    delta = json.loads(payload)["choices"][0].get("delta") or {}
+                except (ValueError, KeyError, IndexError):
+                    continue
+                if delta.get("content"):
+                    yield {"content": delta["content"]}
+                for tc in delta.get("tool_calls") or []:
+                    slot = calls.setdefault(tc.get("index", 0), {"id": "", "type": "function", "function": {"name": "", "arguments": ""}})
+                    if tc.get("id"):
+                        slot["id"] = tc["id"]
+                    fn = tc.get("function") or {}
+                    slot["function"]["name"] += fn.get("name") or ""
+                    slot["function"]["arguments"] += fn.get("arguments") or ""
+    except httpx.HTTPError as exc:
+        raise LLMError(f"Could not reach AICredits: {exc}") from exc
+    if calls:
+        yield {"tool_calls": [calls[i] for i in sorted(calls)]}

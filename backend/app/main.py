@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.ask_routes import router as ask_router
+from app.api.chat_routes import router as chat_router
 from app.api.data_routes import router as data_router
 from app.api.metrics_routes import router as metrics_router
 from app.api.system_routes import router as system_router
@@ -69,5 +70,6 @@ app.include_router(router)
 app.include_router(data_router)
 app.include_router(metrics_router)
 app.include_router(ask_router)
+app.include_router(chat_router)
 app.include_router(system_router)
 mount_frontend(app)  # last, so the API routes above take priority

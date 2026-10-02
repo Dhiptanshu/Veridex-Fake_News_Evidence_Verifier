@@ -122,12 +122,23 @@ def dedupe_items(items: list[Item]) -> list[Item]:
 
 def score_items(
     res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], store_name: str = "bge_small",
+    cache: dict | None = None,
 ):
-    """(scores, doc_embeddings, query_embedding): BGE similarity + title bonus + each item's prior."""
+    """(scores, doc_embeddings, query_embedding): BGE similarity + title bonus + each item's prior.
+
+    `cache` (text -> embedding) lets a caller that scores overlapping item lists twice embed each passage only once."""
     store = hybrid.get_store(res, store_name)
     embed_docs = store.encode_docs or store.encode
     q = store.encode([claim])[0]
-    docs = embed_docs([f"{it.title}. {it.text}" for it in items])
+    texts = [f"{it.title}. {it.text}" for it in items]
+    if cache is None:
+        docs = embed_docs(texts)
+    else:
+        missing = list(dict.fromkeys(t for t in texts if t not in cache))
+        if missing:
+            for t, v in zip(missing, embed_docs(missing)):
+                cache[t] = v
+        docs = np.stack([cache[t] for t in texts])
     lowered = claim.lower() + " " + " ".join(entity_texts).lower()
     bonus = np.array([TITLE_BONUS if it.boost_name and it.boost_name in lowered else 0.0 for it in items])
     return docs @ q + bonus + np.array([it.prior for it in items]), docs, q
@@ -135,12 +146,12 @@ def score_items(
 
 def rank_items(
     res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], *, store_name: str = "bge_small",
-    k_sentences: int = 5, project: bool = True, max_per_kind: dict[str, int] | None = None,
+    k_sentences: int = 5, project: bool = True, max_per_kind: dict[str, int] | None = None, cache: dict | None = None,
 ) -> RetrievalOut:
     items = dedupe_items(items)
     if not items:
         raise RuntimeError("No evidence was found for this claim.")
-    scores, docs, q = score_items(res, claim, entity_texts, items, store_name)
+    scores, docs, q = score_items(res, claim, entity_texts, items, store_name, cache)
     ranked = np.argsort(-scores)
     if max_per_kind:  # e.g. at most 2 background (Wikipedia) passages, so they never crowd out news and fact-checks
         used: dict[str, int] = {}

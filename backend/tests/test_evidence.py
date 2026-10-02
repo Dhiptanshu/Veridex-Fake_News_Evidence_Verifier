@@ -216,6 +216,8 @@ def test_daily_limit_is_remembered_so_no_more_requests_are_wasted(monkeypatch):
 def test_wikipedia_background_is_capped_and_timings_are_reported(live_setup):
     from app.retrieval import live as live_mod
 
+    live_setup.setattr(engine, "NEWS_RELEVANT_MIN", -1.0)  # treat the news as on-topic
+
     live_setup.setattr(settings, "wikipedia_contact", "me@example.org")
     live_setup.setattr(settings, "google_factcheck_key", "")
     live_setup.setattr(providers, "gnews", lambda q, country=None, limit=10: [art("Curie headline about Nobel", "https://www.thehindu.com/a", "The Hindu", "Curie won prizes.")])
@@ -241,3 +243,19 @@ async def test_default_retrieval_falls_back_to_offline_wikipedia_without_keys(ti
     ret = next(e for e in events if e.type == "stage_end" and e.slot == "retrieval")
     assert ret.impl == "news_first" and any("offline Wikipedia subset" in n for n in ret.payload["notes"])
     assert ret.payload["evidence"][0]["kind"] == "wikipedia"
+
+
+def test_wikipedia_gets_more_room_when_the_news_found_is_off_topic(live_setup):
+    from app.retrieval import live as live_mod
+
+    live_setup.setattr(engine, "NEWS_RELEVANT_MIN", 99.0)  # nothing counts as on-topic news
+
+    live_setup.setattr(settings, "wikipedia_contact", "me@example.org")
+    live_setup.setattr(settings, "google_factcheck_key", "")
+    live_setup.setattr(providers, "gnews", lambda q, country=None, limit=10: [art("Weather turns cold today", "https://news.example/w", "Example", "Temperatures fall.")])
+    wiki = [live_mod.Item(doc_id="Marie_Curie", title="Marie Curie", url="https://en.wikipedia.org/wiki/Marie_Curie", source="wikipedia (live)",
+                          text=f"Marie Curie won Nobel Prize number {i} in physics and chemistry.", kind="background") for i in range(6)]
+    live_setup.setattr(live_mod, "wikipedia_items", lambda c, e: wiki)
+    out = engine.gather(hybrid.get_resources(), "Marie Curie won Nobel Prize", ["Marie Curie"], "curie", project=False)
+    n_bg = sum(len(e.sentences) for e in out.evidence if e.kind == "background")
+    assert n_bg > engine.MAX_BACKGROUND_PASSAGES  # irrelevant weather news does not crowd out the relevant background

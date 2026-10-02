@@ -4,7 +4,7 @@ fetch the full text of the most relevant articles -> rank passages with BGE plus
 Failures are isolated: a provider that errors or hits its quota adds a note, and the run continues with what is left.
 """
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 
 from nltk import sent_tokenize
 
@@ -13,9 +13,12 @@ from app.retrieval import hybrid, live
 from app.schemas.stages import RetrievalOut
 
 FETCH_TOP = 4  # article bodies to download (the most relevant ones by headline/snippet)
+FETCH_DEADLINE_S = 6.0  # slow sites are abandoned: their headline and snippet are used instead
 MAX_BODY_SENTENCES = 14
 BACKGROUND_PRIOR = -0.02  # Wikipedia may add context but should not outrank news and fact-checks
 MAX_BACKGROUND_PASSAGES = 2
+MAX_BACKGROUND_WHEN_NEWS_OFF_TOPIC = 5
+NEWS_RELEVANT_MIN = 0.72  # in the 14-claim benchmark, on-topic news scored >= 0.76 and off-topic news <= 0.68
 FACTCHECK_PRIOR = 0.08
 ENOUGH_ARTICLES = 5  # a first query that returns this many distinct articles makes a second request unnecessary
 
@@ -145,17 +148,22 @@ def gather(
 
     # Download the full text of the most relevant articles: snippets rarely contain the facts.
     t0 = time.perf_counter()
+    cache: dict = {}  # passage embeddings are computed once and reused by the final ranking
+    scores, _, _ = live.score_items(res, claim, entities, items, cache=cache)
     news_items = [it for it in items if it.kind == "news"]
+    best_live = max((float(sc) for it, sc in zip(items, scores) if it.kind in ("news", "fact-check")), default=0.0)
     if news_items and FETCH_TOP > 0:
-        scores, _, _ = live.score_items(res, claim, entities, items)
         best: dict[str, float] = {}
         for it, sc in zip(items, scores):
             if it.kind == "news":
                 best[it.doc_id] = max(best.get(it.doc_id, -9.0), float(sc))
         top_docs = sorted(best, key=lambda d: -best[d])[:FETCH_TOP]
         base_of = {it.doc_id: it for it in news_items}
-        with ThreadPoolExecutor(max_workers=FETCH_TOP) as pool:
-            texts = list(pool.map(lambda d: fetch.fetch_article(base_of[d].url), top_docs))
+        pool = ThreadPoolExecutor(max_workers=FETCH_TOP)
+        futs = [pool.submit(fetch.fetch_article, base_of[d].url) for d in top_docs]
+        wait(futs, timeout=FETCH_DEADLINE_S)
+        texts = [f.result() if f.done() and not f.exception() else "" for f in futs]
+        pool.shutdown(wait=False, cancel_futures=True)
         fetched = 0
         for d, text in zip(top_docs, texts):
             if text:
@@ -167,8 +175,9 @@ def gather(
     timings["fetch"] = (time.perf_counter() - t0) * 1000
 
     t0 = time.perf_counter()
+    background_cap = MAX_BACKGROUND_PASSAGES if best_live >= NEWS_RELEVANT_MIN else MAX_BACKGROUND_WHEN_NEWS_OFF_TOPIC
     out = live.rank_items(res, claim, entities, items, k_sentences=k, project=project,
-                          max_per_kind={"background": MAX_BACKGROUND_PASSAGES})
+                          max_per_kind={"background": background_cap}, cache=cache)
     timings["rank"] = (time.perf_counter() - t0) * 1000
 
     if not articles and not checks and not conf["gnews"] and not conf["newsapi"]:
