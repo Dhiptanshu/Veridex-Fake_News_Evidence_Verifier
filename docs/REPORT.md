@@ -38,7 +38,7 @@ which is how we compare them.
 | IV | Transformers, BERT, transfer learning | `bert-base-uncased` fine-tuned on claim-evidence pairs; BGE/MiniLM sentence encoders | BERT 71.5%, with stacker 74.9% |
 | IV | NER, dependency parsing | spaCy NER; subject-verb-object triples from the dependency parse | shown in the UI |
 | IV | Sequence labeling, chunking | POS tags (NLTK) and noun chunks (spaCy) | shown in the UI |
-| V (25-27) | Text generation, summarization, chatbots | templated grounded rationale; extractive (MMR) and abstractive (DistilBART) evidence summaries; a follow-up question box (intent router + local extractive QA, optional LLM via AICredits) | see section 5 |
+| V (25-27) | Text generation, summarization, chatbots, LLM APIs | templated grounded rationale; extractive (MMR) and abstractive (DistilBART) evidence summaries; a follow-up question box (intent router + local extractive QA, optional LLM via AICredits) | see section 5 |
 | V (28) | Accuracy, precision, recall, F1, BLEU | all reported, plus ROUGE, calibration error and the FEVER score | sections 4 and 5 |
 | V (29-30) | Deployment | FastAPI service with streaming (SSE); one-container Docker setup (see section 7) | API + UI run locally |
 
@@ -129,6 +129,37 @@ Interpretation: the verifier is not broken; the task is different. FEVER claims 
 article states or contradicts, while LIAR statements are about voting records, budgets and statistics that an offline
 Wikipedia subset does not contain, so "not enough info" is arguably the honest answer. It also shows that a high score on
 one benchmark says little about fact-checking in general.
+
+## 5c. From a benchmark system to a live fact-checker
+
+The FEVER system above answers claims about Wikipedia facts. Real misinformation is mostly about **current events**, often in
+India, so the deployed pipeline was rebuilt around live evidence (`backend/app/evidence`, `backend/app/verification/llm_judge.py`,
+`backend/app/assistant`):
+
+* **Evidence engine.** An LLM (rule-based fallback) writes 2-3 short search queries; GNews (with `country=in` for India),
+  NewsAPI and the Google Fact Check API are searched in parallel with Wikipedia as background only. The full text of the most
+  relevant articles is downloaded (`trafilatura`, SSRF-guarded), passages are ranked with BGE plus a small credibility prior
+  (fact-checker > wire/major > established > unrated), duplicates from syndication are removed, and Wikipedia is capped at 2
+  passages unless the news found is off-topic (best news score < 0.72, a threshold read off the benchmark).
+* **LLM judge** instead of the Wikipedia-trained BERT for news. It must return strict JSON (verdict, probabilities, reasoning,
+  cited passages, per-passage stances, nuance, what is missing); citations are validated, a decisive verdict without a valid
+  citation is downgraded to "not enough info", and the prompt states that absence of evidence is not refutation.
+* **Choosing the model** (`ml/bench_judge.py`, `docs/results/judge_bench.json`; 14 claims, 10 with a known answer, evidence
+  cached so each model sees identical passages): Claude Sonnet 4.6 9/10, GPT-4o 8/10, GPT-4o-mini 8/10; all three declined to
+  guess when no relevant passage was retrieved, so the two misses common to all models (a myth claim and a viral health claim)
+  are **retrieval gaps**, not judge errors. The sample is small and only indicative.
+* **Assistant** with tool calling (news, fact-check, Wikipedia, article reader; at most 4 rounds, URLs restricted to sources
+  already shown). In a live test it searched by itself when the evidence did not contain the answer and cited the sources
+  it found; an unlabeled-general-knowledge failure seen in testing led to a stricter citation rule in its prompt.
+* **What this changes about the claims in this report.** The accuracy figures in sections 4 and 5 describe the *offline FEVER*
+  system. No accuracy is claimed for the live pipeline beyond the small benchmark above: there is no labelled live-news dataset
+  here, and LLM confidences are not calibrated.
+
+Engineering findings: free news APIs match all query words, so long entity-quoted queries returned nothing (the cause of the
+original "cannot find India news" problem); date words in model-written queries had the same effect and are now stripped on
+retry; the first news request starts while the LLM is still planning; identical queries are cached and an exhausted daily quota
+is remembered so no further requests are wasted. Latency on a healthy machine is about 20-30 s per claim, dominated by article
+downloads and the judge call; on a memory-starved machine it doubled or more.
 
 ## 6. Limitations and ethics
 

@@ -234,7 +234,7 @@ export function InsightsPage() {
                 </tr>
               </thead>
               <tbody>
-                {Object.values(m.judge_bench.rows)[0] && (Object.values(m.judge_bench.rows)[0] as M[]).map((r: M, i: number) => (
+                {((Object.values(m.judge_bench.rows)[0] ?? []) as M[]).map((r: M, i: number) => (
                   <tr key={r.claim} className="border-t border-line">
                     <td className="py-1.5 pr-3">{r.claim}</td>
                     <td className="pr-3 text-muted">{r.gold === "?" ? "unknown (recent)" : String(r.gold).replaceAll("_", " ")}</td>
