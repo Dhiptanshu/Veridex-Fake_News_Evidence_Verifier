@@ -132,6 +132,12 @@ class VerificationOut(BaseModel):
     probabilities: dict[Label, float]
     per_evidence: list[EvidenceVerdict]
     per_sentence: list[SentenceVerdict] = Field(default_factory=list)  # empty for verifiers that do not score sentences
+    engine: str = "bert"  # who produced the verdict: bert | llm
+    reasoning: str | None = None  # the judge's own explanation, citing passages as [n]
+    nuance: str | None = None  # partly_true | misleading | outdated | satire | opinion | unverifiable_future | needs_context
+    missing: str | None = None  # what evidence would settle a not-enough-info verdict
+    cited: list[int] = Field(default_factory=list)  # passage numbers the verdict rests on
+    notes: list[str] = Field(default_factory=list)  # warnings (fell back to BERT, no usable citation...)
 
 
 class Citation(BaseModel):

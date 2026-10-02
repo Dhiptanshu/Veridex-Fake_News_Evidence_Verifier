@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     aicredits_api_key: str = ""
     aicredits_base_url: str = "https://api.aicredits.in/v1"
     aicredits_model: str = "openai/gpt-4o-mini"
+    aicredits_judge_model: str = ""  # model for verdicts; empty = same as aicredits_model. A stronger one judges better.
 
 
 settings = Settings()

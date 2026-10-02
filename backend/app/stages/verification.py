@@ -2,9 +2,10 @@ import asyncio
 
 import numpy as np
 
+from app.llm import client as llm_client
 from app.schemas.stages import EvidenceVerdict, RetrievalOut, SentenceVerdict, VerificationOut
 from app.stages.base import Stage, StageContext, register
-from app.verification import models, stack
+from app.verification import llm_judge, models, stack
 from app.verification import text as vtext
 
 
@@ -78,6 +79,21 @@ def verify_stacked(claim: str, ret: RetrievalOut) -> VerificationOut:
     )
 
 
+def verify_judged(claim: str, ret: RetrievalOut) -> VerificationOut:
+    """The LLM judge, with BERT as the fallback when no key is set or the call fails (the reason is attached as a note)."""
+    if llm_client.configured():
+        try:
+            return llm_judge.judge(claim, ret)
+        except llm_client.LLMError as exc:
+            out = verify_stacked(claim, ret)
+            out.notes.append(f"The LLM judge was unavailable ({exc}); BERT produced this verdict instead.")
+            return out
+    out = verify_stacked(claim, ret)
+    out.notes.append("No LLM key is configured (FNEV_AICREDITS_API_KEY), so the Wikipedia-trained BERT produced this verdict. "
+                     "It is much less reliable on news.")
+    return out
+
+
 def _register(kind: str, title: str, desc: str, family: str, is_default: bool = False, stacked: bool = False) -> None:
     @register
     class Verifier(Stage):
@@ -97,8 +113,24 @@ def _register(kind: str, title: str, desc: str, family: str, is_default: bool = 
     Verifier.__name__ = f"Verifier_{kind}"
 
 
+@register
+class LlmJudge(Stage):
+    slot, name = "verification", "llm_judge"
+    label = "LLM judge (reads the evidence)"
+    default = True
+    family = "neural"
+    description = (
+        "A language model reads the claim and the numbered, source-tagged passages and returns a verdict with reasoning and "
+        "citations. Best for news; confidence is stated by the model, not calibrated. Falls back to BERT without a key."
+    )
+
+    async def run(self, ctx: StageContext) -> VerificationOut:
+        ret: RetrievalOut = ctx.results["retrieval"]  # type: ignore[assignment]
+        return await asyncio.to_thread(verify_judged, ctx.claim, ret)
+
+
 _register(
-    "bert", "BERT + stacker (best)", family="neural", is_default=True, stacked=True,
+    "bert", "BERT + stacker (offline, Wikipedia-trained)", family="neural", stacked=True,
     desc="Fine-tuned bert-base reads the claim with each evidence sentence and with all of them; a logistic-regression stacker combines the scores.",
 )
 _register(

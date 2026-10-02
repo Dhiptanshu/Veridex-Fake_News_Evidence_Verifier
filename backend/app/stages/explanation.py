@@ -1,14 +1,48 @@
 import asyncio
 import re
 
+from app.evidence import passages as psg
 from app.explain import attribution, differences, rationale, select, summarize
 from app.explain.clean import tidy
-from app.schemas.stages import Differences, ExplanationOut, RetrievalOut, VerificationOut
+from app.schemas.stages import Citation, Differences, ExplanationOut, RetrievalOut, VerificationOut
 from app.stages.base import Stage, StageContext, register
 from app.verification import models
 
 
+NUANCE_TEXT = {'partly_true': 'Partly true: the claim gets some facts right but is wrong in a key detail.', 'misleading': 'Misleading: technically close to facts, but the framing leaves a false impression.', 'outdated': 'Outdated: this may have been true earlier but is not true now.', 'satire': 'This looks like satire rather than a factual claim.', 'opinion': 'This is an opinion rather than a checkable fact.', 'unverifiable_future': 'This concerns the future, so it cannot be verified yet.', 'needs_context': 'True or false depends on missing context.'}
+
+
+def _explain_llm(claim: str, ver: VerificationOut, ret: RetrievalOut, summarizer: str) -> ExplanationOut:
+    """The judge already wrote the reasoning; keep it verbatim (it cites passages as [n]) and add structure around it."""
+    ps = {p.n: p for p in psg.flatten(ret)}
+    wanted = list(dict.fromkeys([*ver.cited, *(int(n) for n in re.findall(r"\[(\d+)\]", ver.reasoning or ""))]))
+    citations = [
+        Citation(n=n, evidence_id=ps[n].evidence.id, title=ps[n].evidence.title, text=ps[n].sentence.text,
+                 role="decisive" if n in ver.cited else "context",
+                 supported=None, refuted=None, neutral=None)
+        for n in wanted if n in ps
+    ]
+    parts = [ver.reasoning or ""]
+    if ver.nuance in NUANCE_TEXT:
+        parts.append(NUANCE_TEXT[ver.nuance])
+    if ver.missing:
+        parts.append(f"What would settle it: {ver.missing}")
+    summary, method = "", "none"
+    candidates = [(t, tidy(x)) for t, x in select.summary_candidates(ver, ret)]
+    if candidates:
+        title_of = {x: t for t, x in candidates}
+        picked = summarize.mmr_summary(claim, [x for _, x in candidates])
+        summary = " ".join(f"{title_of[x]}: {x}" for x in picked)
+        method = "MMR (extractive)"
+    return ExplanationOut(
+        summary=summary, summary_method=method, rationale=" ".join(p for p in parts if p),
+        cited_evidence_ids=list(dict.fromkeys(c.evidence_id for c in citations)), citations=citations,
+    )
+
+
 def explain(claim: str, ver: VerificationOut, ret: RetrievalOut, summarizer: str) -> ExplanationOut:
+    if ver.engine == "llm":
+        return _explain_llm(claim, ver, ret, summarizer)
     citations = select.select_citations(ver, ret)
     first = citations[0] if citations else None
     retrieved = [s.text for s, _ in sorted(((s, e) for e in ret.evidence for s in e.sentences), key=lambda t: -t[0].score)]
