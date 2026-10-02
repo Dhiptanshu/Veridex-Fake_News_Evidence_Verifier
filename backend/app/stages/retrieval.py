@@ -4,7 +4,8 @@ Fusion weights come from the validation grid in docs/results/retrieval_semantic.
 """
 import asyncio
 
-from app.retrieval import hybrid, live, news
+from app.evidence import engine
+from app.retrieval import hybrid, live
 from app.retrieval.hybrid import TFIDF
 from app.retrieval.search import search
 from app.retrieval.tfidf import get_index
@@ -65,7 +66,7 @@ def _semantic(
 
 
 _semantic(
-    key="dense_bge", title="BGE-small dense search", is_default=True, weights={"bge_small": 1.0}, dense="bge_small", project="bge_small",
+    key="dense_bge", title="Offline Wikipedia (BGE dense search)", weights={"bge_small": 1.0}, dense="bge_small", project="bge_small",
     title_bonus=0.02,
     desc="BAAI/bge-small-en-v1.5 embeddings (Kaggle GPU) plus a small bonus for pages named in the claim; best in our evaluation.",
 )
@@ -108,25 +109,23 @@ def _query(ctx: StageContext) -> str:
 
 
 @register
-class LiveNews(Stage):
-    slot, name = "retrieval", "live_news"
-    label = "Live news search"
+class NewsFirst(Stage):
+    slot, name = "retrieval", "news_first"
+    label = "News + fact-checks (live)"
+    default = True
     description = (
-        "Searches recent news (GNews or NewsAPI, needs a key in backend/.env; sends the claim's keywords to that service) "
-        "and ranks headlines and snippets with BGE. News is a different domain from the training data, so treat results with care."
+        "Plans several search queries (LLM when configured), searches news (GNews, NewsAPI; India-aware) and fact-check sites "
+        "(Google Fact Check) in parallel, reads the full text of the best articles, and ranks passages with BGE, weighting source "
+        "credibility. Wikipedia is background only. Falls back to the offline Wikipedia subset when no provider is configured."
     )
     family = "hybrid"
 
     async def run(self, ctx: StageContext) -> RetrievalOut:
-        return await asyncio.to_thread(news.news_search, hybrid.get_resources(), ctx.claim, _entities(ctx), _query(ctx))
-
-
-@register
-class LiveWikipediaAndNews(Stage):
-    slot, name = "retrieval", "live_all"
-    label = "Live Wikipedia + news"
-    description = "Both live sources, ranked together (uses whichever of Wikipedia contact / news key is configured)."
-    family = "hybrid"
-
-    async def run(self, ctx: StageContext) -> RetrievalOut:
-        return await asyncio.to_thread(news.combined_search, hybrid.get_resources(), ctx.claim, _entities(ctx), _query(ctx))
+        if not engine.available():
+            out = await asyncio.to_thread(
+                hybrid.hybrid_search, hybrid.get_resources(), ctx.claim, _entities(ctx),
+                weights={"bge_small": 1.0}, dense_for_candidates="bge_small", project_with="bge_small", title_bonus=0.02,
+            )
+            out.notes.append("No live news provider is configured, so the offline Wikipedia subset was used (see the Pipeline tab).")
+            return out
+        return await asyncio.to_thread(engine.gather, hybrid.get_resources(), ctx.claim, _entities(ctx), _query(ctx))

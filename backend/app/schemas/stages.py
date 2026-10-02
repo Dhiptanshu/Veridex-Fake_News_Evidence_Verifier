@@ -75,6 +75,10 @@ class Evidence(BaseModel):
     score: float
     sentences: list[EvidenceSentence]
     topic: Topic | None = None  # dominant LDA topic of the page
+    kind: str = "wikipedia"  # news | fact-check | background (live Wikipedia) | wikipedia (offline FEVER subset)
+    published: str | None = None  # ISO date for news and fact-checks
+    tier: str | None = None  # source credibility tier (evidence/credibility.py); None for offline Wikipedia
+    rating: str | None = None  # a fact-checker's own verdict text, when kind == "fact-check"
 
 
 class MapPoint(BaseModel):
@@ -98,6 +102,9 @@ class RetrievalOut(BaseModel):
     query: str | None = None  # the text actually searched (after any expansion)
     score_entropy: float | None = None  # entropy of the normalised retrieval score distribution
     projection: Projection | None = None
+    queries: list[str] = Field(default_factory=list)  # live search queries actually sent
+    timings_ms: dict[str, float] = Field(default_factory=dict)  # where retrieval time went (plan, search, fetch, rank)
+    notes: list[str] = Field(default_factory=list)  # warnings shown to the user (a provider failed, quota, no results...)
 
 
 class EvidenceVerdict(BaseModel):

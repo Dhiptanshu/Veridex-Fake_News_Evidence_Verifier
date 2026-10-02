@@ -37,6 +37,11 @@ class Item:
     source: str
     text: str
     boost_name: str = ""  # a name that, if mentioned in the claim, earns the title bonus (Wikipedia page titles)
+    kind: str = "background"
+    published: str = ""
+    tier: str = ""
+    rating: str = ""
+    prior: float = 0.0  # additive ranking adjustment (credibility, recency, fact-check boost)
 
 
 # ------------------------------------------------------------------------------------------------ Wikipedia
@@ -109,22 +114,48 @@ def _clean_snippet(text: str) -> str:
     return re.sub(r"\s*(?:…|\.\.\.)?\s*\[\+?\d+ chars\]\s*$", "", text or "").strip()
 
 
-def rank_items(
-    res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], *, store_name: str = "bge_small",
-    k_sentences: int = 5, project: bool = True,
-) -> RetrievalOut:
-    seen: set[str] = set()  # syndicated stories and copied sentences would otherwise fill the top 5 with one fact
-    items = [it for it in items if not ((k := " ".join(it.text.lower().split())) in seen or seen.add(k))]
-    if not items:
-        raise RuntimeError("No evidence was found for this claim.")
+def dedupe_items(items: list[Item]) -> list[Item]:
+    """Syndicated stories and copied sentences would otherwise fill the top results with one fact."""
+    seen: set[str] = set()
+    return [it for it in items if not ((k := " ".join(it.text.lower().split())) in seen or seen.add(k))]
+
+
+def score_items(
+    res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], store_name: str = "bge_small",
+):
+    """(scores, doc_embeddings, query_embedding): BGE similarity + title bonus + each item's prior."""
     store = hybrid.get_store(res, store_name)
     embed_docs = store.encode_docs or store.encode
     q = store.encode([claim])[0]
     docs = embed_docs([f"{it.title}. {it.text}" for it in items])
-    scores = docs @ q
     lowered = claim.lower() + " " + " ".join(entity_texts).lower()
-    scores = scores + np.array([TITLE_BONUS if it.boost_name and it.boost_name in lowered else 0.0 for it in items])
-    order = np.argsort(-scores)[:k_sentences]
+    bonus = np.array([TITLE_BONUS if it.boost_name and it.boost_name in lowered else 0.0 for it in items])
+    return docs @ q + bonus + np.array([it.prior for it in items]), docs, q
+
+
+def rank_items(
+    res: hybrid.Resources, claim: str, entity_texts: list[str], items: list[Item], *, store_name: str = "bge_small",
+    k_sentences: int = 5, project: bool = True, max_per_kind: dict[str, int] | None = None,
+) -> RetrievalOut:
+    items = dedupe_items(items)
+    if not items:
+        raise RuntimeError("No evidence was found for this claim.")
+    scores, docs, q = score_items(res, claim, entity_texts, items, store_name)
+    ranked = np.argsort(-scores)
+    if max_per_kind:  # e.g. at most 2 background (Wikipedia) passages, so they never crowd out news and fact-checks
+        used: dict[str, int] = {}
+        picked = []
+        for i in ranked:
+            kind = items[i].kind
+            if used.get(kind, 0) >= max_per_kind.get(kind, 10**6):
+                continue
+            used[kind] = used.get(kind, 0) + 1
+            picked.append(i)
+            if len(picked) == k_sentences:
+                break
+        order = np.array(picked, dtype=int)
+    else:
+        order = ranked[:k_sentences]
 
     by_doc: dict[str, list[tuple[str, float]]] = {}
     meta: dict[str, Item] = {}
@@ -134,6 +165,8 @@ def rank_items(
     evidence = [
         Evidence(
             id=doc_id, title=meta[doc_id].title, source=meta[doc_id].source, url=meta[doc_id].url,
+            kind=meta[doc_id].kind, published=meta[doc_id].published or None, tier=meta[doc_id].tier or None,
+            rating=meta[doc_id].rating or None,
             score=round(max(0.0, min(1.0, max(sc for _, sc in ss))), 4),
             sentences=[EvidenceSentence(text=x, score=round(max(0.0, min(1.0, sc)), 4)) for x, sc in ss],
         )

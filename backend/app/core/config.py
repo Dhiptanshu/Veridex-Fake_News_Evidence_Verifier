@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # Wikimedia's API policy requires contact details in the User-Agent. Live Wikipedia search stays off until you set
     # FNEV_WIKIPEDIA_CONTACT to an email address or a URL of yours.
     wikipedia_contact: str = ""
+    google_factcheck_key: str = ""  # Google Fact Check Tools API (optional): https://developers.google.com/fact-check/tools/api
     # News evidence (optional). Keys come from the provider's dashboard; see .env.example. Empty = feature off.
     gnews_api_key: str = ""
     newsapi_key: str = ""

@@ -85,3 +85,13 @@ def tiny_resources(tmp_path_factory):
     vmodels.load.cache_clear()
     tfidf.get_index.cache_clear()
     pmi_mod.get_table.cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def no_live_services(monkeypatch):
+    """Tests must never touch the network or spend quota, even when backend/.env contains real keys."""
+    from app.evidence import providers
+
+    for name in ("gnews_api_key", "newsapi_key", "aicredits_api_key", "google_factcheck_key", "wikipedia_contact"):
+        monkeypatch.setattr(settings, name, "")
+    providers.clear_cache()
