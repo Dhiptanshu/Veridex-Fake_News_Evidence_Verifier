@@ -94,13 +94,20 @@ def clean_snippet(text: str) -> str:
     return re.sub(r"\s*(?:…|\.\.\.)?\s*\[\+?\d+ chars\]\s*$", "", text or "").strip()
 
 
+def clean_query(q: str) -> str:
+    """News APIs treat punctuation and AND/OR/NOT as query syntax: 'Drinking hot water cures cancer.' is a syntax error to GNews.
+    Keep only words, digits, hyphens and apostrophes, and drop bare boolean operators."""
+    q = re.sub(r"[^\w\s'’-]", " ", q)
+    return " ".join(w for w in q.split() if w not in {"AND", "OR", "NOT"})[:200]
+
+
 def gnews(query: str, country: str | None = None, limit: int = 10) -> list[Article]:
     key = settings.gnews_api_key.strip()
     if not key:
         raise ProviderError("GNews: no key configured")
 
     def go() -> list[Article]:
-        params = {"q": query[:200], "lang": "en", "max": limit, "sortby": "relevance", "apikey": key}
+        params = {"q": clean_query(query), "lang": "en", "max": limit, "sortby": "relevance", "apikey": key}
         if country:
             params["country"] = country
         data = _get("GNews", GNEWS_URL, params)
@@ -119,7 +126,7 @@ def newsapi(query: str, limit: int = 10) -> list[Article]:
         raise ProviderError("NewsAPI: no key configured")
 
     def go() -> list[Article]:
-        data = _get("NewsAPI", NEWSAPI_URL, {"q": query[:200], "language": "en", "pageSize": limit, "sortBy": "relevancy"},
+        data = _get("NewsAPI", NEWSAPI_URL, {"q": clean_query(query), "language": "en", "pageSize": limit, "sortBy": "relevancy"},
                     {"X-Api-Key": key})
         return [
             Article(a.get("title") or "", a.get("description") or "", clean_snippet(a.get("content") or ""), a.get("url") or "",

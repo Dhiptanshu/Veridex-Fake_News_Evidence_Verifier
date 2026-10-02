@@ -259,3 +259,14 @@ def test_wikipedia_gets_more_room_when_the_news_found_is_off_topic(live_setup):
     out = engine.gather(hybrid.get_resources(), "Marie Curie won Nobel Prize", ["Marie Curie"], "curie", project=False)
     n_bg = sum(len(e.sentences) for e in out.evidence if e.kind == "background")
     assert n_bg > engine.MAX_BACKGROUND_PASSAGES  # irrelevant weather news does not crowd out the relevant background
+
+
+def test_queries_are_sanitised_because_punctuation_is_news_api_syntax(monkeypatch):
+    assert providers.clean_query("Drinking hot water cures cancer.") == "Drinking hot water cures cancer"
+    assert providers.clean_query('Modi "GST" AND (rail) OR NOT tax?') == "Modi GST rail tax"
+    assert providers.clean_query("India's Rs. 25,000 rule ’s") == "India's Rs 25 000 rule ’s"
+    monkeypatch.setattr(settings, "gnews_api_key", "KEY")
+    seen = []
+    monkeypatch.setattr(providers, "_get", lambda name, url, params, headers=None: seen.append(params["q"]) or {"articles": []})
+    providers.gnews("Did Modi resign?")
+    assert seen == ["Did Modi resign"]
