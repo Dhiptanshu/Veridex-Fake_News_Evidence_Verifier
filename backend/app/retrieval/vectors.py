@@ -94,7 +94,10 @@ DENSE_MODELS = {
 def _sentence_transformer(model_name: str):
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(model_name, device="cpu")
+    try:  # use the local cache without contacting huggingface.co (faster start, and no network call just to load a model)
+        return SentenceTransformer(model_name, device="cpu", local_files_only=True)
+    except OSError:  # not downloaded yet
+        return SentenceTransformer(model_name, device="cpu")
 
 
 def dense_store(key: str, matrix: np.ndarray) -> VectorStore:

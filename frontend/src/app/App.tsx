@@ -1,3 +1,4 @@
+import { AssistantPage } from "@/features/assistant/AssistantPage";
 import { BatchPage } from "@/features/batch/BatchPage";
 import { ComparePage } from "@/features/compare/ComparePage";
 import { DataPage } from "@/features/data/DataPage";
@@ -15,6 +16,7 @@ export default function App() {
     <Shell route={route} go={go}>
       {/* The Verify tab stays mounted while you visit other tabs, so a running or finished verification is not lost. */}
       <div hidden={route !== "verify"}><VerifyPage go={go} /></div>
+      {route === "assistant" && <AssistantPage />}
       {route === "compare" && <ComparePage />}
       {route === "batch" && <BatchPage />}
       {route === "history" && <HistoryPage go={go} />}

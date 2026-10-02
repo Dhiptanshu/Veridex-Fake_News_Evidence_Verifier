@@ -1,4 +1,4 @@
-"""Check which optional services are configured in backend/.env and that each one really answers (1 small request each).
+"""Check which optional services are configured in backend/.env and that each one really answers (one small request each).
 
     python ml/check_live.py
 
@@ -12,14 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
 from app.core.config import settings  # noqa: E402
-from app.qa import llm  # noqa: E402
-from app.qa.schemas import AskRequest, Passage  # noqa: E402
-from app.retrieval import live, news  # noqa: E402
+from app.evidence import providers  # noqa: E402
+from app.llm import client  # noqa: E402
+from app.retrieval import live  # noqa: E402
 
 
-def step(name: str, configured: bool, fn) -> None:
+def step(name: str, configured: bool, fn, missing: str) -> None:
     if not configured:
-        print(f"[skip] {name}: not set in backend/.env")
+        print(f"[skip] {name}: not set ({missing})")
         return
     t = time.time()
     try:
@@ -28,22 +28,36 @@ def step(name: str, configured: bool, fn) -> None:
         print(f"[FAIL] {name}: {exc}")
 
 
+def first_title(arts) -> str:
+    return f"{len(arts)} articles; first: {arts[0].title[:70]!r} ({arts[0].source}, {arts[0].published})" if arts else "0 articles"
+
+
+def llm_json() -> str:
+    data = client.chat_json([{"role": "user", "content": 'Reply with JSON {"ok": true, "word": "ping"}.'}], max_tokens=40)
+    return f"JSON reply {data}"
+
+
+def llm_tools() -> str:
+    from app.assistant import tools
+
+    calls = []
+    for chunk in client.chat_stream(
+        [{"role": "user", "content": "Use the search_news tool to look up 'India cabinet decision'."}], tools=tools.TOOLS, max_tokens=60,
+    ):
+        calls += chunk.get("tool_calls", [])
+    return f"streaming + tool calling work (called {[c['function']['name'] for c in calls]})" if calls else "streaming works but the model did not call a tool"
+
+
 def main() -> None:
-    print("configured:", {
-        "wikipedia_contact": bool(settings.wikipedia_contact.strip()), "gnews": bool(settings.gnews_api_key.strip()),
-        "newsapi": bool(settings.newsapi_key.strip()), "aicredits": bool(settings.aicredits_api_key.strip()),
-        "aicredits_model": settings.aicredits_model,
-    })
-    step("Wikipedia live search", bool(settings.wikipedia_contact.strip()), lambda: live.search_titles("Eiffel Tower completed 1889", 3))
-    step("News search", news.provider() is not None, lambda: (
-        lambda arts: f"{news.provider()} returned {len(arts)} articles; first: {arts[0].title[:70]!r}" if arts else f"{news.provider()} returned 0 articles"
-    )(news.search("Eiffel Tower")))
-    req = AskRequest(
-        question="Where was Obama born?", claim="Barack Obama was born in Kenya.", label="refuted", confidence=0.78,
-        probabilities={"supported": 0.02, "refuted": 0.78, "not_enough_info": 0.2}, rationale="The claim is refuted.",
-        passages=[Passage(n=1, title="Barack Obama", text="Obama was born in Honolulu, Hawaii.")],
-    )
-    step("AICredits LLM answer", bool(settings.aicredits_api_key.strip()), lambda: repr(llm.ask(req)))
+    print("model for verdicts:", settings.aicredits_judge_model or settings.aicredits_model, "| planner/assistant:", settings.aicredits_model)
+    step("GNews (India)", bool(settings.gnews_api_key.strip()), lambda: first_title(providers.gnews("Modi cabinet decision", "in", limit=3)), "FNEV_GNEWS_API_KEY")
+    step("NewsAPI", bool(settings.newsapi_key.strip()), lambda: first_title(providers.newsapi("Modi cabinet decision", limit=3)), "FNEV_NEWSAPI_KEY")
+    step("Google Fact Check", bool(settings.google_factcheck_key.strip()),
+         lambda: (lambda r: f"{len(r)} reviews; first: {r[0].publisher} rated {r[0].rating!r}" if r else "0 reviews (key works)")(providers.factchecks("hot water cures cancer", limit=3)),
+         "FNEV_GOOGLE_FACTCHECK_KEY")
+    step("Wikipedia", bool(settings.wikipedia_contact.strip()), lambda: live.search_titles("Eiffel Tower", 3), "FNEV_WIKIPEDIA_CONTACT")
+    step("AICredits JSON", client.configured(), llm_json, "FNEV_AICREDITS_API_KEY")
+    step("AICredits streaming + tools", client.configured(), llm_tools, "FNEV_AICREDITS_API_KEY")
 
 
 if __name__ == "__main__":

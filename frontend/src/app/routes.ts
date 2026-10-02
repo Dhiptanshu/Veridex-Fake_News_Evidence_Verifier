@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-export type Route = "verify" | "compare" | "batch" | "history" | "data" | "insights" | "pipeline" | "settings";
-export const ROUTES: Route[] = ["verify", "compare", "batch", "history", "data", "insights", "pipeline", "settings"];
+export type Route = "verify" | "assistant" | "compare" | "batch" | "history" | "data" | "insights" | "pipeline" | "settings";
+export const ROUTES: Route[] = ["verify", "assistant", "compare", "batch", "history", "data", "insights", "pipeline", "settings"];
 
 function current(): Route {
   const h = location.hash.replace(/^#\/?/, "").split(/[/?]/)[0] as Route;

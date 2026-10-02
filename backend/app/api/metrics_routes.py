@@ -23,6 +23,7 @@ FILES = {
     "explanation": "explanation.json",
     "topics": "topics.json",
     "liar": "liar.json",
+    "judge_bench": "judge_bench.json",
 }
 
 

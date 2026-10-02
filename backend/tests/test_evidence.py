@@ -189,11 +189,11 @@ def test_second_gnews_query_is_only_sent_when_the_first_found_few_articles(live_
     many = [art(f"Distinct headline number {i} about Curie", f"https://n/{i}") for i in range(6)]
     live_setup.setattr(providers, "gnews", lambda q, country=None, limit=10: sent.append((q, country)) or many)
     engine.gather(hybrid.get_resources(), "Curie Nobel", ["Curie"], "curie", project=False)
-    assert sent == [("q one", "in")]  # enough articles: quota saved
+    assert len(sent) == 1 and sent[0][0] != "q one"  # the first request is rule-based (it starts before the planner finishes)
     sent.clear()
     live_setup.setattr(providers, "gnews", lambda q, country=None, limit=10: sent.append((q, country)) or many[:1])
     engine.gather(hybrid.get_resources(), "Curie Nobel", ["Curie"], "curie", project=False)
-    assert [q for q, _ in sent] == ["q one", "q two"]  # never more than two requests per run
+    assert [q for q, _ in sent][1:] == ["q one"] and len(sent) == 2  # then one planner query, never more than two requests
 
 
 def test_daily_limit_is_remembered_so_no_more_requests_are_wasted(monkeypatch):

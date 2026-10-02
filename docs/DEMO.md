@@ -1,5 +1,13 @@
 # Demo script (about 7 minutes)
 
+> **Primary demo (live news):** start the API with your keys, open **Verify**, and run a current claim. Suggested order:
+> (1) an India claim from the example chips, e.g. *RBI cut the repo rate in its latest policy meeting.* Point at the source cards:
+> news from The Hindu / ThePrint with dates and credibility tiers, and the judge's cited reasoning;
+> (2) *Drinking hot water cures cancer.*, which fact-checkers have covered (needs the Google Fact Check key);
+> (3) in the Assistant panel ask something the evidence cannot answer, e.g. *Who is the current RBI governor?*, and show it
+> searching and citing instead of refusing; (4) **Compare** the LLM judge with the offline BERT on the same claim to show why a
+> Wikipedia-trained model is weak on news. The sections below cover the offline FEVER side (benchmark, ground truth).
+
 Start the API and the UI (see the README), open the app, and have the Pipeline options panel closed.
 All claims below were run through the real pipeline; the verdicts are what the system produced, including its mistakes.
 

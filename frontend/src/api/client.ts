@@ -75,3 +75,5 @@ export async function askQuestion(req: AskRequest, signal?: AbortSignal): Promis
 }
 
 export const fetchSystemStatus = (signal?: AbortSignal) => getJson<SystemStatus>("/api/system/status", signal);
+
+export const fetchChatStatus = (signal?: AbortSignal) => getJson<{ configured: boolean; model: string; tools: string[] }>("/api/chat/status", signal);

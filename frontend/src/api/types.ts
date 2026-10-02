@@ -26,18 +26,22 @@ export interface Triple { subject: string; predicate: string; object: string }
 export interface NerOut { entities: Entity[]; noun_chunks: string[]; triples: Triple[] }
 export interface KeywordsOut { keywords: { term: string; score: number; kind: string }[]; query: string }
 export interface Topic { id: number; label: string; words: string[] }
+export type EvidenceKind = "news" | "fact-check" | "background" | "wikipedia";
 export interface Evidence {
   id: string; title: string; source: string; url: string | null; score: number;
   sentences: { text: string; score: number }[]; topic: Topic | null;
+  kind: EvidenceKind; published: string | null; tier: string | null; rating: string | null;
 }
 export interface MapPoint { x: number; y: number; kind: "claim" | "evidence"; label: string; score: number | null }
 export interface Projection { points: MapPoint[]; background: [number, number][]; explained_variance: number }
 export interface RetrievalOut {
   evidence: Evidence[]; query: string | null; score_entropy: number | null; projection: Projection | null;
+  queries: string[]; timings_ms: Record<string, number>; notes: string[];
 }
 export interface VerificationOut {
   label: Label; confidence: number; probabilities: Record<Label, number>;
   per_evidence: { evidence_id: string; supported: number; refuted: number; neutral: number }[];
+  engine: "bert" | "llm"; reasoning: string | null; nuance: string | null; missing: string | null; cited: number[]; notes: string[];
 }
 export interface Citation {
   n: number; evidence_id: string; title: string; text: string; role: "decisive" | "closest" | "context";

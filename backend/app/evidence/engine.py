@@ -12,8 +12,8 @@ from app.evidence import credibility, fetch, planner, providers
 from app.retrieval import hybrid, live
 from app.schemas.stages import RetrievalOut
 
-FETCH_TOP = 4  # article bodies to download (the most relevant ones by headline/snippet)
-FETCH_DEADLINE_S = 6.0  # slow sites are abandoned: their headline and snippet are used instead
+FETCH_TOP = 3  # article bodies to download (the most relevant ones by headline/snippet)
+FETCH_DEADLINE_S = 4.0  # slow sites are abandoned: their headline and snippet are used instead
 MAX_BODY_SENTENCES = 14
 BACKGROUND_PRIOR = -0.02  # Wikipedia may add context but should not outrank news and fact-checks
 MAX_BACKGROUND_PASSAGES = 2
@@ -79,20 +79,31 @@ def _unique(articles: list[providers.Article]) -> list[providers.Article]:
     return out
 
 
-def _search_news(plan: planner.Plan, notes: list[str]) -> list[providers.Article]:
-    """GNews first: the main query, and a second differently-worded one only if the first found few articles (each request
-    costs quota). NewsAPI only when GNews is absent or still short."""
+def _news_first(query: str, country: str | None, notes: list[str]) -> list[providers.Article]:
+    """The first news request. It starts immediately, with a rule-based query, while the LLM is still planning."""
     conf = providers.configured()
-    articles: list[providers.Article] = []
-    if conf["gnews"]:
-        for q in plan.queries[:2]:
+    try:
+        if conf["gnews"]:
+            return providers.gnews(query, country)
+        if conf["newsapi"]:
+            return providers.newsapi(query)
+    except providers.ProviderError as exc:
+        notes.append(str(exc))
+    return []
+
+
+def _news_followup(have: list[providers.Article], plan: planner.Plan, first_query: str, notes: list[str]) -> list[providers.Article]:
+    """Only when the first query found few articles: one more request with the planner's best differently-worded query, and
+    NewsAPI as a second source if GNews is absent or still short. Each request costs quota."""
+    conf = providers.configured()
+    articles = list(have)
+    if conf["gnews"] and len(_unique(articles)) < ENOUGH_ARTICLES:
+        nxt = next((q for q in plan.queries if _norm_title(q) != _norm_title(first_query)), None)
+        if nxt:
             try:
-                articles += providers.gnews(q, plan.country)
+                articles += providers.gnews(nxt, plan.country)
             except providers.ProviderError as exc:
                 notes.append(str(exc))
-                break
-            if len(_unique(articles)) >= ENOUGH_ARTICLES:
-                break
     if conf["newsapi"] and len(_unique(articles)) < 3:
         try:
             articles += providers.newsapi(plan.queries[0])
@@ -110,17 +121,20 @@ def gather(
     timings: dict[str, float] = {}
 
     t0 = time.perf_counter()
-    plan = planner.make_plan(claim, entities, keyword_query, use_llm=use_llm)
-    notes += plan.notes
-    timings["plan"] = (time.perf_counter() - t0) * 1000
-
-    t0 = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        news_f = pool.submit(_search_news, plan, notes) if (conf["gnews"] or conf["newsapi"]) else None
-        fc_f = (pool.submit(lambda: [fc for q in dict.fromkeys([claim[:200], plan.queries[0]]) for fc in providers.factchecks(q)])
+    rule_queries = planner.fallback_queries(claim, entities, keyword_query) or [claim[:80]]
+    rule_country = "in" if planner.india_related(claim) else None
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        plan_f = pool.submit(planner.make_plan, claim, entities, keyword_query, use_llm=use_llm)
+        news_f = pool.submit(_news_first, rule_queries[0], rule_country, notes) if (conf["gnews"] or conf["newsapi"]) else None
+        fc_f = (pool.submit(lambda: [fc for q in dict.fromkeys([claim[:200], rule_queries[0]]) for fc in providers.factchecks(q)])
                 if conf["factcheck"] else None)
         wiki_f = pool.submit(live.wikipedia_items, claim, entities) if conf["wikipedia"] else None
+        plan = plan_f.result()
+        timings["plan"] = (time.perf_counter() - t0) * 1000
+        notes += plan.notes
         articles = news_f.result() if news_f else []
+        if news_f:
+            articles = _news_followup(articles, plan, rule_queries[0], notes)
         checks: list[providers.FactCheck] = []
         if fc_f:
             try:
@@ -133,7 +147,7 @@ def gather(
                 wiki = wiki_f.result()
             except RuntimeError as exc:
                 notes.append(str(exc))
-    timings["search"] = (time.perf_counter() - t0) * 1000
+    timings["search"] = (time.perf_counter() - t0) * 1000  # includes planning: the two overlap
 
     items: list[live.Item] = [it for a in articles for it in article_items(a)]
     items += [it for fc in checks for it in factcheck_items(fc)]

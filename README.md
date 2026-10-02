@@ -3,19 +3,41 @@
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
 
-**Status: Phases 1-7 done, Phase 8 (polish and deploy) mostly done.** The full pipeline is real: preprocessing, NER,
-keywords, retrieval (lexical, word-vector, transformer, live Wikipedia), verification (BiLSTM/BiGRU, fine-tuned BERT)
-and a grounded explanation. Open the **Insights** tab for the results. Also see [docs/REPORT.md](docs/REPORT.md) (lab report with
-syllabus mapping) and [docs/DEMO.md](docs/DEMO.md) (demo script).
+**Status: news-first.** By default a claim is checked against **live news and fact-check sites** (India-aware), the full text of
+the best articles is read, and an **LLM judge** returns a verdict with reasoning and cited sources; a **chat assistant** can search
+the web to answer follow-ups. The offline FEVER/Wikipedia system (BiLSTM/BiGRU, fine-tuned BERT) is still there as the benchmark and
+the no-keys fallback. See [docs/API_KEYS.md](docs/API_KEYS.md) for keys, [docs/REPORT.md](docs/REPORT.md) (lab report) and
+[docs/DEMO.md](docs/DEMO.md) (demo script).
+
+## How a live check works
+
+```
+claim -> understand (spaCy entities, keywords) -> plan 2-3 search queries (LLM, rule-based fallback)
+      -> search in parallel: GNews (country=in for India), NewsAPI, Google Fact Check, Wikipedia (background only)
+      -> download the full text of the top articles -> rank passages (BGE + source credibility, Wikipedia capped)
+      -> LLM judge: strict JSON verdict + probabilities + reasoning + cited passages + what is missing
+      -> explanation with citation chips; assistant chat with tools (news, fact-check, Wikipedia, article reader)
+```
+
+* **Sources, not just wording:** every passage carries its source, date and a credibility tier (fact-checker, wire/major,
+  established, unrated) from a small curated list; a fact-checker's own rating counts most.
+* **Honest by construction:** the judge may only use the numbered passages; a verdict with no valid citation is downgraded to
+  "not enough info"; absence of evidence is never "refuted"; passages are untrusted data (prompt-injection tested).
+* **Fallbacks:** no news key -> offline Wikipedia subset; no LLM key -> BERT verdict with a visible warning; a failing provider
+  adds a note and the run continues. Quota use is minimal and cached (see docs/API_KEYS.md).
+* **Judge model choice:** `ml/bench_judge.py` compares models on cached evidence (`docs/results/judge_bench.json`, shown in Insights).
+  Claude Sonnet 4.6 scored best (9/10 on claims with a known answer vs 8/10 for GPT-4o and GPT-4o-mini) and was best calibrated.
 
 ## The interface
 
-A sidebar app (every tab is linkable, e.g. `http://localhost:8000/#/compare`), with a light theme (neutral off-white) and
-a graphite dark theme; Settings can follow your system.
+A sidebar app (every tab is linkable, e.g. `http://localhost:8000/#/compare`) with a clean light theme and a deep blue-black dark
+theme (violet accent, no yellow); Settings can follow your system. `Ctrl+K` opens a command palette: type a claim to verify it,
+or jump to any tab or past claim.
 
 | Tab | What it does |
 |---|---|
-| **Verify** | One claim through the pipeline, streamed stage by stage. Result header (verdict, probabilities, timings), then tabs: Explanation (cited rationale, word heat-map, follow-up questions), Evidence, Pipeline (tokens, entities, keywords) and Semantic map. "Real FEVER claims" fills the box with a random test claim and shows FEVER's label next to the system's verdict. |
+| **Verify** | One claim, streamed stage by stage. Hero card (verdict, confidence ring, nuance such as "partly true", warnings), then tabs: Explanation (cited reasoning, what is missing), Evidence (news / fact-check / Wikipedia cards with source, date, credibility tier and link), Pipeline and Semantic map; plus the Assistant chat. "Real FEVER claims" tests against ground truth. |
+| **Assistant** | A free-form chat that needs no claim. It answers from the current result when there is one and otherwise searches news, fact-checkers and Wikipedia itself, citing every source. |
 | **Compare** | The same claim through up to three pipeline configurations side by side (for example claim-only vs BERT, TF-IDF vs BGE, live Wikipedia), with a banner when they disagree. |
 | **Batch** | Many claims at once (paste or upload `.txt`/`.csv`, up to 100, two in flight). Add `claim,label` or `claim<TAB>label` to get an accuracy score for your own data. Export CSV or JSON. |
 | **History** | Every verify, compare and batch run, saved in your browser only. Search, filter, re-run, export, delete. |
@@ -233,25 +255,18 @@ random words. Reading 30 random explanations found two real bugs (an unrelated p
 dates deleted by text cleanup), both fixed with regression tests. `docs/results/explanation_samples.md` has the samples;
 10 of those 30 verdicts disagreed with FEVER's label. Details and the summary table are in the report.
 
-## Live Wikipedia search and deployment (Phase 8)
+## Keys, live services and deployment
 
-* **Keys and where to put them:** see [docs/API_KEYS.md](docs/API_KEYS.md) (links, free-tier limits, privacy). Copy
-  `backend/.env.example` to `backend/.env` and fill in what you want; every key is optional.
-* **Live news** (retrieval options "Live news search" and "Live Wikipedia + news"): GNews or NewsAPI evidence ranked with the
-  same BGE embeddings. Free plans return only headlines and short snippets, and news is a different domain from the training
-  data, so verdicts from news evidence are less reliable. Needs `FNEV_GNEWS_API_KEY` or `FNEV_NEWSAPI_KEY`.
-* **Ask about this result:** a follow-up box under the explanation. It routes "why / how sure / what are the sources"
-  questions to the system's own results, answers factual questions with a local SQuAD 2.0 model that quotes a span from the
-  evidence (or says the evidence does not answer; `python ml/setup_nlp.py --qa` downloads it), and can use an LLM instead
-  when `FNEV_AICREDITS_API_KEY` is set. Evidence passages are passed to an LLM as untrusted data, and the local mode sends
-  nothing off the machine.
-* **Live mode** (retrieval option "Live Wikipedia search") searches Wikipedia's public API for claims outside the FEVER
-  subset and ranks page introductions with BGE. Wikimedia requires contact details in the User-Agent, so it stays off
-  until you set `FNEV_WIKIPEDIA_CONTACT` (your email or a URL, for example in `backend/.env`). The claim text and entity
-  names are sent to en.wikipedia.org. Verdicts on real-world claims are demonstrations, not fact-checking.
+* **Keys:** `backend/.env` (see [docs/API_KEYS.md](docs/API_KEYS.md) for links, quotas, cost and privacy). All optional.
+* **Assistant:** streams over Server-Sent Events (`POST /api/chat`); the server keeps no conversation state. Tools: `search_news`,
+  `search_factcheck`, `search_wikipedia`, `fetch_article` (only for URLs already shown to the user, so a web page cannot make
+  it fetch an arbitrary address). At most 4 tool rounds per message. Without an LLM key the Verify tab falls back to a small
+  local question-answering box (`python ml/setup_nlp.py --qa`).
+* **Check your setup:** `python ml/check_live.py` verifies each configured service answers (uses a few requests of quota).
 * **One process serves everything:** after `npm run build` in `frontend/`, `uvicorn app.main:app` also serves the UI at `/`.
 * **Docker:** `Dockerfile` and `docker-compose.yml` package this (mount `./data/{indexes,models,processed}`). They have **not
-  been built or run**: the Docker daemon was not running and disk space was limited. Treat them as untested.
+  been built or run**: the Docker daemon was not running. Treat them as untested.
+* **Memory:** the API needs about 1.2 GB; on a machine with little free RAM everything (including the network calls) slows down.
 
 ## LIAR (extra)
 

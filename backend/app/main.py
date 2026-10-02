@@ -19,6 +19,7 @@ log = logging.getLogger("fnev")
 
 def _warm_up() -> None:
     """Load heavy resources once at startup. Failures are logged, not fatal: stages report a clear error per request."""
+    from app.evidence import engine
     from app.nlp import pmi, resources, text, topics, wordnet
     from app.retrieval import hybrid, projection
     from app.retrieval.tfidf import get_index
@@ -27,15 +28,19 @@ def _warm_up() -> None:
         get_index().feature_names()
 
     def warm_bert() -> None:
+        from app.llm import client as llm_client
         from app.verification import models as vmodels
 
+        if llm_client.configured():  # the LLM judge is the default verdict engine; BERT then loads only if it is needed
+            return
         vmodels.load("bert").predict([("Warm up.", "Warm up.")])
         vmodels.load_stacker()
 
     def warm_dense() -> None:
         store = hybrid.get_store(hybrid.get_resources(), "bge_small")
         store.encode(["Warm up."])
-        store.matrix32()  # float32 copy for global search, about 570 MB
+        if not engine.available():  # the offline pipeline needs the 570 MB float32 matrix; the live one does not
+            store.matrix32()
 
     for name, load in [
         ("nltk + wordnet", lambda: (text.analyze("Warm up the tagger."), wordnet.synonyms("film", "NN"))),

@@ -62,8 +62,12 @@ def build_status() -> SystemStatus:
         Check(key="newsapi", label="NewsAPI", ready=bool(settings.newsapi_key.strip()),
               detail="key set" if settings.newsapi_key.strip() else "not configured (optional)",
               fix=None if settings.newsapi_key.strip() else "Set FNEV_NEWSAPI_KEY in backend/.env"),
+        Check(key="factcheck", label="Google Fact Check", ready=bool(settings.google_factcheck_key.strip()),
+              detail="key set" if settings.google_factcheck_key.strip() else "not configured (optional, recommended)",
+              fix=None if settings.google_factcheck_key.strip() else "Create a key at developers.google.com/fact-check/tools/api, then set FNEV_GOOGLE_FACTCHECK_KEY in backend/.env"),
         Check(key="aicredits", label="AICredits LLM", ready=bool(settings.aicredits_api_key.strip()),
-              detail=f"model {settings.aicredits_model}" if settings.aicredits_api_key.strip() else "not configured",
+              detail=(f"chat {settings.aicredits_model}, judge {settings.aicredits_judge_model or settings.aicredits_model}"
+                      if settings.aicredits_api_key.strip() else "not configured"),
               fix=None if settings.aicredits_api_key.strip() else "Set FNEV_AICREDITS_API_KEY in backend/.env"),
     ]
     return SystemStatus(resources=res, services=services)

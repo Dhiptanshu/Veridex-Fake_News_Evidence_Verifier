@@ -213,6 +213,53 @@ export function InsightsPage() {
         </Section>
       )}
 
+      {m.judge_bench?.summary && (
+        <Section
+          title="Choosing the LLM judge"
+          finding={`On live news evidence, all three models were honest (they said "not enough info" rather than guess), and the stronger models were better calibrated.`}
+        >
+          <HBars
+            rows={Object.entries(m.judge_bench.summary).map(([model, s]: [string, M]) => ({
+              label: model, highlight: model.includes("sonnet"), values: { acc: s.correct / s.scored },
+            }))}
+            series={[{ key: "acc", label: "Correct on claims with a known answer (10 claims)", color: C.accent }]}
+          />
+          <div className="mt-5 overflow-x-auto">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="text-left text-xs text-muted">
+                  <th className="pb-2 font-normal">Claim</th>
+                  <th className="pb-2 font-normal">Known answer</th>
+                  {Object.keys(m.judge_bench.rows).map((model) => <th key={model} className="pb-2 font-normal">{model.split("/")[1]}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {Object.values(m.judge_bench.rows)[0] && (Object.values(m.judge_bench.rows)[0] as M[]).map((r: M, i: number) => (
+                  <tr key={r.claim} className="border-t border-line">
+                    <td className="py-1.5 pr-3">{r.claim}</td>
+                    <td className="pr-3 text-muted">{r.gold === "?" ? "unknown (recent)" : String(r.gold).replaceAll("_", " ")}</td>
+                    {Object.values(m.judge_bench.rows).map((rows, k) => {
+                      const x = (rows as M[])[i];
+                      const ok = r.gold !== "?" && x.verdict === r.gold;
+                      const bad = r.gold !== "?" && x.verdict !== r.gold;
+                      return (
+                        <td key={k} className={`pr-3 font-mono text-xs ${ok ? "text-supported" : bad ? "text-refuted" : "text-muted"}`}>
+                          {String(x.verdict).replaceAll("_", " ")} {x.confidence != null ? x.confidence.toFixed(2) : ""}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-xs text-muted">
+            Small benchmark: 14 claims, 10 with a known answer. The misses on myth claims ("visible from space", "hot water kills the virus") were retrieval gaps, not judge errors: no
+            relevant passage was found, so "not enough info" was the honest answer. Sonnet 4.6 is the default judge; set <span className="font-mono">FNEV_AICREDITS_JUDGE_MODEL</span> to change it.
+          </p>
+        </Section>
+      )}
+
       {m.liar && (
         <Section
           title="A second dataset: LIAR"

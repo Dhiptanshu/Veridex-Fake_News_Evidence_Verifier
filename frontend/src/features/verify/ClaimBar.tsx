@@ -53,17 +53,17 @@ export function ClaimBar({
   const submit = () => { if (valid && !running) { setMenu(false); onRun(value.trim(), gold); } };
 
   return (
-    <div className="rounded-lg border border-line bg-surface focus-within:border-accent">
+    <div className="mx-auto w-full max-w-3xl rounded-2xl border border-line bg-surface shadow-pop transition focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/10">
       <label htmlFor="claim" className="sr-only">Claim to verify</label>
       <textarea
         id="claim"
         value={value}
         onChange={(e) => { onChange(e.target.value); setGold(null); }}
         onKeyDown={(e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey || !e.shiftKey)) { e.preventDefault(); submit(); } }}
-        rows={2}
+        rows={3}
         maxLength={2000}
-        placeholder="Enter a claim or headline to verify against evidence..."
-        className="block w-full resize-none bg-transparent px-4 pb-1 pt-3 text-[15px] leading-snug outline-none placeholder:text-muted/70"
+        placeholder="Paste a claim, headline or forwarded message..."
+        className="block w-full resize-none bg-transparent px-5 pb-1 pt-4 text-[16px] leading-snug outline-none placeholder:text-muted/70"
       />
       <div className="flex flex-wrap items-center gap-2 border-t border-line px-3 py-2">
         <div ref={boxRef} className="relative">
