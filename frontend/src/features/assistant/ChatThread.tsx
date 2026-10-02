@@ -43,14 +43,28 @@ function SourceCard({ s }: { s: ChatSource }) {
   return s.url ? <a href={s.url} target="_blank" rel="noreferrer noopener" className="block">{body}</a> : body;
 }
 
+export interface SavedMsg { role: "user" | "assistant"; content: string }
+
+function loadSaved(persistKey?: string): { msgs: Msg[]; sources: ChatSource[] } | null {
+  const saved = persistKey ? readJSON<{ msgs: Msg[]; sources: ChatSource[] } | null>(`fnev-chat:${persistKey}`, null) : null;
+  return saved?.msgs?.length ? { msgs: saved.msgs.map((m) => ({ ...m, streaming: false })), sources: saved.sources ?? [] } : null;
+}
+
+/**
+ * A chat. It loads its saved conversation when it is created, so callers give it a `key` (the session or claim id) and
+ * a new key means a new, separate conversation. `onChange` reports finished message lists, for session bookkeeping.
+ */
 export function ChatThread({
-  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey,
+  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey, onChange,
 }: {
   context: ChatContext | null; initialSources: ChatSource[]; suggestions: string[]; placeholder: string; onJump?: (s: ChatSource) => void;
-  resetKey: string; height?: string; modelHint?: string; persistKey?: string;
+  resetKey: string; height?: string; modelHint?: string; persistKey?: string; onChange?: (msgs: SavedMsg[]) => void;
 }) {
-  const [msgs, setMsgs] = useState<Msg[]>([]);
-  const [sources, setSources] = useState<ChatSource[]>(initialSources);
+  const [init] = useState(() => loadSaved(persistKey));
+  const [msgs, setMsgs] = useState<Msg[]>(init?.msgs ?? []);
+  const [sources, setSources] = useState<ChatSource[]>(init?.sources.length ? init.sources : initialSources);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState<number | null>(null);
@@ -59,27 +73,20 @@ export function ChatThread({
   const sourcesRef = useRef(sources);
   sourcesRef.current = sources;
 
-  // a new claim/result starts (or resumes) its own conversation; conversations are saved so a reload or tab switch loses nothing
+  // Conversations are saved so a reload or tab switch loses nothing. Per-claim chats keep the 12 most recent; named
+  // sessions (persistKey "session:...") are managed by the Assistant page, which decides how many to keep.
+  const firstRun = useRef(true);
   useEffect(() => {
-    ctl.current?.abort();
-    setBusy(false);
-    const saved = persistKey ? readJSON<{ msgs: Msg[]; sources: ChatSource[] } | null>(`fnev-chat:${persistKey}`, null) : null;
-    if (saved?.msgs?.length) {
-      setMsgs(saved.msgs.map((m) => ({ ...m, streaming: false })));
-      setSources(saved.sources?.length ? saved.sources : initialSources);
-    } else {
-      setMsgs([]);
-      setSources(initialSources);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey]);
-  useEffect(() => {
+    if (firstRun.current) { firstRun.current = false; if (init) return; }  // just opened a saved chat: nothing new to save
     if (!persistKey || msgs.length === 0 || msgs.some((m) => m.streaming)) return;
-    writeJSON(`fnev-chat:${persistKey}`, { msgs: msgs.slice(-30), sources });
-    const index = readJSON<string[]>("fnev-chat-index", []).filter((k) => k !== persistKey);
-    index.push(persistKey);
-    while (index.length > 12) { try { localStorage.removeItem(`fnev-chat:${index.shift()}`); } catch { /* ignore */ } }
-    writeJSON("fnev-chat-index", index);
+    writeJSON(`fnev-chat:${persistKey}`, { msgs: msgs.slice(-60), sources });
+    if (!persistKey.startsWith("session:")) {
+      const index = readJSON<string[]>("fnev-chat-index", []).filter((k) => k !== persistKey);
+      index.push(persistKey);
+      while (index.length > 12) { try { localStorage.removeItem(`fnev-chat:${index.shift()}`); } catch { /* ignore */ } }
+      writeJSON("fnev-chat-index", index);
+    }
+    onChangeRef.current?.(msgs.map((m) => ({ role: m.role, content: m.content })));
   }, [msgs, sources, persistKey]);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs]);
   useEffect(() => () => ctl.current?.abort(), []);

@@ -40,7 +40,7 @@ export function AssistantPanel({
       subtitle="Follow-up questions. It searches the web when the evidence here is not enough."
     >
       <ChatThread
-        context={context} initialSources={sources} resetKey={`${claim}|${verification.label}|${verification.confidence}`} persistKey={`claim:${claim.toLowerCase().slice(0, 120)}`} onJump={onJump}
+        key={`${claim}|${verification.label}|${verification.confidence}`} context={context} initialSources={sources} resetKey={`${claim}|${verification.label}|${verification.confidence}`} persistKey={`claim:${claim.toLowerCase().slice(0, 120)}`} onJump={onJump}
         suggestions={["Why this verdict?", "How reliable are the sources?", "What would change the verdict?", "Is there anything newer on this?"]}
         placeholder="Ask a follow-up..." modelHint={status?.model ? `Model: ${status.model}` : undefined}
       />
