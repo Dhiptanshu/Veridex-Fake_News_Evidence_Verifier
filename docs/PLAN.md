@@ -1,4 +1,4 @@
-# Fake News Evidence Verifier — Project Plan
+# Veridex — Project Plan
 
 NLP Lab (Course 2604732), Semester VII, GLS University.
 

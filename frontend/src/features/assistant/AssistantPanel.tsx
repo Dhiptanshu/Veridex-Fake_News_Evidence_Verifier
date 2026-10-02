@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { VeraAvatar } from "@/components/Vera";
 import { useEffect, useMemo, useState } from "react";
 import { fetchChatStatus } from "@/api/client";
 import { passagesOf, type ChatContext, type ChatSource } from "@/api/chat";
@@ -36,8 +36,8 @@ export function AssistantPanel({
 
   return (
     <Panel
-      title={<span className="flex items-center gap-2"><Sparkles size={14} className="text-accent" />Assistant</span>}
-      subtitle="Follow-up questions. It searches the web when the evidence here is not enough."
+      title={<span className="flex items-center gap-2"><VeraAvatar size={22} className="rounded-full" />Ask Vera</span>}
+      subtitle="Follow-up questions. If the evidence here is not enough, Vera goes digging."
     >
       <ChatThread
         key={`${claim}|${verification.label}|${verification.confidence}`} context={context} initialSources={sources} resetKey={`${claim}|${verification.label}|${verification.confidence}`} persistKey={`claim:${claim.toLowerCase().slice(0, 120)}`} onJump={onJump}

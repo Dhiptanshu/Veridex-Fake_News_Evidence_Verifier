@@ -1,7 +1,7 @@
 [project]
 name = "fnev-backend"
 version = "0.1.0"
-description = "Fake News Evidence Verifier - API and NLP pipeline"
+description = "Veridex - evidence-based fact-checking API and NLP pipeline"
 requires-python = ">=3.10"
 dependencies = [
   "fastapi>=0.115",

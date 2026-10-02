@@ -13,7 +13,7 @@ interface Item { route: Route; label: string; icon: LucideIcon }
 const GROUPS: Item[][] = [
   [
     { route: "verify", label: "Verify", icon: ShieldCheck },
-    { route: "assistant", label: "Assistant", icon: Sparkles },
+    { route: "assistant", label: "Vera", icon: Sparkles },
     { route: "compare", label: "Compare", icon: Columns2 },
     { route: "batch", label: "Batch", icon: ListChecks },
     { route: "history", label: "History", icon: History },
@@ -29,7 +29,7 @@ const GROUPS: Item[][] = [
 ];
 const PAGE: Record<Route, { title: string; sub: string }> = {
   verify: { title: "Verify a claim", sub: "Check a claim against live news, fact-checkers and an AI judge" },
-  assistant: { title: "Assistant", sub: "Ask anything. It searches news, fact-checkers and Wikipedia and cites its sources" },
+  assistant: { title: "Chat with Vera", sub: "Your investigative sidekick. She digs through news, fact-checkers and Wikipedia and cites every source" },
   compare: { title: "Compare pipelines", sub: "Run one claim through different evidence and verdict engines side by side" },
   batch: { title: "Batch verification", sub: "Check many claims at once, with accuracy scoring for labelled data" },
   history: { title: "History", sub: "Every claim you have checked, saved in this browser only" },
@@ -71,8 +71,8 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
       <Logo size={compact ? 36 : 38} />
       {!compact && (
         <div className="min-w-0 leading-none">
-          <p className="font-display text-[17px] font-bold tracking-[0.08em]">EVIDENCE</p>
-          <p className="mt-1 truncate text-[11px] font-medium text-accent">Fake-news verifier</p>
+          <p className="font-display text-[19px] font-bold tracking-[0.1em]">VERIDEX</p>
+          <p className="mt-1 truncate text-[11px] font-medium text-accent">Verify before you share</p>
         </div>
       )}
     </div>

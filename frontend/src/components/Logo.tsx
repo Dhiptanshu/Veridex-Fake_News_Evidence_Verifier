@@ -1,7 +1,7 @@
-/** Evidence Verifier mark: a newspaper under a magnifying glass with a checkmark in the lens. Same artwork as public/favicon.svg. */
+/** Veridex mark: a newspaper under a magnifying glass with a checkmark in the lens. Same artwork as public/favicon.svg. */
 export function Logo({ size = 36, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Evidence Verifier" className={className}>
+    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="Veridex" className={className}>
       <defs>
         <linearGradient id="evlg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#6c9bff" />

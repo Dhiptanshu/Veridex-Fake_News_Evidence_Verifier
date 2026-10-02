@@ -1,4 +1,6 @@
-# Fake News Evidence Verifier
+# Veridex
+
+*Verify before you share.* Veridex checks claims against live news and fact-checkers and explains its verdict with sources. **Vera**, a friendly investigative-journalist assistant, helps you dig deeper.
 
 NLP Lab project (Semester VII). Given a claim, the system retrieves evidence, verifies the claim against it,
 and explains the verdict. See [docs/PLAN.md](docs/PLAN.md) for the full plan and syllabus mapping.
@@ -37,7 +39,7 @@ or jump to any tab or past claim.
 | Tab | What it does |
 |---|---|
 | **Verify** | One claim, streamed stage by stage. Hero card (verdict, confidence ring, nuance such as "partly true", warnings), then tabs: Explanation (cited reasoning, what is missing), Evidence (news / fact-check / Wikipedia cards with source, date, credibility tier and link), Pipeline and Semantic map; plus the Assistant chat. "Real FEVER claims" tests against ground truth. |
-| **Assistant** | A free-form chat that needs no claim. It answers from the current result when there is one and otherwise searches news, fact-checkers and Wikipedia itself, citing every source. Chats are saved as sessions in your browser: opening or reloading the app starts a fresh chat, tab switches keep your current one, and **Recent chats** reopens, searches or deletes older ones (the 50 most recent are kept). |
+| **Vera** (assistant) | A free-form chat that needs no claim. It answers from the current result when there is one and otherwise searches news, fact-checkers and Wikipedia itself, citing every source. Chats are saved as sessions in your browser: opening or reloading the app starts a fresh chat, tab switches keep your current one, and **Recent chats** reopens, searches or deletes older ones (the 50 most recent are kept). |
 | **Compare** | The same claim through up to three pipeline configurations side by side (for example claim-only vs BERT, TF-IDF vs BGE, live Wikipedia), with a banner when they disagree. |
 | **Batch** | Many claims at once (paste or upload `.txt`/`.csv`, up to 100, two in flight). Add `claim,label` or `claim<TAB>label` to get an accuracy score for your own data. Export CSV or JSON. |
 | **History** | Every verify, compare and batch run, saved in your browser only. Search, filter, re-run, export, delete. |

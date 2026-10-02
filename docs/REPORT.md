@@ -1,4 +1,4 @@
-# Fake News Evidence Verifier: lab report
+# Veridex: lab report
 
 NLP Lab, Course 2604732, B.Tech (CS&E) Semester VII, GLS University.
 Code: this repository. Every number below is read from `docs/results/*.json`, produced by the scripts in `ml/`.

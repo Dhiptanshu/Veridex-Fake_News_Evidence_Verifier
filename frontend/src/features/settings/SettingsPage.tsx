@@ -48,7 +48,7 @@ export function SettingsPage() {
 
       <Panel title="About">
         <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-[13px]">
-          <dt className="text-muted">Project</dt><dd>Fake News Evidence Verifier (NLP Lab, Semester VII)</dd>
+          <dt className="text-muted">Project</dt><dd>Veridex, an evidence-based fact-checker (NLP Lab, Semester VII). Meet Vera, the assistant.</dd>
           <dt className="text-muted">Reports</dt><dd className="font-mono text-xs">docs/REPORT.md, docs/DEMO.md, docs/API_KEYS.md</dd>
           <dt className="text-muted">Results</dt><dd className="font-mono text-xs">docs/results/*.json (shown in Insights)</dd>
           <dt className="text-muted">Keyboard</dt><dd><span className="font-mono text-xs">Enter</span> runs a claim, <span className="font-mono text-xs">Shift+Enter</span> adds a line.</dd>

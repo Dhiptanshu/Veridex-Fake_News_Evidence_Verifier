@@ -187,7 +187,7 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
               {status === "done" && v && expl && ret ? (
                 <AssistantPanel claim={claim} verification={v} explanation={expl} retrieval={ret} onJump={jumpToSource} />
               ) : (
-                <Panel title="Ask about this result"><p className="text-[13px] text-muted">Available once the run finishes.</p></Panel>
+                <Panel title="Ask Vera"><p className="text-[13px] text-muted">Vera can answer follow-up questions once the check finishes.</p></Panel>
               )}
             </div>
           )}

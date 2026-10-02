@@ -1,6 +1,7 @@
-import { ArrowUp, Check, Copy, ExternalLink, Globe, Loader2, RotateCcw, Sparkles, Square } from "lucide-react";
+import { ArrowUp, Check, Copy, ExternalLink, Globe, Loader2, RotateCcw, Square } from "lucide-react";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { streamChat, type ChatContext, type ChatSource, type Turn } from "@/api/chat";
+import { VeraAvatar } from "@/components/Vera";
 import { Badge, SourceMark } from "@/components/ui";
 import { readJSON, writeJSON } from "@/lib/persist";
 
@@ -55,10 +56,10 @@ function loadSaved(persistKey?: string): { msgs: Msg[]; sources: ChatSource[] } 
  * a new key means a new, separate conversation. `onChange` reports finished message lists, for session bookkeeping.
  */
 export function ChatThread({
-  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey, onChange,
+  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey, onChange, intro,
 }: {
   context: ChatContext | null; initialSources: ChatSource[]; suggestions: string[]; placeholder: string; onJump?: (s: ChatSource) => void;
-  resetKey: string; height?: string; modelHint?: string; persistKey?: string; onChange?: (msgs: SavedMsg[]) => void;
+  resetKey: string; height?: string; modelHint?: string; persistKey?: string; onChange?: (msgs: SavedMsg[]) => void; intro?: string;
 }) {
   const [init] = useState(() => loadSaved(persistKey));
   const [msgs, setMsgs] = useState<Msg[]>(init?.msgs ?? []);
@@ -135,10 +136,13 @@ export function ChatThread({
       <div className={`${height} max-h-[34rem] space-y-4 overflow-y-auto pr-1`} aria-live="polite">
         {msgs.length === 0 && (
           <div className="grid place-items-center gap-3 py-8 text-center">
-            <span className="grid size-11 place-items-center rounded-2xl bg-brand text-accentink shadow-brand"><Sparkles size={20} /></span>
-            <p className="max-w-sm text-[13px] text-muted">
-              Ask anything about this result, or any factual question. If the evidence here is not enough, I search news, fact-checkers and Wikipedia and cite what I find.
-            </p>
+            <VeraAvatar size={64} className="rounded-full shadow-brand" />
+            <div>
+              <p className="font-display text-[15px] font-semibold">Hi, I'm Vera</p>
+              <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-muted">
+                {intro ?? "Ask me anything about this result. If the evidence here isn't enough, I'll go digging through news, fact-checkers and Wikipedia and show you what I find."}
+              </p>
+            </div>
             <div className="flex flex-wrap justify-center gap-2">
               {followUps.map((s) => (
                 <button key={s} onClick={() => void send(s)} className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-muted transition hover:border-accent/50 hover:text-ink">{s}</button>
@@ -151,7 +155,9 @@ export function ChatThread({
             {m.role === "user" ? (
               <p className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-[13.5px] leading-relaxed text-accentink shadow-brand">{m.content}</p>
             ) : (
-              <div className="w-full max-w-[96%] space-y-2">
+              <div className="flex w-full max-w-[98%] gap-2.5">
+              <VeraAvatar size={30} className="mt-0.5 rounded-full" />
+              <div className="min-w-0 flex-1 space-y-2">
                 {(m.tools ?? []).length > 0 && (
                   <ul className="flex flex-wrap gap-1.5">
                     {m.tools!.map((t) => (
@@ -169,6 +175,7 @@ export function ChatThread({
                   <div className="rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3 text-[13.5px] leading-relaxed shadow-card">
                     <p className="whitespace-pre-wrap">
                       <Cited text={m.content} sources={sources} onJump={onJump} />
+                      {m.streaming && !m.content && <span className="text-muted">Vera is on it...</span>}
                       {m.streaming && <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-accent align-middle" />}
                     </p>
                     {!m.streaming && m.content && (
@@ -191,6 +198,7 @@ export function ChatThread({
                   </div>
                 )}
               </div>
+              </div>
             )}
           </div>
         ))}
@@ -211,7 +219,7 @@ export function ChatThread({
         )}
       </form>
       <p className="mt-1.5 px-1 text-[11px] text-muted">
-        {modelHint ? `${modelHint}. ` : ""}Answers can be wrong; check the cited sources. Your question and the evidence shown are sent to AICredits.
+        {modelHint ? `${modelHint}. ` : ""}Vera can be wrong, so check the sources she cites. Your messages and the evidence shown are sent to AICredits.
       </p>
     </div>
   );

@@ -1,4 +1,5 @@
-import { KeyRound, Sparkles } from "lucide-react";
+import { KeyRound } from "lucide-react";
+import { VeraAvatar } from "@/components/Vera";
 import { useCallback, useState } from "react";
 import { Empty, Panel } from "@/components/ui";
 import { usePersistentState } from "@/lib/persist";
@@ -10,7 +11,7 @@ const STARTERS = [
   "Is it true that the government banned 500 rupee notes again?",
   "What did the Union Cabinet decide this week?",
   "Has this viral WhatsApp claim been fact-checked? Drinking hot water cures cancer",
-  "Explain how you decide between refuted and not enough info",
+  "How do you decide between refuted and not enough info?",
 ];
 const MAX_SESSIONS = 50;
 const newId = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -49,7 +50,7 @@ export function AssistantPage() {
   if (status && !status.configured) {
     return (
       <Panel>
-        <Empty icon={<KeyRound size={20} />} title="The assistant needs an LLM key">
+        <Empty icon={<KeyRound size={20} />} title="Vera needs an LLM key to work">
           Add <code className="font-mono text-xs">FNEV_AICREDITS_API_KEY</code> to <code className="font-mono text-xs">backend/.env</code> and restart the API. See the Pipeline tab for the status of every service.
         </Empty>
       </Panel>
@@ -59,14 +60,14 @@ export function AssistantPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <Panel
-        title={<span className="flex items-center gap-2"><Sparkles size={14} className="text-accent" />{current ? current.title : "New chat"}</span>}
-        subtitle="Searches news, fact-checkers and Wikipedia as needed, and cites every source."
+        title={<span className="flex items-center gap-2"><VeraAvatar size={22} className="rounded-full" />{current ? current.title : "New chat with Vera"}</span>}
+        subtitle="Vera searches news, fact-checkers and Wikipedia as needed and cites every source."
         actions={<SessionMenu sessions={sessions} currentId={currentId} onOpen={setCurrentId} onDelete={remove} onDeleteAll={removeAll} onNew={startNew} />}
       >
         <ChatThread
           key={currentId} context={null} initialSources={[]} resetKey={currentId} persistKey={`session:${currentId}`} onChange={onChange}
-          suggestions={STARTERS} height="min-h-[26rem]"
-          placeholder="Ask about a claim, an event or how this tool works..." modelHint={status?.model ? `Model: ${status.model}` : undefined}
+          suggestions={STARTERS} height="min-h-[26rem]" intro="Your investigative sidekick. Give me a claim, a headline or a hunch and I will chase it down through news, fact-checkers and Wikipedia, with every source cited."
+          placeholder="Ask Vera about a claim, a headline or how Veridex works..." modelHint={status?.model ? `Model: ${status.model}` : undefined}
         />
       </Panel>
     </div>

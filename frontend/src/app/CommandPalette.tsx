@@ -8,7 +8,7 @@ import type { Route } from "./routes";
 interface Cmd { id: string; label: string; hint?: string; icon: typeof Search; run: () => void; verdict?: Label | null }
 
 const TABS: { route: Route; label: string }[] = [
-  { route: "verify", label: "Verify a claim" }, { route: "assistant", label: "Assistant" }, { route: "compare", label: "Compare pipelines" },
+  { route: "verify", label: "Verify a claim" }, { route: "assistant", label: "Chat with Vera" }, { route: "compare", label: "Compare pipelines" },
   { route: "batch", label: "Batch verification" }, { route: "history", label: "History" }, { route: "data", label: "Data" },
   { route: "insights", label: "Insights" }, { route: "pipeline", label: "Pipeline and services" }, { route: "settings", label: "Settings" },
 ];

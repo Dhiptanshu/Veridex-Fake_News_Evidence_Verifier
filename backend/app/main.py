@@ -67,7 +67,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="Fake News Evidence Verifier", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="Veridex", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["*"], allow_headers=["*"]
 )
