@@ -61,5 +61,14 @@ export function useVerify() {
     }
   }, []);
 
-  return { status, claim, stages, error, totalMs, run };
+  /** Show a previously saved finished run (after a reload). */
+  const restore = useCallback((snap: { claim: string; stages: Stages; totalMs: number | null }) => {
+    setClaim(snap.claim);
+    setStages(snap.stages);
+    setTotalMs(snap.totalMs);
+    setError(null);
+    setStatus("done");
+  }, []);
+
+  return { status, claim, stages, error, totalMs, run, restore };
 }

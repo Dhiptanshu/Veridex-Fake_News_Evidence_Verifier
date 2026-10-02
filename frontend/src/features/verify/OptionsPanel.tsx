@@ -20,10 +20,10 @@ export function countChanged(o: Options) { return Object.keys(o).length; }
 
 /** One select per pipeline slot; picking a slot's default removes it from the overrides. */
 export function OptionsGrid({
-  value, onChange, stages, slots = SLOTS,
-}: { value: Options; onChange: (o: Options) => void; stages: StageInfo[]; slots?: readonly Slot[] }) {
+  value, onChange, stages, slots = SLOTS, stacked = false,
+}: { value: Options; onChange: (o: Options) => void; stages: StageInfo[]; slots?: readonly Slot[]; stacked?: boolean }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className={stacked ? "space-y-4" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
       {slots.map((slot) => {
         const impls = stages.filter((s) => s.slot === slot);
         if (impls.length < 2) return null;
@@ -32,7 +32,7 @@ export function OptionsGrid({
         const info = impls.find((s) => s.name === current);
         return (
           <label key={slot} className="block">
-            <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+            <span className="mb-1.5 flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
               {SLOT_LABEL[slot]} {value[slot] && <Badge tone="accent">changed</Badge>}
             </span>
             <Select
@@ -47,7 +47,7 @@ export function OptionsGrid({
             >
               {impls.map((s) => <option key={s.name} value={s.name}>{s.label}{s.is_default ? " (default)" : ""}</option>)}
             </Select>
-            {info && <span className="mt-1 block text-xs leading-snug text-muted">{info.description}</span>}
+            {info && <span className="mt-1.5 block text-xs leading-relaxed text-muted">{info.description}</span>}
           </label>
         );
       })}

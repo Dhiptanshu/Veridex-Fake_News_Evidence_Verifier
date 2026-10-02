@@ -29,7 +29,7 @@ export function AssistantPage() {
         subtitle="Searches news, fact-checkers and Wikipedia as needed, and cites every source."
       >
         <ChatThread
-          context={null} initialSources={[]} resetKey="free" suggestions={STARTERS} height="min-h-[26rem]"
+          context={null} initialSources={[]} resetKey="free" persistKey="free" suggestions={STARTERS} height="min-h-[26rem]"
           placeholder="Ask about a claim, an event or how this tool works..." modelHint={status?.model ? `Model: ${status.model}` : undefined}
         />
       </Panel>

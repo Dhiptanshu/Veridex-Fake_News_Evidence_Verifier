@@ -82,7 +82,6 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
                 >
                   <Icon size={17} strokeWidth={route === r ? 2.3 : 1.9} />
                   {!compact && label}
-                  {!compact && r === "assistant" && <span className="ml-auto rounded-full bg-brand px-1.5 py-px text-[9px] font-bold uppercase text-accentink">New</span>}
                 </a>
               </li>
             ))}

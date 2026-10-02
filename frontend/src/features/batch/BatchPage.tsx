@@ -5,6 +5,8 @@ import { runOnce, type RunResult } from "@/api/run";
 import { Badge, Button, Empty, LABEL_TEXT, LABEL_TONE, Panel, Stat } from "@/components/ui";
 import { download, stamp, toCSV } from "@/lib/download";
 import { OptionsGrid, useStageCatalog } from "@/features/verify/OptionsPanel";
+import { ResultDetail } from "@/features/verify/ResultDetail";
+import { slimRun, usePersistentState } from "@/lib/persist";
 import { entryFromRun, useAppState, type Options } from "@/state/AppState";
 
 const MAX = 100;
@@ -28,9 +30,11 @@ export function parseLines(text: string): { claim: string; gold: Label | null }[
 export function BatchPage() {
   const { addEntry } = useAppState();
   const catalog = useStageCatalog();
-  const [text, setText] = useState("");
-  const [options, setOptions] = useState<Options>({});
-  const [rows, setRows] = useState<Row[]>([]);
+  const [text, setText] = usePersistentState("fnev-batch-text", "");
+  const [options, setOptions] = usePersistentState<Options>("fnev-batch-options", {});
+  // a batch that was running when the page was reloaded cannot continue: mark its unfinished rows instead of leaving them "running"
+  const [rows, setRows] = usePersistentState<Row[]>("fnev-batch-rows", [], (stored) =>
+    (stored as Row[]).map((r) => (r.status === "queued" || r.status === "running" ? { ...r, status: "error" as const, error: "Interrupted (page was reloaded)" } : r)));
   const [running, setRunning] = useState(false);
   const [open, setOpen] = useState<number | null>(null);
   const cancel = useRef(false);
@@ -54,7 +58,7 @@ export function BatchPage() {
         setRows((r) => r.map((x) => (x.n === i + 1 ? { ...x, status: "running" } : x)));
         try {
           const run = await runOnce(items[i].claim, options);
-          setRows((r) => r.map((x) => (x.n === i + 1 ? { ...x, status: run.error ? "error" : "done", run, error: run.error ?? undefined } : x)));
+          setRows((r) => r.map((x) => (x.n === i + 1 ? { ...x, status: run.error ? "error" : "done", run: slimRun(run), error: run.error ?? undefined } : x)));
           if (!run.error) addEntry(entryFromRun(run, "batch", items[i].gold));
         } catch (e) {
           setRows((r) => r.map((x) => (x.n === i + 1 ? { ...x, status: "error", error: (e as Error).message } : x)));
@@ -169,9 +173,9 @@ export function BatchPage() {
                         {open === r.n && (
                           <tr key={`${r.n}-d`} className="border-b border-line bg-bg/60">
                             <td />
-                            <td colSpan={5} className="px-2 py-3 text-[13px] leading-relaxed">
-                              {r.error && <p className="text-refuted">{r.error}</p>}
-                              {r.run?.out.explanation && <p>{r.run.out.explanation.rationale}</p>}
+                            <td colSpan={5} className="px-2 py-4 text-[13px] leading-relaxed">
+                              {r.error && <p className="mb-2 text-refuted">{r.error}</p>}
+                              {r.run && !r.run.error && <ResultDetail run={r.run} />}
                             </td>
                           </tr>
                         )}

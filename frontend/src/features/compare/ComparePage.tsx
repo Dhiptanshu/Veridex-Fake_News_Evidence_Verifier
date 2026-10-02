@@ -3,15 +3,18 @@ import { useState } from "react";
 import { runOnce, type RunResult } from "@/api/run";
 import { Badge, Button, LABEL_TEXT, LABEL_TONE, Panel, ProbBar, Select } from "@/components/ui";
 import { OptionsGrid, useStageCatalog } from "@/features/verify/OptionsPanel";
+import { ResultDetail } from "@/features/verify/ResultDetail";
+import { slimRun, usePersistentState } from "@/lib/persist";
 import { entryFromRun, useAppState, type Options } from "@/state/AppState";
 
 const PRESETS: { name: string; opts: Options }[] = [
-  { name: "Default (BGE + BERT stacker)", opts: {} },
-  { name: "Claim only (ignores evidence)", opts: { verification: "claim_only" } },
-  { name: "TF-IDF retrieval + BERT", opts: { retrieval: "tfidf" } },
-  { name: "BERT, evidence concatenated", opts: { verification: "bert_concat" } },
-  { name: "BiLSTM baseline", opts: { verification: "lstm" } },
-  { name: "Live Wikipedia + BERT", opts: { retrieval: "live_wikipedia" } },
+  { name: "Live news + LLM judge (default)", opts: {} },
+  { name: "Live news + BERT (offline model)", opts: { verification: "bert" } },
+  { name: "Offline Wikipedia + BERT", opts: { retrieval: "dense_bge", verification: "bert" } },
+  { name: "Offline Wikipedia + LLM judge", opts: { retrieval: "dense_bge" } },
+  { name: "Claim only (ignores evidence)", opts: { retrieval: "dense_bge", verification: "claim_only" } },
+  { name: "Offline TF-IDF + BERT", opts: { retrieval: "tfidf", verification: "bert" } },
+  { name: "Offline BiLSTM baseline", opts: { retrieval: "dense_bge", verification: "lstm" } },
 ];
 const SLOTS_SHOWN = ["retrieval", "verification", "explanation"] as const;
 
@@ -21,13 +24,21 @@ interface Outcome { run?: RunResult; error?: string }
 export function ComparePage() {
   const { addEntry } = useAppState();
   const catalog = useStageCatalog();
-  const [claim, setClaim] = useState("");
-  const [cfgs, setCfgs] = useState<Cfg[]>([
+  const [claim, setClaim] = usePersistentState("fnev-compare-claim", "");
+  const [cfgs, setCfgs] = usePersistentState<Cfg[]>("fnev-compare-cfgs", [
     { id: 1, preset: PRESETS[0].name, options: PRESETS[0].opts },
     { id: 2, preset: PRESETS[1].name, options: PRESETS[1].opts },
-  ]);
-  const [outcomes, setOutcomes] = useState<Record<number, Outcome | "running">>({});
+  ], (stored) => {
+    const known = new Set([...PRESETS.map((p) => p.name), "Custom"]);
+    const ok = (stored as Cfg[]).filter((c) => known.has(c.preset));
+    if (ok.length < 2) throw new Error("outdated saved presets");  // fall back to the defaults
+    return ok;
+  });
+  const [outcomes, setOutcomes] = usePersistentState<Record<number, Outcome | "running">>(
+    "fnev-compare-out", {}, (stored) => Object.fromEntries(Object.entries(stored as Record<string, Outcome | "running">).filter(([, v]) => v !== "running")),
+  );
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState<number | null>(null);
 
   const setPreset = (id: number, name: string) => {
     const p = PRESETS.find((x) => x.name === name);
@@ -42,7 +53,7 @@ export function ComparePage() {
     await Promise.all(cfgs.map(async (c) => {
       try {
         const r = await runOnce(text, c.options);
-        setOutcomes((o) => ({ ...o, [c.id]: { run: r } }));
+        setOutcomes((o) => ({ ...o, [c.id]: { run: slimRun(r) } }));
         if (!r.error) addEntry(entryFromRun(r, "compare"));
       } catch (e) {
         setOutcomes((o) => ({ ...o, [c.id]: { error: (e as Error).message } }));
@@ -96,7 +107,7 @@ export function ComparePage() {
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted hover:text-ink">Customise stages</summary>
                   <div className="mt-3">
-                    <OptionsGrid value={c.options} stages={catalog} slots={SLOTS_SHOWN}
+                    <OptionsGrid stacked value={c.options} stages={catalog} slots={SLOTS_SHOWN}
                       onChange={(opts) => setCfgs((x) => x.map((y) => (y.id === c.id ? { ...y, options: opts, preset: "Custom" } : y)))} />
                   </div>
                 </details>
@@ -115,7 +126,11 @@ export function ComparePage() {
                       <ProbBar values={[{ label: "supported", value: v.probabilities.supported }, { label: "refuted", value: v.probabilities.refuted }, { label: "not_enough_info", value: v.probabilities.not_enough_info }]} />
                       <p className="font-mono text-[11px] text-muted">{run.impl.retrieval} / {run.impl.verification}</p>
                       {run.out.explanation && <p className="text-[13px] leading-relaxed text-ink/90">{run.out.explanation.rationale.replace(/\[\d+\]/g, "")}</p>}
-                      {ret && (
+                      <button onClick={() => setOpen(open === c.id ? null : c.id)} className="text-xs font-semibold text-accent hover:underline">
+                        {open === c.id ? "Hide full result" : "Show full result (explanation and all evidence)"}
+                      </button>
+                      {open === c.id && <div className="rounded-xl border border-line bg-bg/60 p-3"><ResultDetail run={run} /></div>}
+                      {ret && open !== c.id && (
                         <div>
                           <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted">Top evidence</p>
                           <ul className="space-y-1.5">

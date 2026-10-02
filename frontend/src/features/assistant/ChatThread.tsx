@@ -2,6 +2,7 @@ import { ArrowUp, Check, Copy, ExternalLink, Globe, Loader2, RotateCcw, Sparkles
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { streamChat, type ChatContext, type ChatSource, type Turn } from "@/api/chat";
 import { Badge, SourceMark } from "@/components/ui";
+import { readJSON, writeJSON } from "@/lib/persist";
 
 interface Msg { role: "user" | "assistant"; content: string; tools?: { id: string; label: string; done: boolean; error?: string | null }[]; cited?: number[]; error?: string; streaming?: boolean }
 
@@ -43,10 +44,10 @@ function SourceCard({ s }: { s: ChatSource }) {
 }
 
 export function ChatThread({
-  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint,
+  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey,
 }: {
   context: ChatContext | null; initialSources: ChatSource[]; suggestions: string[]; placeholder: string; onJump?: (s: ChatSource) => void;
-  resetKey: string; height?: string; modelHint?: string;
+  resetKey: string; height?: string; modelHint?: string; persistKey?: string;
 }) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [sources, setSources] = useState<ChatSource[]>(initialSources);
@@ -58,8 +59,28 @@ export function ChatThread({
   const sourcesRef = useRef(sources);
   sourcesRef.current = sources;
 
-  // a new claim/result starts a new conversation
-  useEffect(() => { ctl.current?.abort(); setMsgs([]); setSources(initialSources); setBusy(false); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [resetKey]);
+  // a new claim/result starts (or resumes) its own conversation; conversations are saved so a reload or tab switch loses nothing
+  useEffect(() => {
+    ctl.current?.abort();
+    setBusy(false);
+    const saved = persistKey ? readJSON<{ msgs: Msg[]; sources: ChatSource[] } | null>(`fnev-chat:${persistKey}`, null) : null;
+    if (saved?.msgs?.length) {
+      setMsgs(saved.msgs.map((m) => ({ ...m, streaming: false })));
+      setSources(saved.sources?.length ? saved.sources : initialSources);
+    } else {
+      setMsgs([]);
+      setSources(initialSources);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+  useEffect(() => {
+    if (!persistKey || msgs.length === 0 || msgs.some((m) => m.streaming)) return;
+    writeJSON(`fnev-chat:${persistKey}`, { msgs: msgs.slice(-30), sources });
+    const index = readJSON<string[]>("fnev-chat-index", []).filter((k) => k !== persistKey);
+    index.push(persistKey);
+    while (index.length > 12) { try { localStorage.removeItem(`fnev-chat:${index.shift()}`); } catch { /* ignore */ } }
+    writeJSON("fnev-chat-index", index);
+  }, [msgs, sources, persistKey]);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [msgs]);
   useEffect(() => () => ctl.current?.abort(), []);
 

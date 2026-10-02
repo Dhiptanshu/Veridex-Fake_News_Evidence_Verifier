@@ -5,7 +5,9 @@ import { Card, Eyebrow, PlaceholderTag } from "@/components/Card";
 
 /** Scrolls to the evidence card of a citation. */
 function jumpTo(evidenceId: string) {
-  document.getElementById(`evidence-${evidenceId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  // several tabs stay mounted, so the same evidence id can exist more than once: scroll to the one that is visible
+  const el = [...document.querySelectorAll<HTMLElement>(`[id="evidence-${CSS.escape(evidenceId)}"]`)].find((e) => e.offsetParent !== null);
+  el?.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function CiteChip({ c, onClick }: { c: Citation; onClick: () => void }) {

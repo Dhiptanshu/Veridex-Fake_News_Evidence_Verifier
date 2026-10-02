@@ -4,6 +4,7 @@ import { SLOTS, type Label, type Slot } from "@/api/types";
 import type { RunResult } from "@/api/run";
 import { Badge, Empty, LABEL_TEXT, LABEL_TONE, Panel, Tabs } from "@/components/ui";
 import { entryFromRun, useAppState, type Options } from "@/state/AppState";
+import { readJSON, slimRun, usePersistentState, writeJSON } from "@/lib/persist";
 import { AssistantPanel } from "@/features/assistant/AssistantPanel";
 import type { ChatSource } from "@/api/chat";
 import { ClaimBar } from "./ClaimBar";
@@ -45,13 +46,13 @@ function toRunResult(claim: string, options: Options, stages: Stages, totalMs: n
 
 export function VerifyPage({ go }: { go: (r: "history") => void }) {
   const { defaults, addEntry, draft, setDraft, history } = useAppState();
-  const { status, claim, stages, error, totalMs, run } = useVerify();
+  const { status, claim, stages, error, totalMs, run, restore } = useVerify();
   const catalog = useStageCatalog();
-  const [text, setText] = useState("");
-  const [options, setOptions] = useState<Options>(defaults);
+  const [text, setText] = usePersistentState("fnev-verify-text", "");
+  const [options, setOptions] = usePersistentState<Options>("fnev-verify-options", defaults);
   const [optOpen, setOptOpen] = useState(false);
-  const [gold, setGold] = useState<Label | null>(null);
-  const [tab, setTab] = useState<TabKey>("why");
+  const [gold, setGold] = usePersistentState<Label | null>("fnev-verify-gold", null);
+  const [tab, setTab] = usePersistentState<TabKey>("fnev-verify-tab", "why");
   const runId = useRef(0);
   const savedId = useRef(0);
 
@@ -68,11 +69,21 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft]);
 
+  // The last finished result survives a reload.
+  useEffect(() => {
+    const snap = readJSON<{ claim: string; stages: Stages; totalMs: number | null } | null>("fnev-verify-snap", null);
+    if (snap?.claim && snap.stages?.verification?.output) restore(snap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Every finished run is saved to History.
   useEffect(() => {
     if (status === "done" && runId.current !== savedId.current) {
       savedId.current = runId.current;
       addEntry(entryFromRun(toRunResult(claim, options, stages, totalMs, null), "verify", gold));
+      const slim = slimRun(toRunResult(claim, options, stages, totalMs, null));
+      const keep = { ...stages, retrieval: { ...stages.retrieval, output: slim.out.retrieval ?? stages.retrieval.output } };
+      writeJSON("fnev-verify-snap", { claim, stages: keep, totalMs });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
