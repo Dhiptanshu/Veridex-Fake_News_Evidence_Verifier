@@ -46,6 +46,15 @@ export function SettingsPage() {
         </div>
       </Panel>
 
+      <Panel title="Privacy" subtitle="What leaves this device, and when">
+        <ul className="space-y-2 text-[13px] leading-relaxed text-muted">
+          <li><b className="font-semibold text-ink">Searching:</b> short search queries derived from your claim go to the news and fact-check providers (GNews, NewsAPI, Google Fact Check) and to Wikipedia for background. Public article pages found by search are downloaded to read them.</li>
+          <li><b className="font-semibold text-ink">AI judge and Vera:</b> your claim, the evidence passages shown on screen and your chat messages are sent to AICredits, and on to the model provider it routes to, to write verdicts and answers.</li>
+          <li><b className="font-semibold text-ink">On this device:</b> history, chats, results and settings are stored only in this browser. Nothing is uploaded.</li>
+          <li><b className="font-semibold text-ink">Offline mode</b> (no keys configured) sends nothing anywhere.</li>
+        </ul>
+      </Panel>
+
       <Panel title="About">
         <dl className="grid grid-cols-[8rem_1fr] gap-y-2 text-[13px]">
           <dt className="text-muted">Project</dt><dd>Veridex, an evidence-based fact-checker (NLP Lab, Semester VII). Meet Vera, the assistant.</dd>

@@ -61,13 +61,13 @@ export function AssistantPage() {
     <div className="mx-auto max-w-3xl">
       <Panel
         title={<span className="flex items-center gap-2"><VeraAvatar size={22} className="rounded-full" />{current ? current.title : "New chat with Vera"}</span>}
-        subtitle="Vera searches news, fact-checkers and Wikipedia as needed and cites every source."
+        subtitle="Vera searches the news and fact-checkers as needed and cites every source."
         actions={<SessionMenu sessions={sessions} currentId={currentId} onOpen={setCurrentId} onDelete={remove} onDeleteAll={removeAll} onNew={startNew} />}
       >
         <ChatThread
           key={currentId} context={null} initialSources={[]} resetKey={currentId} persistKey={`session:${currentId}`} onChange={onChange}
-          suggestions={STARTERS} height="min-h-[26rem]" intro="Your investigative sidekick. Give me a claim, a headline or a hunch and I will chase it down through news, fact-checkers and Wikipedia, with every source cited."
-          placeholder="Ask Vera about a claim, a headline or how Veridex works..." modelHint={status?.model ? `Model: ${status.model}` : undefined}
+          suggestions={STARTERS} height="min-h-[26rem]" intro="Your investigative sidekick. Give me a claim, a headline or a hunch and I will chase it down through the news and fact-checkers, with every source cited."
+          placeholder="Ask Vera about a claim, a headline or how Veridex works..."
         />
       </Panel>
     </div>

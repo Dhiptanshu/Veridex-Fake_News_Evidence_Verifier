@@ -56,10 +56,10 @@ function loadSaved(persistKey?: string): { msgs: Msg[]; sources: ChatSource[] } 
  * a new key means a new, separate conversation. `onChange` reports finished message lists, for session bookkeeping.
  */
 export function ChatThread({
-  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", modelHint, persistKey, onChange, intro,
+  context, initialSources, suggestions, placeholder, onJump, resetKey, height = "min-h-[22rem]", persistKey, onChange, intro,
 }: {
   context: ChatContext | null; initialSources: ChatSource[]; suggestions: string[]; placeholder: string; onJump?: (s: ChatSource) => void;
-  resetKey: string; height?: string; modelHint?: string; persistKey?: string; onChange?: (msgs: SavedMsg[]) => void; intro?: string;
+  resetKey: string; height?: string; persistKey?: string; onChange?: (msgs: SavedMsg[]) => void; intro?: string;
 }) {
   const [init] = useState(() => loadSaved(persistKey));
   const [msgs, setMsgs] = useState<Msg[]>(init?.msgs ?? []);
@@ -140,7 +140,7 @@ export function ChatThread({
             <div>
               <p className="font-display text-[15px] font-semibold">Hi, I'm Vera</p>
               <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-muted">
-                {intro ?? "Ask me anything about this result. If the evidence here isn't enough, I'll go digging through news, fact-checkers and Wikipedia and show you what I find."}
+                {intro ?? "Ask me anything about this result. If the evidence here isn't enough, I'll go digging through the news and fact-checkers and show you what I find."}
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
@@ -219,7 +219,7 @@ export function ChatThread({
         )}
       </form>
       <p className="mt-1.5 px-1 text-[11px] text-muted">
-        {modelHint ? `${modelHint}. ` : ""}Vera can be wrong, so check the sources she cites. Your messages and the evidence shown are sent to AICredits.
+        Vera can be wrong, so check the sources she cites.
       </p>
     </div>
   );

@@ -29,7 +29,7 @@ const GROUPS: Item[][] = [
 ];
 const PAGE: Record<Route, { title: string; sub: string }> = {
   verify: { title: "Verify a claim", sub: "Check a claim against live news, fact-checkers and an AI judge" },
-  assistant: { title: "Chat with Vera", sub: "Your investigative sidekick. She digs through news, fact-checkers and Wikipedia and cites every source" },
+  assistant: { title: "Chat with Vera", sub: "Your investigative sidekick. She digs through the news and fact-checkers and cites every source" },
   compare: { title: "Compare pipelines", sub: "Run one claim through different evidence and verdict engines side by side" },
   batch: { title: "Batch verification", sub: "Check many claims at once, with accuracy scoring for labelled data" },
   history: { title: "History", sub: "Every claim you have checked, saved in this browser only" },
