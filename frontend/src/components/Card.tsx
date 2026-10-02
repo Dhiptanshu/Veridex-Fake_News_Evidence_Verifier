@@ -5,12 +5,12 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="text-[13px] font-semibold uppercase tracking-wide text-muted">{children}</p>;
+  return <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">{children}</p>;
 }
 
 export function PlaceholderTag() {
   return (
-    <span className="rounded-full bg-warn/16 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-warn">
+    <span className="rounded-full bg-warn/16 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-warn">
       placeholder
     </span>
   );

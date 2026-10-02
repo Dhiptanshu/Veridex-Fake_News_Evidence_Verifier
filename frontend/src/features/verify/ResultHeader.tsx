@@ -61,7 +61,7 @@ export function ResultHeader({
             <Ring value={v.confidence} color={color} size={112} stroke={10}>
               <div className="text-center">
                 <p className="font-mono text-2xl font-semibold tabular-nums">{Math.round(v.confidence * 100)}<span className="text-sm text-muted">%</span></p>
-                <p className="-mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted">confidence</p>
+                <p className="-mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted">confidence</p>
               </div>
             </Ring>
           ) : (
@@ -94,7 +94,7 @@ export function ResultHeader({
           </div>
 
           <ClaimText claim={claim} entities={entities} />
-          {v && <p className="text-[14px] text-muted">{HEADLINE[v.label]}{fastCount > 0 ? `, based on ${fastCount} live source${fastCount === 1 ? "" : "s"}` : ""}.</p>}
+          {v && <p className="text-[13px] text-muted">{HEADLINE[v.label]}{fastCount > 0 ? `, based on ${fastCount} live source${fastCount === 1 ? "" : "s"}` : ""}.</p>}
 
           {notes.length > 0 && (
             <ul className="space-y-1.5">
@@ -107,7 +107,7 @@ export function ResultHeader({
             </ul>
           )}
 
-          <p className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[12px] text-muted">
+          <p className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-muted">
             {(Object.keys(SLOT_SHORT) as Slot[]).filter((s) => stages[s].impl).map((s) => (
               <span key={s}>{SLOT_SHORT[s]}: <span className="text-ink/80">{stages[s].impl}</span>{stages[s].elapsedMs != null && ` ${(stages[s].elapsedMs! / 1000).toFixed(1)}s`}</span>
             ))}

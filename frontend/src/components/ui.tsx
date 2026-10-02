@@ -16,15 +16,15 @@ export function Panel({
   return (
     <section className={`card rounded-[22px] ${className}`} style={tint ? ({ "--tint": tint } as CSSProperties) : undefined}>
       {(title || actions) && (
-        <header className="flex items-center justify-between gap-3 px-6 pt-5">
+        <header className="flex items-center justify-between gap-3 px-5 pt-4">
           <div className="min-w-0">
-            <h3 className="font-display text-[16px] font-semibold leading-tight tracking-tight">{title}</h3>
-            {subtitle && <p className="mt-1 text-[14px] text-muted">{subtitle}</p>}
+            <h3 className="font-display text-[14.5px] font-semibold leading-tight tracking-tight">{title}</h3>
+            {subtitle && <p className="mt-0.5 text-[12px] text-muted">{subtitle}</p>}
           </div>
           <div className="flex shrink-0 items-center gap-2">{actions}</div>
         </header>
       )}
-      <div className={flush ? "pt-3" : "p-6 pt-4"}>{children}</div>
+      <div className={flush ? "pt-2.5" : "p-5 pt-3"}>{children}</div>
     </section>
   );
 }
@@ -34,15 +34,15 @@ export function StatCard({
   icon, value, unit, label, hint, tint = "var(--accent)",
 }: { icon: ReactNode; value: ReactNode; unit?: string; label: string; hint?: ReactNode; tint?: string }) {
   return (
-    <div className="card flex items-center gap-4 rounded-[22px] p-5" style={{ "--tint": tint } as CSSProperties}>
-      <span className="grid size-12 shrink-0 place-items-center rounded-2xl" style={{ background: `color-mix(in srgb, ${tint} 16%, transparent)`, color: tint }}>
+    <div className="card flex items-center gap-3.5 rounded-[20px] p-4" style={{ "--tint": tint } as CSSProperties}>
+      <span className="grid size-11 shrink-0 place-items-center rounded-xl" style={{ background: `color-mix(in srgb, ${tint} 16%, transparent)`, color: tint }}>
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="font-display text-[30px] font-semibold leading-none tracking-tight tabular-nums">
+        <p className="font-display text-[26px] font-semibold leading-none tracking-tight tabular-nums">
           {value}{unit && <span className="ml-1 text-sm font-medium text-muted">{unit}</span>}
         </p>
-        <p className="mt-1.5 truncate text-[14px] font-medium">{label}</p>
+        <p className="mt-1.5 truncate text-[13px] font-medium">{label}</p>
         {hint && <p className="truncate text-xs text-muted">{hint}</p>}
       </div>
     </div>
@@ -78,12 +78,12 @@ export function Button({
     secondary: "border border-line bg-surface hover:bg-surface2",
     ghost: "text-muted hover:bg-surface2 hover:text-ink",
   }[variant];
-  const sz = size === "sm" ? "h-9 px-3.5 text-[14px]" : "h-11 px-5 text-[14px]";
+  const sz = size === "sm" ? "h-8 px-3 text-[12px]" : "h-10 px-4 text-[13px]";
   return (
     <button
       {...rest}
       disabled={rest.disabled || loading}
-      className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${sz} ${v} ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-xl font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${sz} ${v} ${className}`}
     >
       {loading ? <Loader2 size={15} className="animate-spin" /> : icon}
       {children}
@@ -101,7 +101,7 @@ export function Segmented<T extends string>({
           key={o.value}
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={`rounded-xl px-3.5 py-1.5 text-[14px] font-semibold transition ${value === o.value ? "bg-accent text-accentink shadow-brand" : "text-muted hover:text-ink"}`}
+          className={`rounded-lg px-3 py-1.5 text-[12px] font-semibold transition ${value === o.value ? "bg-accent text-accentink shadow-brand" : "text-muted hover:text-ink"}`}
         >
           {o.label}
         </button>
@@ -122,10 +122,10 @@ export function Tabs<T extends string>({
           role="tab"
           aria-selected={value === t.value}
           onClick={() => onChange(t.value)}
-          className={`shrink-0 rounded-xl px-4 py-2 text-[14.5px] font-semibold transition ${value === t.value ? "bg-accent text-accentink shadow-brand" : "text-muted hover:text-ink"}`}
+          className={`shrink-0 rounded-lg px-3.5 py-1.5 text-[13px] font-semibold transition ${value === t.value ? "bg-accent text-accentink shadow-brand" : "text-muted hover:text-ink"}`}
         >
           {t.label}
-          {t.count !== undefined && <span className={`ml-2 rounded-full px-1.5 text-[12px] ${value === t.value ? "bg-white/25" : "bg-accent/14 text-accent"}`}>{t.count}</span>}
+          {t.count !== undefined && <span className={`ml-2 rounded-full px-1.5 text-[11px] ${value === t.value ? "bg-white/25" : "bg-accent/14 text-accent"}`}>{t.count}</span>}
         </button>
       ))}
     </div>
@@ -147,7 +147,7 @@ export function Empty({ icon, title, children, action }: { icon?: ReactNode; tit
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center">
       {icon && <div className="grid size-14 place-items-center rounded-2xl bg-accent/12 text-accent">{icon}</div>}
       <p className="font-display text-[16px] font-semibold">{title}</p>
-      {children && <p className="max-w-md text-[14px] text-muted">{children}</p>}
+      {children && <p className="max-w-md text-[13px] text-muted">{children}</p>}
       {action}
     </div>
   );
@@ -229,7 +229,7 @@ export function Select({
       <button
         ref={btn} type="button" role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`} aria-label={ariaLabel}
         onClick={() => (open ? setOpen(false) : openMenu())} onKeyDown={onKey}
-        className={`flex h-11 items-center justify-between gap-2 rounded-2xl border bg-surface px-4 text-left text-[14px] font-medium outline-none transition ${open ? "border-accent ring-4 ring-accent/12" : "border-line hover:border-accent/50"} ${className}`}
+        className={`flex h-10 items-center justify-between gap-2 rounded-xl border bg-surface px-3.5 text-left text-[13px] font-medium outline-none transition ${open ? "border-accent ring-4 ring-accent/12" : "border-line hover:border-accent/50"} ${className}`}
       >
         <span className="truncate">{current?.label ?? value}</span>
         <ChevronDown size={16} className={`shrink-0 text-muted transition ${open ? "rotate-180" : ""}`} />
@@ -244,7 +244,7 @@ export function Select({
             <li
               key={o.value} role="option" aria-selected={o.value === value} data-active={i === active}
               onMouseEnter={() => setActive(i)} onMouseDown={(e) => { e.preventDefault(); choose(o.value); }}
-              className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-[14px] ${i === active ? "bg-accent/12" : ""} ${o.value === value ? "font-semibold text-accent" : ""}`}
+              className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-[13px] ${i === active ? "bg-accent/12" : ""} ${o.value === value ? "font-semibold text-accent" : ""}`}
             >
               <span className="truncate">{o.label}</span>
               {o.value === value && <Check size={15} className="shrink-0" />}
@@ -258,7 +258,7 @@ export function Select({
 }
 
 export function Kbd({ children }: { children: ReactNode }) {
-  return <kbd className="rounded-md border border-line bg-surface2 px-1.5 py-0.5 font-mono text-[11px] text-muted">{children}</kbd>;
+  return <kbd className="rounded-md border border-line bg-surface2 px-1.5 py-0.5 font-mono text-[10px] text-muted">{children}</kbd>;
 }
 
 export function ProbBar({ values, className = "" }: { values: { label: Label; value: number }[]; className?: string }) {
@@ -303,7 +303,7 @@ export function SourceMark({ url, name, size = 22 }: { url?: string | null; name
   const initial = (name || host || "?").replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase() || "?";
   return (
     <span
-      className="inline-grid shrink-0 place-items-center rounded-xl text-[13px] font-bold"
+      className="inline-grid shrink-0 place-items-center rounded-xl text-[12px] font-bold"
       style={{ width: size, height: size, background: `hsl(${h} 70% 55% / 0.18)`, color: `hsl(${h} 55% 42%)` }}
     >
       {initial}

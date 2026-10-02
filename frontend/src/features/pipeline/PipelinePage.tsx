@@ -11,9 +11,9 @@ function Row({ c }: { c: Check }) {
     <li className="flex items-start gap-3 px-4 py-2.5">
       {c.ready ? <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-supported" /> : <CircleDashed size={16} className="mt-0.5 shrink-0 text-muted" />}
       <div className="min-w-0 flex-1">
-        <p className="text-[14px] font-medium">{c.label}</p>
+        <p className="text-[13px] font-medium">{c.label}</p>
         <p className="text-xs text-muted">{c.detail}</p>
-        {c.fix && <p className="mt-1 break-words font-mono text-[12px] text-ink/80"><span className="text-muted">fix: </span>{c.fix}</p>}
+        {c.fix && <p className="mt-1 break-words font-mono text-[11px] text-ink/80"><span className="text-muted">fix: </span>{c.fix}</p>}
       </div>
       <Badge tone={c.ready ? "supported" : "neutral"}>{c.ready ? "ready" : "not set up"}</Badge>
     </li>
@@ -39,7 +39,7 @@ export function PipelinePage() {
 
   return (
     <div className="space-y-4">
-      {error && <p role="alert" className="rounded-lg border border-refuted/30 bg-refuted/10 px-3 py-2.5 text-[14px] text-refuted">{error}</p>}
+      {error && <p role="alert" className="rounded-lg border border-refuted/30 bg-refuted/10 px-3 py-2.5 text-[13px] text-refuted">{error}</p>}
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Services" flush actions={<Button size="sm" variant="ghost" icon={<RefreshCw size={13} />} loading={loading} onClick={load}>Refresh</Button>}>
           <ul className="divide-y divide-line">{status?.services.map((c) => <Row key={c.key} c={c} />)}</ul>
@@ -57,11 +57,11 @@ export function PipelinePage() {
         <div className="divide-y divide-line">
           {SLOTS.map((slot) => (
             <div key={slot} className="grid gap-3 px-4 py-3 md:grid-cols-[9rem_1fr]">
-              <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">{SLOT_LABEL[slot]}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">{SLOT_LABEL[slot]}</p>
               <ul className="space-y-2">
                 {bySlot(slot).map((s) => (
                   <li key={s.name} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                    <span className="text-[14px] font-medium">{s.label}</span>
+                    <span className="text-[13px] font-medium">{s.label}</span>
                     <Badge tone={FAMILY_TONE[s.family]}>{s.family}</Badge>
                     {s.is_default && <Badge tone="supported">default</Badge>}
                     <span className="basis-full text-xs leading-snug text-muted">{s.description}</span>

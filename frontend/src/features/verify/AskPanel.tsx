@@ -89,7 +89,7 @@ export function AskPanel({
             {t.answer && (
               <div className="max-w-[95%] rounded-lg rounded-bl-sm border border-line bg-bg/60 px-3.5 py-2.5">
                 <p className="whitespace-pre-line text-sm leading-relaxed">{t.answer.answer}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
                   <span className="rounded-full border border-line px-2 py-0.5">{t.answer.method}</span>
                   {t.answer.cited.map((n) => {
                     const p = passages.find((x) => x.n === n);
@@ -119,7 +119,7 @@ export function AskPanel({
         </button>
       </form>
       {mode !== "local" && llmOn && (
-        <p className="mt-2 text-[12px] text-muted">LLM mode sends your question, the claim and the evidence shown here to AICredits.</p>
+        <p className="mt-2 text-[11px] text-muted">LLM mode sends your question, the claim and the evidence shown here to AICredits.</p>
       )}
     </Card>
   );

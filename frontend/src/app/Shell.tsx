@@ -68,11 +68,11 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
 
   const brand = (compact: boolean) => (
     <div className={`flex items-center gap-3 ${compact ? "justify-center" : "px-2"}`}>
-      <Logo size={compact ? 40 : 46} />
+      <Logo size={compact ? 36 : 38} />
       {!compact && (
         <div className="min-w-0 leading-none">
-          <p className="font-display text-[22px] font-bold tracking-[0.08em]">EVIDENCE</p>
-          <p className="mt-1.5 truncate text-[13px] font-medium text-accent">Fake-news verifier</p>
+          <p className="font-display text-[17px] font-bold tracking-[0.08em]">EVIDENCE</p>
+          <p className="mt-1 truncate text-[11px] font-medium text-accent">Fake-news verifier</p>
         </div>
       )}
     </div>
@@ -89,10 +89,10 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
                 <a
                   href={`#/${r}`} onClick={(e) => { e.preventDefault(); go(r); onPick?.(); }} aria-current={route === r ? "page" : undefined}
                   title={compact ? label : undefined}
-                  className={`flex h-12 items-center gap-3.5 rounded-2xl border text-[15px] font-medium transition ${compact ? "justify-center" : "px-4"} ${
+                  className={`flex h-10 items-center gap-3 rounded-xl border text-[13.5px] font-medium transition ${compact ? "justify-center" : "px-3"} ${
                     route === r ? "border-accent/45 bg-accent/12 text-ink" : "border-transparent text-ink/80 hover:bg-surface2 hover:text-ink"}`}
                 >
-                  <Icon size={19} strokeWidth={route === r ? 2.2 : 1.8} className={route === r ? "text-accent" : "text-muted"} />
+                  <Icon size={17} strokeWidth={route === r ? 2.2 : 1.8} className={route === r ? "text-accent" : "text-muted"} />
                   {!compact && label}
                 </a>
               </li>
@@ -105,15 +105,10 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
 
   return (
     <div className="flex min-h-dvh gap-5 p-3 md:p-5">
-      <aside className={`card-flat sticky top-5 hidden h-[calc(100dvh-2.5rem)] shrink-0 flex-col rounded-[28px] p-4 md:flex ${collapsed ? "w-[5.5rem]" : "w-[17.5rem]"} transition-[width] duration-200`}>
-        <div className="pb-4 pt-1">{brand(collapsed)}</div>
+      <aside className={`card-flat sticky top-5 hidden h-[calc(100dvh-2.5rem)] shrink-0 flex-col rounded-[24px] p-3 md:flex ${collapsed ? "w-[4.75rem]" : "w-[15rem]"} transition-[width] duration-200`}>
+        <div className="pb-3 pt-1">{brand(collapsed)}</div>
         {nav(collapsed)}
         <div className="mt-2 border-t border-line pt-3">
-          {!collapsed && (
-            <p className="px-2 pb-3 text-[11.5px] leading-snug text-muted">
-              NLP Lab 2026 . Live news, fact-checks and an AI judge, with the FEVER benchmark underneath.
-            </p>
-          )}
           <div className={`flex items-center ${collapsed ? "flex-col gap-2" : "justify-between"} px-1`}>
             <span className="flex items-center gap-2 text-[12.5px] text-muted" title={online ? "API online" : "API offline"}>
               <i className={`size-2.5 rounded-full ${online === null ? "bg-neutral" : online ? "bg-supported" : "bg-refuted"}`} />
@@ -141,19 +136,19 @@ export function Shell({ route, go, children }: { route: Route; go: (r: Route) =>
           <div className="flex min-w-0 items-start gap-3">
             <button onClick={() => setMenu(true)} aria-label="Open menu" className="card-flat mt-0.5 grid size-11 shrink-0 place-items-center rounded-2xl md:hidden"><Menu size={19} /></button>
             <div className="min-w-0">
-              <h1 className="truncate font-display text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{PAGE[route].title}</h1>
-              <p className="mt-1 text-[14px] text-muted md:text-[15px]">{PAGE[route].sub}</p>
+              <h1 className="truncate font-display text-[20px] font-bold leading-tight tracking-tight md:text-[24px]">{PAGE[route].title}</h1>
+              <p className="mt-0.5 text-[13px] text-muted">{PAGE[route].sub}</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2.5">
             <button
               onClick={() => setPalette(true)}
-              className="card-flat hidden h-12 items-center gap-2.5 rounded-2xl px-4 text-[14px] text-muted transition hover:text-ink sm:flex"
+              className="card-flat hidden h-10 items-center gap-2.5 rounded-xl px-3.5 text-[13px] text-muted transition hover:text-ink sm:flex"
             >
               <Search size={16} /> Search or run a claim <Kbd>Ctrl K</Kbd>
             </button>
             <button onClick={() => setPalette(true)} aria-label="Search" className="card-flat grid size-11 place-items-center rounded-2xl sm:hidden"><Search size={18} /></button>
-            <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} className="card-flat grid size-12 place-items-center rounded-2xl text-muted transition hover:text-ink">
+            <button onClick={toggle} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} className="card-flat grid size-10 place-items-center rounded-xl text-muted transition hover:text-ink">
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>

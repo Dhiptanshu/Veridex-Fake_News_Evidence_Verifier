@@ -138,7 +138,7 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
             {STEPS.map(({ icon: Icon, title, text: d }, n) => (
               <li key={title} className="rise rounded-2xl border border-line bg-surface p-4 shadow-card" style={{ animationDelay: `${n * 60}ms` }}>
                 <span className="grid size-9 place-items-center rounded-xl bg-accent/10 text-accent"><Icon size={17} /></span>
-                <p className="mt-3 text-[14.5px] font-semibold">{n + 1}. {title}</p>
+                <p className="mt-3 text-[13.5px] font-semibold">{n + 1}. {title}</p>
                 <p className="mt-1 text-xs leading-relaxed text-muted">{d}</p>
               </li>
             ))}
@@ -149,7 +149,7 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
               <ul className="divide-y divide-line">
                 {history.slice(0, 5).map((h) => (
                   <li key={h.id}>
-                    <button onClick={() => { setText(h.claim); setGold(h.goldLabel ?? null); }} className="flex w-full items-start justify-between gap-3 px-5 py-3 text-left text-[14px] hover:bg-surface2">
+                    <button onClick={() => { setText(h.claim); setGold(h.goldLabel ?? null); }} className="flex w-full items-start justify-between gap-3 px-5 py-3 text-left text-[13px] hover:bg-surface2">
                       <span className="line-clamp-2">{h.claim}</span>
                       {h.label && <Badge tone={LABEL_TONE[h.label]} className="shrink-0">{LABEL_TEXT[h.label]}</Badge>}
                     </button>
@@ -165,7 +165,7 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
         <>
           <PipelineTimeline stages={stages} />
           {error && (
-            <p role="alert" className="flex items-start gap-2 rounded-lg border border-refuted/30 bg-refuted/10 px-3 py-2.5 text-[14px] text-refuted">
+            <p role="alert" className="flex items-start gap-2 rounded-lg border border-refuted/30 bg-refuted/10 px-3 py-2.5 text-[13px] text-refuted">
               <AlertTriangle size={15} className="mt-0.5 shrink-0" /> {error}
             </p>
           )}
@@ -187,7 +187,7 @@ export function VerifyPage({ go }: { go: (r: "history") => void }) {
               {status === "done" && v && expl && ret ? (
                 <AssistantPanel claim={claim} verification={v} explanation={expl} retrieval={ret} onJump={jumpToSource} />
               ) : (
-                <Panel title="Ask about this result"><p className="text-[14px] text-muted">Available once the run finishes.</p></Panel>
+                <Panel title="Ask about this result"><p className="text-[13px] text-muted">Available once the run finishes.</p></Panel>
               )}
             </div>
           )}

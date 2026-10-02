@@ -16,10 +16,10 @@ export function ResultDetail({ run }: { run: RunResult }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        {v && <Badge tone={LABEL_TONE[v.label]} className="px-2.5 py-1 text-[14px]">{LABEL_TEXT[v.label]}</Badge>}
+        {v && <Badge tone={LABEL_TONE[v.label]} className="px-2.5 py-1 text-[13px]">{LABEL_TEXT[v.label]}</Badge>}
         {v && <span className="font-mono text-sm text-muted">{Math.round(v.confidence * 100)}% confidence</span>}
         {v && <Badge>{v.engine === "llm" ? "LLM judge" : "BERT (offline)"}</Badge>}
-        {run.totalMs != null && <span className="ml-auto font-mono text-[12px] text-muted">{(run.totalMs / 1000).toFixed(1)}s</span>}
+        {run.totalMs != null && <span className="ml-auto font-mono text-[11px] text-muted">{(run.totalMs / 1000).toFixed(1)}s</span>}
       </div>
       {notes.length > 0 && (
         <ul className="space-y-1.5">

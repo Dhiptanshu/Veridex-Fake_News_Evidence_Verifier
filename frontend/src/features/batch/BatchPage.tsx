@@ -104,7 +104,7 @@ export function BatchPage() {
         <textarea
           id="batch" value={text} onChange={(e) => setText(e.target.value)} rows={7}
           placeholder={"One claim per line, e.g.\nMarie Curie won two Nobel Prizes.\nThe capital of Australia is Sydney.\n\nOptional ground truth after a tab or comma: Paris is the capital of Germany.,refuted"}
-          className="block w-full resize-y rounded-md border border-line bg-bg/60 p-3 font-mono text-[14px] leading-relaxed outline-none focus:border-accent"
+          className="block w-full resize-y rounded-md border border-line bg-bg/60 p-3 font-mono text-[13px] leading-relaxed outline-none focus:border-accent"
         />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-muted">
@@ -147,9 +147,9 @@ export function BatchPage() {
             </>}
           >
             <div className="overflow-x-auto">
-              <table className="w-full text-[14px]">
+              <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-muted">
+                  <tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-muted">
                     <th className="w-10 px-4 py-2 font-medium">#</th><th className="px-2 py-2 font-medium">Claim</th>
                     <th className="px-2 py-2 font-medium">Verdict</th><th className="px-2 py-2 font-medium">Conf.</th>
                     <th className="px-2 py-2 font-medium">Label</th><th className="px-4 py-2 text-right font-medium">Time</th>
@@ -178,7 +178,7 @@ export function BatchPage() {
                         {open === r.n && (
                           <tr key={`${r.n}-d`} className="border-b border-line bg-bg/60">
                             <td />
-                            <td colSpan={5} className="px-2 py-4 text-[14px] leading-relaxed">
+                            <td colSpan={5} className="px-2 py-4 text-[13px] leading-relaxed">
                               {r.error && <p className="mb-2 text-refuted">{r.error}</p>}
                               {r.run && !r.run.error && <ResultDetail run={r.run} />}
                             </td>

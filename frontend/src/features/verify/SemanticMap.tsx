@@ -57,7 +57,7 @@ export function SemanticMap({ projection }: { projection: Projection }) {
         <span className="flex items-center gap-1.5"><i className="inline-block size-1.5 rounded-full bg-muted/40" /> corpus sample</span>
       </div>
       {hover !== null && <p className="mt-2 truncate text-xs text-ink/80">{projection.points[hover].label}</p>}
-      <p className="mt-2 text-[12px] leading-snug text-muted">
+      <p className="mt-2 text-[11px] leading-snug text-muted">
         PCA to 2 components keeps {(projection.explained_variance * 100).toFixed(1)}% of the variance, so distances are
         approximate. Closer means more similar in meaning.
       </p>

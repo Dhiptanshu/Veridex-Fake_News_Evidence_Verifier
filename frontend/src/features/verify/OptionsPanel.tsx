@@ -32,7 +32,7 @@ export function OptionsGrid({
         const info = impls.find((s) => s.name === current);
         return (
           <label key={slot} className="block">
-            <span className="mb-1.5 flex items-center justify-between gap-2 text-[12px] font-semibold uppercase tracking-wide text-muted">
+            <span className="mb-1.5 flex items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
               {SLOT_LABEL[slot]} {value[slot] && <Badge tone="accent">changed</Badge>}
             </span>
             <Select

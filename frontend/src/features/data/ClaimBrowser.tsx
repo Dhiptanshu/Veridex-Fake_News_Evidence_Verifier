@@ -14,17 +14,17 @@ function ClaimRow({ c }: { c: ClaimView }) {
     <li className="rounded-md border border-line bg-bg/60 p-4">
       <div className="flex items-start justify-between gap-3">
         <p className="text-base font-medium leading-snug">{c.claim}</p>
-        <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[12px] font-semibold ${meta.className}`}>{meta.text}</span>
+        <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${meta.className}`}>{meta.text}</span>
       </div>
       {c.evidence_sets.length === 0 ? (
         <p className="mt-2 text-xs text-muted">No gold evidence: Wikipedia does not settle this claim.</p>
       ) : (
         c.evidence_sets.slice(0, 2).map((set, i) => (
           <div key={i} className="mt-3 space-y-1.5 border-l-2 border-accent/60 pl-3">
-            {c.evidence_sets.length > 1 && <p className="font-mono text-[11px] uppercase tracking-wider text-muted">Evidence set {i + 1}</p>}
+            {c.evidence_sets.length > 1 && <p className="font-mono text-[10px] uppercase tracking-wider text-muted">Evidence set {i + 1}</p>}
             {set.map((e) => (
               <p key={`${e.page}-${e.sent_id}`} className="text-sm leading-relaxed text-ink/90">
-                <span className="mr-1.5 font-mono text-[12px] text-accent">{e.title}</span>
+                <span className="mr-1.5 font-mono text-[11px] text-accent">{e.title}</span>
                 {e.text}
               </p>
             ))}

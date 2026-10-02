@@ -28,7 +28,7 @@ export function PipelineTimeline({ stages }: { stages: Stages }) {
             >
               {done ? <Check size={12} className="text-supported" /> : running ? <Loader2 size={12} className="animate-spin" /> : <i className="size-1.5 rounded-full bg-muted/50" />}
               {SLOT_LABEL[slot]}
-              {done && st.elapsedMs != null && <span className="font-mono text-[11px] text-muted">{Math.round(st.elapsedMs)}ms</span>}
+              {done && st.elapsedMs != null && <span className="font-mono text-[10px] text-muted">{Math.round(st.elapsedMs)}ms</span>}
             </span>
           </li>
         );
