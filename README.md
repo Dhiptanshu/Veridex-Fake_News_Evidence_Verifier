@@ -517,8 +517,11 @@ python ml/check_live.py           # tests each configured service with one small
 cd backend && python -m pytest    # 153 tests; no network, models or keys needed
 ```
 
-**Docker** (`Dockerfile`, `docker-compose.yml`, mounting `data/{indexes,models,processed}`) is provided but has **not been built or
-run** yet; treat it as untested.
+**Docker.** One image serves the API and the built UI: `docker compose up --build`, then open http://localhost:8000. Build the
+data first (step 3), because `data/{indexes,models,processed}` are mounted read-only into the container, not baked into the image.
+Compose loads the same `backend/.env` as a normal run (optional), keeps the downloaded BGE encoder in a volume, and has a health
+check. Allow about 4 GB of RAM. The compose file passes validation, but the image has **not been built or run** yet, so treat it as
+untested. Do not run `docker compose config` with a filled `.env`: it prints the key values.
 
 <details>
 <summary><b>Troubleshooting</b></summary>

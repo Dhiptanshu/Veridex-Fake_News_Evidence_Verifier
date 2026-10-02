@@ -1,18 +1,31 @@
-# docker compose up --build   ->   http://localhost:8000
-# Needs the artefacts from the README's build steps in ./data (indexes, models, processed). Allow about 4 GB of RAM.
+# docker compose up --build    ->    http://localhost:8000
+#
+# Needs data/indexes, data/models and data/processed built on the host (see the README's setup steps); they are mounted
+# read-only, not baked into the image. Allow about 4 GB of RAM for the container.
+#
+# Keys: the same backend/.env you use without Docker is loaded here (optional; copy backend/.env.example to create it).
+# Never commit it; .dockerignore keeps it out of the image.
 services:
   app:
     build: .
     ports:
       - "8000:8000"
-    environment:
-      # All optional; see docs/API_KEYS.md. Put them in a .env file next to this one (never commit it).
-      FNEV_WIKIPEDIA_CONTACT: ${FNEV_WIKIPEDIA_CONTACT:-}
-      FNEV_GNEWS_API_KEY: ${FNEV_GNEWS_API_KEY:-}
-      FNEV_NEWSAPI_KEY: ${FNEV_NEWSAPI_KEY:-}
-      FNEV_ANTHROPIC_API_KEY: ${FNEV_ANTHROPIC_API_KEY:-}
+    env_file:
+      - path: backend/.env
+        required: false
     volumes:
       - ./data/indexes:/app/data/indexes:ro
       - ./data/models:/app/data/models:ro
       - ./data/processed:/app/data/processed:ro
+      # the BGE encoder downloads on first use; keep it so restarts do not download it again
+      - hf-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s  # the API loads its models at startup
     restart: unless-stopped
+
+volumes:
+  hf-cache:
